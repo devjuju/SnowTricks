@@ -1,0 +1,9 @@
+{% for trick in tricks %}
+	<div class="relative overflow-hidden rounded-xl shadow-lg group">
+		<img src="{{ asset(trick.featuredImage) }}" alt="{{ trick.title }}" class="w-full h-56 object-cover transform group-hover:scale-110 transition duration-500 ease-in-out">
+		<div class="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm px-4 py-3">
+			<h3 class="text-white text-lg font-semibold uppercase">{{ trick.title }}</h3>
+		</div>
+		<a href="{{ path('tricks_show', { slug: trick.slug }) }}" class="absolute inset-0"></a>
+	</div>
+{% endfor %}
