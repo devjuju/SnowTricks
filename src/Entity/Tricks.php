@@ -53,6 +53,9 @@ class Tricks
     #[ORM\ManyToMany(targetEntity: Videos::class, inversedBy: 'tricks')]
     private Collection $videos;
 
+    #[ORM\Column(length: 255)]
+    private ?string $slug = null;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -212,6 +215,18 @@ class Tricks
     public function removeVideo(Videos $video): static
     {
         $this->videos->removeElement($video);
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
 
         return $this;
     }

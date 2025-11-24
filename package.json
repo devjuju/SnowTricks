@@ -2,10 +2,12 @@
     "devDependencies": {
         "@babel/core": "^7.17.0",
         "@babel/preset-env": "^7.16.0",
-        "@symfony/webpack-encore": "^5.1.0",
+        "@symfony/webpack-encore": "^5.2.0",
+        "@tailwindcss/postcss": "^4.1.16",
         "autoprefixer": "^10.4.22",
         "core-js": "^3.38.0",
         "postcss": "^8.5.6",
+        "postcss-loader": "^8.2.0",
         "regenerator-runtime": "^0.13.9",
         "tailwindcss": "^4.1.17",
         "webpack": "^5.74.0",
@@ -20,6 +22,7 @@
         "build": "encore production --progress"
     },
     "dependencies": {
-        "flowbite": "^4.0.1"
+        "bootstrap": "^5.3.8",
+        "flowbite": "^4.0.0"
     }
 }
