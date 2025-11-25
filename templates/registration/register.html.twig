@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}S'inscrire
+{% endblock %}
+
+{% block body %}
+	<br>
+	<section class="bg-[#007CCB] min-h-screen flex flex-col items-center pt-24 sm:pt-32 md:pt-40">
+
+		<h1 class="text-white text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center uppercase">
+			S'inscrire
+		</h1>
+
+		<div class="w-full max-w-md sm:max-w-lg mx-4 sm:mx-auto bg-white py-10 px-6 sm:py-16 sm:px-12 md:px-20 rounded-[20px] shadow-[0_18px_45px_rgba(0,0,0,0.12)] space-y-6">
+
+			{{ form_start(registrationForm, {'attr': {'class': 'space-y-6'}}) }}
+
+			{# Email #}
+			<div class="text-center space-y-2">
+				{{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
+				{{ form_widget(registrationForm.email, {'attr': {'class': 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'}}) }}
+				{{ form_errors(registrationForm.email) }}
+			</div>
+
+			{# Username #}
+			<div class="text-center space-y-2">
+				{{ form_label(registrationForm.username, 'Nom d\'utilisateur', {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
+            {{ form_widget(registrationForm.username, {'attr': {'class': 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'}}) }}
+            {{ form_errors(registrationForm.username) }}
+        </div>
+
+        {# Password #}
+        <div class="text-center space-y-2">
+            {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
+            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'}}) }}
+            {{ form_errors(registrationForm.plainPassword) }}
+        </div>
+
+        {# Agree Terms #}
+        <div class="flex items-center space-x-2 text-gray-700">
+            {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'w-4 h-4 accent-blue-600'}}) }}
+            {{ form_label(registrationForm.agreeTerms, 'Accepter les termes', {'label_attr': {'class': 'text-gray-700'}}) }}
+            {{ form_errors(registrationForm.agreeTerms) }}
+        </div>
+
+        <button type="submit" class="w-full bg-[#007CCB] hover:bg-[#005F9E] text-white py-3 px-6 rounded-full font-semibold transition duration-300">
+            S'inscrire
+        </button>
+
+        {{ form_end(registrationForm) }}
+
+			</div>
+		</section>
+	{% endblock %}
