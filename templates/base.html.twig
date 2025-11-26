@@ -28,6 +28,11 @@
 	<body>
 		{% include '_partials/navbar.html.twig' %}
 
+		{% for messages in app.flashes %}
+			{% for message in messages %}
+				<p>{{ message|raw }}</p>
+			{% endfor %}
+		{% endfor %}
 
 		{% block body %}{% endblock %}
 
