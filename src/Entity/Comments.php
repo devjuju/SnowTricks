@@ -7,8 +7,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentsRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Comments
 {
+    use Timestampable;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -38,7 +41,6 @@ class Comments
     public function setContent(string $content): static
     {
         $this->content = $content;
-
         return $this;
     }
 
@@ -50,7 +52,6 @@ class Comments
     public function setUsers(?Users $users): static
     {
         $this->users = $users;
-
         return $this;
     }
 
@@ -62,7 +63,6 @@ class Comments
     public function setTricks(?Tricks $tricks): static
     {
         $this->tricks = $tricks;
-
         return $this;
     }
 }

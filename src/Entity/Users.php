@@ -9,44 +9,37 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ORM\HasLifecycleCallbacks]
 class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use Timestampable;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\Email(message: 'L\' adresse email {{ value }} n\'est pas valide.')]
     private ?string $email = null;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
     #[ORM\Column(length: 50)]
     private ?string $username = null;
 
-    /**
-     * @var Collection<int, Tricks>
-     */
     #[ORM\OneToMany(targetEntity: Tricks::class, mappedBy: 'users', orphanRemoval: true)]
     private Collection $tricks;
 
-    /**
-     * @var Collection<int, Comments>
-     */
     #[ORM\OneToMany(targetEntity: Comments::class, mappedBy: 'users', orphanRemoval: true)]
     private Collection $comments;
 
@@ -58,6 +51,10 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         $this->tricks = new ArrayCollection();
         $this->comments = new ArrayCollection();
     }
+
+    // -------------------
+    // GETTERS / SETTERS
+    // -------------------
 
     public function getId(): ?int
     {
@@ -72,45 +69,27 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -119,25 +98,20 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
     public function __serialize(): array
     {
         $data = (array) $this;
         $data["\0" . self::class . "\0password"] = hash('crc32c', $this->password);
-
         return $data;
     }
 
     #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // @deprecated, to be removed when upgrading to Symfony 8
+        // @deprecated, à supprimer en Symfony 8
     }
 
     public function getUsername(): ?string
@@ -148,13 +122,9 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): static
     {
         $this->username = $username;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Tricks>
-     */
     public function getTricks(): Collection
     {
         return $this->tricks;
@@ -166,25 +136,19 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
             $this->tricks->add($trick);
             $trick->setUsers($this);
         }
-
         return $this;
     }
 
     public function removeTrick(Tricks $trick): static
     {
         if ($this->tricks->removeElement($trick)) {
-            // set the owning side to null (unless already changed)
             if ($trick->getUsers() === $this) {
                 $trick->setUsers(null);
             }
         }
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Comments>
-     */
     public function getComments(): Collection
     {
         return $this->comments;
@@ -196,19 +160,16 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
             $this->comments->add($comment);
             $comment->setUsers($this);
         }
-
         return $this;
     }
 
     public function removeComment(Comments $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getUsers() === $this) {
                 $comment->setUsers(null);
             }
         }
-
         return $this;
     }
 
@@ -220,7 +181,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
-
         return $this;
     }
 }

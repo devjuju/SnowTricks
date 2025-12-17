@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\VideosRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VideosRepository::class)]
@@ -18,16 +16,9 @@ class Videos
     #[ORM\Column(length: 255)]
     private ?string $content = null;
 
-    /**
-     * @var Collection<int, Tricks>
-     */
-    #[ORM\ManyToMany(targetEntity: Tricks::class, mappedBy: 'videos')]
-    private Collection $tricks;
-
-    public function __construct()
-    {
-        $this->tricks = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'videos')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Tricks $trick = null;
 
     public function getId(): ?int
     {
@@ -42,34 +33,51 @@ class Videos
     public function setContent(string $content): static
     {
         $this->content = $content;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Tricks>
-     */
-    public function getTricks(): Collection
+    public function getTrick(): ?Tricks
     {
-        return $this->tricks;
+        return $this->trick;
     }
 
-    public function addTrick(Tricks $trick): static
+    public function setTrick(?Tricks $trick): static
     {
-        if (!$this->tricks->contains($trick)) {
-            $this->tricks->add($trick);
-            $trick->addVideo($this);
+        $this->trick = $trick;
+        return $this;
+    }
+
+    // Dans Videos pour le carousel
+    public function getType(): string
+    {
+        return 'video';
+    }
+
+
+    public function getYoutubeId(): ?string
+    {
+        // youtube.com/watch?v=XXXX
+        if (str_contains($this->content, 'youtube.com')) {
+            parse_str(parse_url($this->content, PHP_URL_QUERY), $vars);
+            return $vars['v'] ?? null;
         }
 
-        return $this;
-    }
-
-    public function removeTrick(Tricks $trick): static
-    {
-        if ($this->tricks->removeElement($trick)) {
-            $trick->removeVideo($this);
+        // youtu.be/XXXX
+        if (str_contains($this->content, 'youtu.be')) {
+            return basename($this->content);
         }
 
-        return $this;
+        return null;
+    }
+
+    public function getEmbedUrl(): ?string
+    {
+        $id = $this->getYoutubeId();
+
+        if (!$id) {
+            return null;
+        }
+
+        return 'https://www.youtube.com/embed/' . $id;
     }
 }

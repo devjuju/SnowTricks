@@ -1,0 +1,128 @@
+<div
+	class="w-full overflow-hidden relative group">
+	<!-- Slider -->
+	<div id="marquee-container" class="overflow-hidden mx-auto">
+		<div
+			id="marquee" class="flex gap-6">
+			<!-- 12 cartes/images -->
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=1" alt="Image 1" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=2" alt="Image 2" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=3" alt="Image 3" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=4" alt="Image 4" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=5" alt="Image 5" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=6" alt="Image 6" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=7" alt="Image 7" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=8" alt="Image 8" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=9" alt="Image 9" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=10" alt="Image 10" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=11" alt="Image 11" class="rounded-lg">
+			</div>
+			<div class="min-w-[250px] h-48 bg-white rounded-lg shadow flex items-center justify-center">
+				<img src="https://picsum.photos/200/150?random=12" alt="Image 12" class="rounded-lg">
+			</div>
+		</div>
+	</div>
+
+	<!-- Flèches flottantes -->
+	<button id="prev" class="absolute top-1/2 left-2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 flex items-center justify-center text-2xl shadow-md
+			             opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0
+			             transition-all duration-300 hover:bg-white hover:scale-110 z-10">
+		‹
+	</button>
+
+	<button id="next" class="absolute top-1/2 right-2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 flex items-center justify-center text-2xl shadow-md
+			             opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0
+			             transition-all duration-300 hover:bg-white hover:scale-110 z-10">
+		›
+	</button>
+</div>
+
+<script>
+	const marquee = document.getElementById('marquee');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+
+let position = 0;
+const cardWidth = 250;
+const gap = 24;
+const step = cardWidth + gap;
+const totalCards = marquee.children.length;
+
+// Déterminer nombre de cartes visibles selon écran
+function getVisibleCards() {
+const width = window.innerWidth;
+if (width < 768) 
+return 2;
+
+if (width < 1024) 
+return 4;
+
+return 6;
+}
+
+function updateWidth() {
+const visible = getVisibleCards();
+marquee.parentElement.style.width = `${
+visible * cardWidth + (visible - 1) * gap
+}px`;
+}
+window.addEventListener('resize', updateWidth);
+updateWidth();
+
+// Fonction de déplacement continu
+function continuousScroll() {
+const visible = getVisibleCards();
+const maxPosition = -(step * (totalCards - visible));
+position -= 1; // vitesse fixe
+if (position < maxPosition) 
+position = maxPosition;
+
+marquee.style.transform = `translateX(${position}px)`;
+requestAnimationFrame(continuousScroll);
+}
+continuousScroll();
+
+// Boutons pour avancer/reculer par 1 carte
+nextBtn.addEventListener('click', () => {
+const visible = getVisibleCards();
+const maxPosition = -(step * (totalCards - visible));
+position -= step;
+if (position < maxPosition) 
+position = maxPosition;
+
+marquee.style.transform = `translateX(${position}px)`;
+});
+
+prevBtn.addEventListener('click', () => {
+position += step;
+if (position > 0) 
+position = 0;
+
+marquee.style.transform = `translateX(${position}px)`;
+});
+
+// Pause au survol
+marquee.parentElement.addEventListener('mouseenter', () => cancelAnimationFrame(continuousScroll));
+marquee.parentElement.addEventListener('mouseleave', () => continuousScroll());
+</script>

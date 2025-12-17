@@ -1,0 +1,50 @@
+<button id="collapseBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full text-center font-medium">
+	Ajouter des images et vidéos secondaires
+</button>
+<div id="collapseContent" class="overflow-hidden transition-[max-height] duration-300">
+	<div
+		class="p-4 bg-gray-100 border border-gray-300 rounded-b">
+		{# Secondary Images #}
+		<div class="mt-4">
+			<div id="images-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>
+			<template id="image-template">
+				<div class="image-item item-card border-2 border-dotted relative">
+					<button type="button" class="remove-image absolute top-2 right-2 bg-red-600 text-white p-1 rounded-xl hover:bg-red-700">
+						<i class="bi bi-trash"></i>
+					</button>
+					<input type="file" class="image-input hidden" accept="image/*"/>
+					<div class="placeholder w-full h-full flex flex-col items-center justify-center text-center text-gray-500 pointer-events-none">
+						<h4 class="text-sm font-medium">Cliquer ou glisser une image ici</h4>
+						<p class="text-xs">JPG / PNG — Max 2 MB</p>
+					</div>
+					<img src="" class="image-preview hidden w-full h-[150px] object-cover rounded-xl border mt-3">
+				</div>
+			</template>
+			<div class="mt-4">
+				<button type="button" id="add-image" class="px-4 py-2 bg-[#007CCB] hover:bg-[#005F9E] text-white rounded-xl">
+					Ajouter des images
+				</button>
+			</div>
+		</div>
+		{# Videos #}
+		<div class="mt-8">
+			<div id="videos-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>
+			<template id="video-template">
+				<div class="video-item item-card relative">
+					<button type="button" class="remove-video absolute top-2 right-2 bg-red-600 text-white p-1 rounded-xl hover:bg-red-700">
+						<i class="bi bi-trash"></i>
+					</button>
+					<input type="text" class="video-input block w-full rounded-xl border-gray-200 p-2 text-sm" placeholder="https://youtu.be/...">
+					<div class="video-preview hidden mt-3 w-full">
+						<iframe class="w-full h-[150px] rounded-xl border" src="" frameborder="0" allowfullscreen></iframe>
+					</div>
+				</div>
+			</template>
+			<div class="mt-4">
+				<button type="button" id="add-video" class="px-4 py-2 bg-[#00A3D9] hover:bg-[#0082B0] text-white rounded-xl">
+					Ajouter des vidéos
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

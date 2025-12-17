@@ -3,43 +3,38 @@
 namespace App\Controller;
 
 use App\Repository\TricksRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class MainController extends AbstractController
 {
     #[Route('/', name: 'app_main')]
-    public function index(TricksRepository $tricksRepository): Response
+    public function index(Request $request, TricksRepository $tricksRepository): Response
     {
-        $tricks = $tricksRepository->findBy([], ['id' => 'DESC']);
+        $page = max(1, (int)$request->query->get('page', 1));
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $query = $tricksRepository->createQueryBuilder('t')
+            ->orderBy('t.id', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery();
+
+        $tricks = new Paginator($query);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('_partials/tricks.html.twig', [
+                'tricks' => $tricks,
+            ]);
+        }
 
         return $this->render('main/index.html.twig', [
             'tricks' => $tricks,
-        ]);
-    }
-
-
-    #[Route('/load-more', name: 'load_more_tricks', methods: ['GET'])]
-    public function loadMore(
-        Request $request,
-        TricksRepository $tricksRepository
-    ): JsonResponse {
-
-        $offset = (int) $request->query->get('offset', 0);
-        $limit = 10;
-
-        $tricks = $tricksRepository->findBy([], ['id' => 'DESC'], $limit, $offset);
-
-        $html = $this->renderView('_partials/tricks_item.html.twig', [
-            'tricks' => $tricks
-        ]);
-
-        return new JsonResponse([
-            'html' => $html,
-            'hasMore' => count($tricks) === $limit
+            'page' => $page,
         ]);
     }
 }

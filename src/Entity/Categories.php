@@ -8,8 +8,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoriesRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Categories
 {
+    use Timestampable;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -18,16 +21,17 @@ class Categories
     #[ORM\Column(length: 50)]
     private ?string $name = null;
 
-    /**
-     * @var Collection<int, Tricks>
-     */
-    #[ORM\ManyToMany(targetEntity: Tricks::class, mappedBy: 'categories')]
+    #[ORM\OneToMany(targetEntity: Tricks::class, mappedBy: 'category')]
     private Collection $tricks;
 
     public function __construct()
     {
         $this->tricks = new ArrayCollection();
     }
+
+    // -------------------
+    // GETTERS / SETTERS
+    // -------------------
 
     public function getId(): ?int
     {
@@ -42,13 +46,9 @@ class Categories
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Tricks>
-     */
     public function getTricks(): Collection
     {
         return $this->tricks;
@@ -58,18 +58,18 @@ class Categories
     {
         if (!$this->tricks->contains($trick)) {
             $this->tricks->add($trick);
-            $trick->addCategory($this);
+            $trick->setCategory($this);
         }
-
         return $this;
     }
 
     public function removeTrick(Tricks $trick): static
     {
         if ($this->tricks->removeElement($trick)) {
-            $trick->removeCategory($this);
+            if ($trick->getCategory() === $this) {
+                $trick->setCategory(null);
+            }
         }
-
         return $this;
     }
 }

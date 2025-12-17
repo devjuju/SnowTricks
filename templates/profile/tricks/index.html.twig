@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello TricksController!
+{% endblock %}
+
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+	</style>
+
+	<div class="example-wrapper">
+		<h1>Hello
+			{{ controller_name }}! ✅</h1>
+
+		This friendly message is coming from:
+		<ul>
+			<li>Your controller at
+				<code>/Users/justineleleu/Desktop/Alternance/Openclassrooms/PARCOURS 2/PROJET 6/SNOWTRICKS/app/src/Controller/Profile/TricksController.php</code>
+			</li>
+			<li>Your template at
+				<code>/Users/justineleleu/Desktop/Alternance/Openclassrooms/PARCOURS 2/PROJET 6/SNOWTRICKS/app/templates/profile/tricks/index.html.twig</code>
+			</li>
+		</ul>
+	</div>
+
+	<section id="home-section" class="bg-[#007CCB] dark:bg-gray-700">
+		<div class="container mx-auto lg:max-w-7xl md:max-w-3xl px-4 pt-20">
+			<div class="grid grid-cols-1 lg:grid-cols-12 items-center ">
+
+				<div class="col-span-12 bg-white/70 dark:bg-gray-800/70
+																																								                backdrop-blur-sm p-8 md:p-12 lg:p-16 rounded-2xl shadow-lg">
+					<h1 class="text-4xl lg:text-7xl font-semibold mb-5 text-black dark:text-white md:4px lg:text-start text-center">Cook anything with the experts</h1>
+					<p class="text-black/55 dark:text-white/50 lg:text-lg font-normal mb-10 lg:text-start text-center">Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+						<!-- -->
+						<br>
+						accusantium doloremque laudantium, totam</p>
+					<div class="md:flex align-middle justify-center lg:justify-start">
+						<a class="text-xl w-full md:w-auto font-medium rounded-full text-white py-5 px-6 bg-primary hover:text-primary lg:px-14 mr-6 border border-primary hover:bg-transparent" href="#cook-section">Lets cook</a>
+						<a class="flex border w-full md:w-auto mt-5 md:mt-0 border-primary justify-center rounded-full text-xl font-medium items-center py-5 px-10 text-primary hover:text-white hover:bg-primary" href="#about-section">Explore now</a>
+					</div>
+
+
+				</div>
+
+			</div>
+
+
+		</div>
+	</section>
+{% endblock %}
