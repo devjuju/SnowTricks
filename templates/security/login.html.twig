@@ -5,53 +5,76 @@
 
 {% block body %}
 	<br>
-	<section class="bg-[#007CCB] min-h-screen flex flex-col items-center pt-24 sm:pt-32 md:pt-40">
 
-		<h1 class="text-white text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center">
-			SE CONNECTER
+	<section class="bg-[#007CCB] min-h-screen flex flex-col items-center pt-24 sm:pt-32 pd:pt-40 px-4 sm:mx-0">
+
+		<h1 class="text-white text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center uppercase">
+			Se connecter
 		</h1>
 
-		<form
-			method="post" class="w-full max-w-md sm:max-w-lg mx-4 sm:mx-auto bg-white py-10 px-6 sm:py-16 sm:px-12 md:px-20 rounded-[20px] shadow-[0_18px_45px_rgba(0,0,0,0.12)] space-y-10">
+		<div
+			class="w-full max-w-md sm:max-w-lg mx-4 sm:mx-auto
+								bg-white py-12 px-8
+																	            sm:py-16 sm:px-12
+																	            md:px-20
+																	            rounded-[20px]
+																	            shadow-[0_18px_45px_rgba(0,0,0,0.12)]
+																	            space-y-6">
 
-			{# Error message #}
+			{# Erreur globale venant du système de sécurité (mauvais identifiants) #}
 			{% if error %}
-				<div class="bg-red-100 border border-red-300 text-red-700 px-4 py-2 rounded-lg">
-					{{ error.messageKey|trans(error.messageData, 'security') }}
+				<div class="bg-red-600 text-white text-center py-3 px-4 mb-6 rounded-lg shadow-md">
+					Identifiants incorrects. Veuillez réessayer.
 				</div>
 			{% endif %}
 
-			{# Logged user #}
-			{% if app.user %}
-				<div class="text-gray-700 text-sm text-center">
-					Vous êtes connecté en tant que
-					<span class="font-semibold">{{ app.user.userIdentifier }}</span>,
-					<a href="{{ path('app_logout') }}" class="text-blue-600 hover:underline">Se déconnecter</a>
-				</div>
-			{% endif %}
+			{{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
 
 			{# Username #}
-			<div class="text-center space-y-2">
-				<label for="username" class="font-medium text-gray-700">Nom de l'utilisateur</label>
-				<input type="text" id="inputUsername" name="username" value="{{ last_username }}" required autofocus autocomplete="username" class="w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700"/>
+			<div class="space-y-2 text-center">
+				{{ form_label(form.username, 'Nom d’utilisateur', { label_attr: { class: 'font-medium text-gray-700' } }) }}
+				{{ form_widget(form.username, { attr: {
+                class: 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'
+            }}) }}
+
+				<div class="text-red-500 text-sm">
+					{{ form_errors(form.username) }}
+				</div>
 			</div>
 
 			{# Password #}
-			<div class="text-center space-y-2">
-				<label for="inputPassword" class="font-medium text-gray-700">Mot de passe</label>
-				<input type="password" id="inputPassword" name="password" required autocomplete="current-password" class="w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700"/>
+			<div class="space-y-2 text-center">
+				{{ form_label(form.password, 'Mot de passe', { label_attr: { class: 'font-medium text-gray-700' } }) }}
+
+				{{ form_widget(form.password, { attr: {
+                class: 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'
+            }}) }}
+
+				<div class="text-red-500 text-sm">
+					{{ form_errors(form.password) }}
+				</div>
 			</div>
 
-			<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-			<a href="{{ path('forgotten_password') }}" class="text-blue-600 text-sm text-center block hover:underline">
-				Mot de passe oublié ?
-			</a>
-
-			<button type="submit" class="w-full bg-[#007CCB] hover:bg-[#005F9E] text-white py-3 px-6 rounded-full font-semibold transition duration-300">
-				Accéder à votre compte
+			{# Submit #}
+			<button type="submit" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition">
+				Se connecter
 			</button>
 
-		</form>
+			{{ form_end(form) }}
+
+			<div class="text-center mt-4">
+				<a href="{{ path('forgotten_password') }}" class="text-blue-600 hover:underline">
+					Mot de passe oublié ?
+				</a>
+			</div>
+
+			<div class="text-center">
+				<a href="{{ path('app_register') }}" class="text-gray-600 hover:underline">
+					Pas encore de compte ? Inscription →
+				</a>
+			</div>
+
+		</div>
 	</section>
+
 {% endblock %}

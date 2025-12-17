@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une catégorie
+{% endblock %}
+
+{% block body %}
+	<br>
+	<section class="bg-[#007CCB] min-h-screen flex flex-col items-center pt-24 sm:pt-32 md:pt-40">
+
+		<div class="w-full max-w-md bg-white shadow-md rounded-2xl p-8">
+
+			<h1 class="text-3xl font-bold text-center text-[#007CCB] mb-8">
+				Ajouter une catégorie
+			</h1>
+
+			{{ form_start(categorieForm) }}
+
+			<div class="mb-6">
+				{{ form_label(categorieForm.name, null, {
+                    label_attr: {class: 'block text-gray-700 font-medium mb-2'}
+                }) }}
+				{{ form_widget(categorieForm.name, {
+                    attr: {
+                        class: 'w-full border border-gray-300 rounded-md p-2 text-gray-800'
+                    }
+                }) }}
+				{{ form_errors(categorieForm.name) }}
+			</div>
+
+			<button type="submit" class="w-full bg-white text-[#007CCB] border border-[#007CCB] py-3 px-6 rounded-full font-semibold transition duration-300 hover:bg-[#007CCB] hover:text-white">
+				Ajouter
+			</button>
+
+			{{ form_end(categorieForm) }}
+
+		</div>
+	</section>
+
+{% endblock %}

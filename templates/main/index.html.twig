@@ -7,8 +7,7 @@
 
 	<!-- Section Hero -->
 	<section class="px-6 md:px-[93px] bg-[#D3DCEB] pt-[120px] pb-[42px]
-									        bg-[url('{{ asset('assets/images/image-cover.jpg') }}')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center">
-
+																																												bg-[url('{{ asset('assets/images/image-cover.jpg') }}')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center">
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
 			<div class="flex items-center justify-center">
 				<div class="bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl">
@@ -23,76 +22,25 @@
 		</div>
 	</section>
 
-	<!-- Section Grille -->
+
 	<section class="px-6 md:px-[93px] bg-[#D3DCEB] pt-[60px] pb-[42px]">
+		<div id="tricks-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 ">
+			{% include '_partials/tricks.html.twig' with { tricks: tricks } %}
+		</div>
 
-		{% if tricks is empty %}
-			<p class="text-center text-black text-lg my-10">
-				Aucune figure disponible pour le moment.
-			</p>
-			<script>
-				document.addEventListener("DOMContentLoaded", () => {
-let btn = document.getElementById('load-more');
-if (btn) 
-btn.style.display = "none";
-
-
-
-});
-			</script>
-		{% else %}
-			<div id="grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-				{% include '_partials/tricks_item.html.twig' with { tricks: tricks|slice(0, 10) } %}
-			</div>
-
-			<div class="text-center mt-10">
-				<button id="load-more" class="text-sm md:text-xl font-semibold hover:shadow-xl bg-[#007CCB] text-white py-3 px-6 md:py-5 md:px-14 rounded-full hover:bg-[#005F9E] transition duration-300">
-					Afficher
-				</button>
-			</div>
-		{% endif %}
+		<div class="text-center mt-6">
+			<button id="load-more" data-page="{{ page }}" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-800 transition">
+				Afficher plus
+			</button>
+		</div>
 
 	</section>
 
-	<!-- Load More AJAX -->
-	<script>
-		let offset = 10;
-const loadMoreBtn = document.getElementById('load-more');
 
-if (loadMoreBtn) {
-loadMoreBtn.addEventListener('click', async function () {
-const button = this;
-button.textContent = "Chargement...";
-button.disabled = true;
+{% endblock %}
 
-try {
-const response = await fetch (`/load-more?offset=${offset}`);
-const data = await response.json();
 
-if (data.html.trim() !== '') {
-document.getElementById('grid-container').insertAdjacentHTML('beforeend', data.html);
-}
-
-offset += 10;
-
-if (! data.hasMore) {
-button.style.display = "none";
-
-const endMessage = document.createElement("p");
-endMessage.textContent = "Tous les articles ont été affichés.";
-endMessage.className = "text-center text-gray-700 mt-6";
-button.parentNode.appendChild(endMessage);
-} else {
-button.textContent = "Afficher";
-button.disabled = false;
-}
-} catch (error) {
-console.error("Erreur lors du chargement des articles :", error);
-button.textContent = "Afficher";
-button.disabled = false;
-}
-});
-}
-	</script>
-
+{% block javascripts %}
+	{{ parent() }}
+	<script src="{{ asset('js/loadMore.js') }}"></script>
 {% endblock %}

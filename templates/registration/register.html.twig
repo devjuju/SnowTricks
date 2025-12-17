@@ -4,52 +4,105 @@
 {% endblock %}
 
 {% block body %}
-	<br>
-	<section class="bg-[#007CCB] min-h-screen flex flex-col items-center pt-24 sm:pt-32 md:pt-40">
+<br>
 
-		<h1 class="text-white text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center uppercase">
-			S'inscrire
-		</h1>
+<section class="bg-[#007CCB] min-h-screen flex flex-col items-center pt-24 sm:pt-32 pd:pt-40 px-4 sm:mx-0">
 
-		<div class="w-full max-w-md sm:max-w-lg mx-4 sm:mx-auto bg-white py-10 px-6 sm:py-16 sm:px-12 md:px-20 rounded-[20px] shadow-[0_18px_45px_rgba(0,0,0,0.12)] space-y-6">
+	<h1 class="text-white text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center uppercase">
+		S'inscrire
+	</h1>
 
-			{{ form_start(registrationForm, {'attr': {'class': 'space-y-6'}}) }}
+	<div class="w-full max-w-md sm:max-w-lg mx-4 sm:mx-auto
+									            bg-white
+									            py-12 px-8
+									            sm:py-16 sm:px-12
+									            md:px-20
+									            rounded-[20px]
+									            shadow-[0_18px_45px_rgba(0,0,0,0.12)]
+									            space-y-6">
 
-			{# Email #}
-			<div class="text-center space-y-2">
-				{{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
-				{{ form_widget(registrationForm.email, {'attr': {'class': 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'}}) }}
+		{{ form_start(registrationForm, { attr: { novalidate: 'novalidate' } }) }}
+
+		{# Email #}
+		<div class="space-y-2 text-center">
+			{{ form_label(registrationForm.email, 'Email', { label_attr: { class: 'font-medium text-gray-700' } }) }}
+			{{ form_widget(registrationForm.email, { attr: {
+                class: 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'
+            }}) }}
+
+			<div class="text-red-500 text-sm">
 				{{ form_errors(registrationForm.email) }}
 			</div>
+		</div>
 
-			{# Username #}
-			<div class="text-center space-y-2">
-				{{ form_label(registrationForm.username, 'Nom d\'utilisateur', {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
-            {{ form_widget(registrationForm.username, {'attr': {'class': 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'}}) }}
-            {{ form_errors(registrationForm.username) }}
+		{# Username #}
+		<div class="space-y-2 text-center">
+			{{ form_label(registrationForm.username, 'Nom d\'utilisateur', { label_attr: { class: 'font-medium text-gray-700' } }) }}
+            {{ form_widget(registrationForm.username, { attr: {
+                class: 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'
+            }}) }}
+
+            <div class="text-red-500 text-sm">
+                {{ form_errors(registrationForm.username) }}
+            </div>
         </div>
 
         {# Password #}
-        <div class="text-center space-y-2">
-            {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
-            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'}}) }}
-            {{ form_errors(registrationForm.plainPassword) }}
+        <div class="space-y-2 text-center">
+            {{ form_label(registrationForm.plainPassword, 'Mot de passe', { label_attr: { class: 'font-medium text-gray-700' } }) }}
+            {{ form_widget(registrationForm.plainPassword, { attr: {
+                class: 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'
+            }}) }}
+
+            <div class="text-red-500 text-sm">
+                {{ form_errors(registrationForm.plainPassword) }}
+            </div>
         </div>
 
-        {# Agree Terms #}
-        <div class="flex items-center space-x-2 text-gray-700">
-            {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'w-4 h-4 accent-blue-600'}}) }}
-            {{ form_label(registrationForm.agreeTerms, 'Accepter les termes', {'label_attr': {'class': 'text-gray-700'}}) }}
-            {{ form_errors(registrationForm.agreeTerms) }}
-        </div>
-       
+        {# AGREE TERMS #}
+        <div class="space-y-1">
+            <div class="relative flex items-center gap-3 cursor-pointer select-none">
 
-        <button type="submit" class="w-full bg-[#007CCB] hover:bg-[#005F9E] text-white py-3 px-6 rounded-full font-semibold transition duration-300">
-            S'inscrire
+                {{ form_widget(registrationForm.agreeTerms, {
+                    attr: {
+                        class: "
+                            peer
+                            h-5 w-5
+                            rounded-md
+                            border-2 border-gray-400
+                            transition-all duration-300
+                            checked:border-[#007CCB]
+                            checked:bg-[#007CCB]
+                            checked:shadow-[0_0_8px_#007CCB]
+                            cursor-pointer
+                            appearance-none
+                            bg-white
+                        "
+                    }
+                }) }}
+
+                {{ form_label(registrationForm.agreeTerms, 'Accepter les termes', {
+                    label_attr: {
+                        class: 'text-gray-700 text-sm cursor-pointer'
+                    }
+                }) }}
+
+            </div>
+
+            <div class="text-red-500 text-sm">
+                {{ form_errors(registrationForm.agreeTerms) }}
+            </div>
+        </div>
+
+        {# SUBMIT #}
+        <button type="submit"
+                class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition">
+            S’inscrire
         </button>
 
         {{ form_end(registrationForm) }}
 
-			</div>
-		</section>
-	{% endblock %}
+    </div>
+</section>
+
+{% endblock %}
