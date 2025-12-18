@@ -219,7 +219,7 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
         $nosGrab = new Tricks();
         $nosGrab->setTitle('Nos grab');
         $nosGrab->setSlug(strtolower($this->slugger->slug($nosGrab->getTitle())));
-        $nosGrab->setContent('Description du trick Nos grab');
+        $nosGrab->setContent('Purus ornare nisl est nec. Nunc, enim tellus pretium viverra quisque id in metus volutpat. Urna eget velit venenatis, commodo eget massa. Magna donec dictum cras nullam platea. Diam rhoncus massa lectus pellentesque tristique. Amet commodo, egestas vitae bibendum. Volutpat elit condimentum integer tortor porttitor justo vel lobortis risus. Lacinia pellentesque fermentum tellus orci mauris, velit duis eget. Commodo justo, hac ligula molestie felis, iaculis. Vitae dui at ante orci, dictum fusce. Urna, sed urna fringilla faucibus euismod aliquet nec. Quis libero, fermentum amet eu, condimentum auctor. Sit vel ipsum sem tempus gravida et. Scelerisque blandit orci, est quis. Nisi, tellus amet est nascetur habitant faucibus ornare et vivamus.');
         $nosGrab->setFeaturedImage('nos_grab.jpg');
 
         // Association avec catégorie et utilisateur

@@ -16,6 +16,14 @@ class CommentsFixtures extends Fixture implements DependentFixtureInterface
         $comment->setTricks($this->getReference('trick_backflip', \App\Entity\Tricks::class));
 
         $manager->persist($comment);
+
+        $commentNosGrab = new \App\Entity\Comments();
+        $commentNosGrab->setContent("Ici commentaire de Jimmy");
+        $commentNosGrab->setUsers($this->getReference('Jimmy', \App\Entity\Users::class)); // Utilisateur existant
+        $commentNosGrab->setTricks($this->getReference('trick_nos_grab', \App\Entity\Tricks::class));
+
+        $manager->persist($commentNosGrab);
+
         $manager->flush();
     }
 

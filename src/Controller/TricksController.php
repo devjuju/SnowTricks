@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Comments;
 use App\Repository\CommentsRepository;
 use App\Repository\TricksRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,20 +10,55 @@ use Symfony\Component\HttpFoundation\RateLimiter\RequestRateLimiterInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Form\AddCommentFormType;
 
 
 #[Route('/tricks', name: 'app_tricks_')]
 final class TricksController extends AbstractController
 {
+
     #[Route('/details/{slug}', name: 'details')]
-    #[Route('/details/{slug}', name: 'details')]
-    public function details($slug, TricksRepository $tricksRepository, CommentsRepository $commentsRepository): Response
-    {
+    public function details(
+        $slug,
+        Request $request,
+        TricksRepository $tricksRepository,
+        CommentsRepository $commentsRepository,
+        EntityManagerInterface $entityManagerInterface,
+
+    ): Response {
         $trick = $tricksRepository->findOneBy(['slug' => $slug]);
 
         if (!$trick) {
             throw $this->createNotFoundException('Cette figure n\'existe pas');
         }
+
+        // Formulaire d'ajout d'un commentaire
+        $comment = new Comments();
+        $form = $this->createForm(AddCommentFormType::class, $comment);
+        $form->handleRequest($request);
+
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // Sécurité : utilisateur connecté
+            if (!$this->getUser()) {
+                throw $this->createAccessDeniedException();
+            }
+
+            $comment
+                ->setUsers($this->getUser())
+                ->setTricks($trick);
+
+            $entityManagerInterface->persist($comment);
+            $entityManagerInterface->flush();
+
+            return $this->redirectToRoute('app_tricks_details', [
+                'slug' => $slug
+            ]);
+        }
+
+
 
         $comments = $commentsRepository->findBy(
             ['tricks' => $trick],
@@ -42,6 +78,7 @@ final class TricksController extends AbstractController
             'trick' => $trick,
             'comments' => $comments,
             'media' => $media,
+            'commentForm' => $form->createView(),
         ]);
     }
 
