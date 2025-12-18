@@ -57,14 +57,15 @@ class UsersAuthenticator extends AbstractLoginFormAuthenticator
         TokenInterface $token,
         string $firewallName
     ): ?Response {
-        // Redirection vers la page demandée si l'utilisateur voulait accéder à une URL protégée
+        // Redirection vers la page demandée avant login si elle existe
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
-        // Sinon redirection vers une page par défaut
-        return new RedirectResponse($this->urlGenerator->generate('app_main'));
+        // Sinon redirection vers la page profil
+        return new RedirectResponse($this->urlGenerator->generate('app_profile_index'));
     }
+
 
     protected function getLoginUrl(Request $request): string
     {

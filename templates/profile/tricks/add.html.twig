@@ -124,7 +124,11 @@
 						<div class="mt-1">
 							{{ form_widget(form.title) }}
 						</div>
-						{{ form_errors(form.title) }}
+
+						<div class="text-red-500 text-sm">
+							{{ form_errors(form.title) }}
+						</div>
+
 					</div>
 
 					{# Content #}
@@ -133,7 +137,9 @@
 						<div class="mt-1">
 							{{ form_widget(form.content) }}
 						</div>
-						{{ form_errors(form.content) }}
+						<div class="text-red-500 text-sm">
+							{{ form_errors(form.content) }}
+						</div>
 					</div>
 
 					{# Category #}
@@ -142,7 +148,9 @@
 						<div class="mt-1">
 							{{ form_widget(form.category) }}
 						</div>
-						{{ form_errors(form.category) }}
+						<div class="text-red-500 text-sm">
+							{{ form_errors(form.category) }}
+						</div>
 					</div>
 
 

@@ -1,12 +1,40 @@
 {% for trick in tricks %}
-	<div class="relative overflow-hidden rounded-xl shadow-lg group">
+	<div
+		class="relative overflow-hidden rounded-xl shadow-lg group trick-card">
+		{# Image principale #}
 		<img src="{{ asset('uploads/tricks/' ~ trick.featuredImage) }}" alt="{{ trick.title }}" class="w-full h-56 object-cover transform group-hover:scale-110 transition duration-500 ease-in-out">
+
 		<div class="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm px-4 py-3">
 			<h3 class="text-white text-lg font-semibold uppercase">
 				<a href="{{ path('app_tricks_details', {slug: trick.slug}) }}">{{ trick.title }}</a>
 			</h3>
 
-		</div>
+			{# Actions seulement pour le propriétaire #}
+			{% if app.user and trick.user.id == app.user.id %}
+				<div
+					class="flex gap-2 mt-2">
 
+					{# Bouton Éditer #}
+					<a href="{{ path('app_profile_tricks_edit', { id: trick.id }) }}" class="flex items-center gap-1 bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-sm">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7m0 0L13 4m7 7l-7 7"/>
+						</svg>
+						Éditer
+					</a>
+
+					{# Bouton Supprimer #}
+					<form method="POST" action="{{ path('app_profile_tricks_delete', { id: trick.id }) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette figure ?');">
+						<input type="hidden" name="_token" value="{{ csrf_token('delete_trick_' ~ trick.id) }}">
+						<button type="submit" class="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"/>
+							</svg>
+							Supprimer
+						</button>
+					</form>
+
+				</div>
+			{% endif %}
+		</div>
 	</div>
 {% endfor %}

@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class AddTrickFormType extends AbstractType
 {
@@ -20,14 +21,24 @@ class AddTrickFormType extends AbstractType
         $builder
             ->add('title', TextType::class, [
                 'attr' => [
-                    'placeholder' => 'Entrez le titre de la figure',
+                    'placeholder' => 'Titre de la figure',
                     'class' => 'w-full rounded-xl border border-gray-300 shadow-sm focus:border-blue-400 focus:ring-blue-400  px-4 py-2'
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        "message" => "Veuillez entrer un titre."
+                    ])
                 ]
             ])
             ->add('content', TextareaType::class, [
                 'attr' => [
                     'placeholder' => 'Décrivez la figure en détail',
                     'class' => 'w-full rounded-xl border border-gray-300 shadow-sm focus:border-blue-400 focus:ring-blue-400 h-28 sm:h-36 px-4 py-2'
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        "message" => "Veuillez entrer un contenu."
+                    ])
                 ]
             ])
             ->add('featuredImage', FileType::class, [
@@ -54,6 +65,11 @@ class AddTrickFormType extends AbstractType
                 'placeholder' => 'Choisir une catégorie',
                 'attr' => [
                     'class' => 'rounded-xl border border-gray-300 px-4 pr-10 py-2 shadow-sm focus:border-blue-400 focus:ring-blue-400'
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        "message" => "Veuillez choisir une catégorie."
+                    ])
                 ]
             ]);
     }

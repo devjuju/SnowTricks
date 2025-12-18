@@ -30,19 +30,33 @@ class Tricks
 
     #[ORM\ManyToOne(inversedBy: 'tricks')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Users $users = null;
+    private ?Users $user = null;
 
-    #[ORM\ManyToOne(targetEntity: Categories::class, inversedBy: 'tricks')]
+    #[ORM\ManyToOne(inversedBy: 'tricks')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Categories $category = null;
 
-    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Images::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(
+        mappedBy: 'trick',
+        targetEntity: Images::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $images;
 
-    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Videos::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(
+        mappedBy: 'trick',
+        targetEntity: Videos::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $videos;
 
-    #[ORM\OneToMany(mappedBy: 'tricks', targetEntity: Comments::class, orphanRemoval: true)]
+    #[ORM\OneToMany(
+        mappedBy: 'tricks',
+        targetEntity: Comments::class,
+        orphanRemoval: true
+    )]
     private Collection $comments;
 
     #[ORM\Column(length: 255)]
@@ -69,7 +83,7 @@ class Tricks
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(string $title): self
     {
         $this->title = $title;
         return $this;
@@ -80,7 +94,7 @@ class Tricks
         return $this->content;
     }
 
-    public function setContent(string $content): static
+    public function setContent(string $content): self
     {
         $this->content = $content;
         return $this;
@@ -91,20 +105,35 @@ class Tricks
         return $this->featuredImage;
     }
 
-    public function setFeaturedImage(string $featuredImage): static
+    public function setFeaturedImage(string $featuredImage): self
     {
         $this->featuredImage = $featuredImage;
         return $this;
     }
 
-    public function getUsers(): ?Users
+    public function getUser(): ?Users
     {
-        return $this->users;
+        return $this->user;
     }
 
-    public function setUsers(?Users $users): static
+    public function setUser(?Users $user): self
     {
-        $this->users = $users;
+        if ($this->user === $user) {
+            return $this;
+        }
+
+        // Retire de l'ancien user
+        if ($this->user !== null) {
+            $this->user->getTricks()->removeElement($this);
+        }
+
+        $this->user = $user;
+
+        // Ajoute au nouveau user
+        if ($user !== null && !$user->getTricks()->contains($this)) {
+            $user->getTricks()->add($this);
+        }
+
         return $this;
     }
 
@@ -113,7 +142,7 @@ class Tricks
         return $this->category;
     }
 
-    public function setCategory(?Categories $category): static
+    public function setCategory(?Categories $category): self
     {
         $this->category = $category;
         return $this;
@@ -124,47 +153,9 @@ class Tricks
         return $this->images;
     }
 
-    public function addImage(Images $image): static
-    {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setTrick($this);
-        }
-        return $this;
-    }
-
-    public function removeImage(Images $image): static
-    {
-        if ($this->images->removeElement($image)) {
-            if ($image->getTrick() === $this) {
-                $image->setTrick(null);
-            }
-        }
-        return $this;
-    }
-
     public function getVideos(): Collection
     {
         return $this->videos;
-    }
-
-    public function addVideo(Videos $video): static
-    {
-        if (!$this->videos->contains($video)) {
-            $this->videos->add($video);
-            $video->setTrick($this);
-        }
-        return $this;
-    }
-
-    public function removeVideo(Videos $video): static
-    {
-        if ($this->videos->removeElement($video)) {
-            if ($video->getTrick() === $this) {
-                $video->setTrick(null);
-            }
-        }
-        return $this;
     }
 
     public function getComments(): Collection
@@ -172,41 +163,14 @@ class Tricks
         return $this->comments;
     }
 
-    public function addComment(Comments $comment): static
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setTricks($this);
-        }
-        return $this;
-    }
-
-    public function removeComment(Comments $comment): static
-    {
-        if ($this->comments->removeElement($comment)) {
-            if ($comment->getTricks() === $this) {
-                $comment->setTricks(null);
-            }
-        }
-        return $this;
-    }
-
     public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    public function setSlug(string $slug): static
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
         return $this;
-    }
-
-    // Dans App\Entity\Tricks
-    public function getMediaOrdered(): array
-    {
-        $media = array_merge($this->images->toArray(), $this->videos->toArray());
-        usort($media, fn($a, $b) => $a->getId() <=> $b->getId()); // ou createdAt si tu préfères
-        return $media;
     }
 }
