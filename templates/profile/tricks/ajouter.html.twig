@@ -4,499 +4,182 @@
 {% endblock %}
 
 {% block body %}
-	<br>
 	<section
-		class="relative">
+		class="relative pb-12">
 		<!-- Hero background -->
 		<div class="absolute inset-0">
 			<img src="{{ asset('assets/images/image-cover.jpg') }}" alt="Hero" class="w-full h-[400px] sm:h-[500px] md:h-[600px] object-cover brightness-75">
-			<div class="absolute inset-0 bg-linear-to-b from-transparent to-white/80"></div>
+			<div class="absolute inset-0 bg-gradient-to-b from-transparent to-white/80"></div>
 		</div>
 
-		<!-- Centered card -->
 		<div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 pt-20">
-			<div
-				class="bg-white rounded-2xl shadow-2xl overflow-hidden w-full">
+			<div class="bg-white rounded-xl shadow-lg max-w-6xl mx-auto overflow-hidden pb-12">
+				<h1 class="text-3xl font-bold text-center mb-8">Ajouter une nouvelle figure</h1>
 
-				<!-- Featured image area -->
-				<div class="bg-gray-100/60 p-6 sm:p-8 relative">
+				{{ form_start(form, { attr: { novalidate: 'novalidate', enctype: 'multipart/form-data' } }) }}
 
+				<!-- Featured Image -->
+				<div id="image-container" class="w-full aspect-video border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50 bg-[#E5E6EA]">
+					<img id="image-preview" class="absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-300"/>
+					<span id="image-placeholder" class="absolute text-gray-500 transition-opacity duration-300">Cliquez pour ajouter une image</span>
+					{{ form_widget(form.featuredImage, { attr: { class: 'absolute w-full h-full opacity-0 cursor-pointer', accept: 'image/png, image/jpeg, image/webp' } }) }}
+					<div class="absolute top-2 right-2 flex gap-2 opacity-0 transition-opacity duration-300" id="image-actions">
+						<button type="button" id="edit-image" class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
+						<button type="button" id="delete-image" class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600">Delete</button>
+					</div>
+					<div id="image-error" class="absolute bottom-2 left-2 text-red-500 text-sm">{{ form_errors(form.featuredImage) }}</div>
+				</div>
+
+				<!-- Media Carousel -->
+				<div
+					class="relative w-full px-4 md:px-8 lg:px-8">
+
+					<!-- ========================
+																																																							        CAROUSEL
+																																																							  ======================== -->
 					<div
-						id="featuredImageArea" class="mt-4 sm:mt-6 border border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-blue-500 transition relative">
-
-						{# on rend l'input file visible dans le DOM, mais on le cache via CSS pour que .click() fonctionne proprement #}
-						{{ form_widget(form.featuredImage, { attr: { id: 'featuredImage_raw', style: 'display:none;' } }) }}
-
-						<!-- Placeholder (si aucune image) -->
-						<div id="placeholder" class="placeholder flex flex-col items-center justify-center space-y-2">
-							<i class="fa-solid fa-cloud-arrow-up text-gray-400 text-3xl sm:text-4xl"></i>
-							<h4 class="text-gray-600 font-medium text-sm sm:text-base">cliquer pour sélectionner</h4>
-							<p class="text-gray-400 text-xs sm:text-sm">Formats acceptés : JPG, PNG. Taille max : 2MB.</p>
-						</div>
-
-						<!-- Aperçu de l'image -->
-						<div id="previewContainer" class="hidden relative">
-							<img
-							id="imagePreview" class="max-h-60 mx-auto rounded-lg" alt="Aperçu">
-							<!-- Icône supprimer -->
-							<button id="deleteImageBtn" type="button" class="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full shadow hover:bg-red-700 transition" aria-label="Supprimer l'image">
-								<i class="fa-solid fa-trash"></i>
-							</button>
-						</div>
-
+						id="media-wrapper" class="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide snap-x snap-mandatory relative">
+						<!-- Conteneur images -->
+						<div id="repeater-image-container" class="flex gap-4"></div>
+						<!-- Conteneur vidéos -->
+						<div id="repeater-video-container" class="flex gap-4"></div>
 					</div>
 
-					{{ form_errors(form.featuredImage) }}
-					<p id="featuredImageMsg" class="text-red-500 text-sm mt-2"></p>
-				</div>
+					<!-- Navigation carousel -->
+					<button type="button" id="prev" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white p-2 rounded-full shadow z-10 transition-opacity">
+						<i class="bi bi-chevron-left"></i>
+					</button>
+					<button type="button" id="next" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white p-2 rounded-full shadow z-10 transition-opacity">
+						<i class="bi bi-chevron-right"></i>
+					</button>
 
+					<!-- Pagination -->
+					<div id="carousel-pagination" class="flex justify-center gap-2 mt-4"></div>
 
-				<!-- Form -->
-				<div class="p-6 sm:p-8 space-y-6">
-					{{ form_start(form, { attr: {'class':'space-y-6'}, render_rest: false }) }}
-
-					<h1 class="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-8">Ajouter une figure</h1>
-
-					<!-- Title -->
-					<div>
-						{{ form_label(form.title, 'Nom de la figure', { label_attr: { class: 'block text-sm sm:text-base font-medium text-gray-700' } }) }}
-						<div class="mt-1">
-							{{ form_widget(form.title, { attr: { class: 'w-full rounded-md border-gray-200 shadow-sm' } }) }}
-						</div>
-						{{ form_errors(form.title) }}
-					</div>
-
-					<!-- Content -->
-					<div>
-						{{ form_label(form.content, 'Description', { label_attr: { class: 'block text-sm sm:text-base font-medium text-gray-700' } }) }}
-						<div class="mt-1">
-							{{ form_widget(form.content, { attr: { class: 'w-full rounded-md border-gray-200 shadow-sm h-28 sm:h-36' } }) }}
-						</div>
-						{{ form_errors(form.content) }}
-					</div>
-
-					<!-- Category -->
-					<div>
-						{{ form_label(form.category, 'Catégorie', { label_attr: { class: 'block text-sm sm:text-base font-medium text-gray-700' } }) }}
-						<div class="mt-1">
-							{{ form_widget(form.category, { attr: { class: 'w-full sm:w-48 rounded-md border-gray-200' } }) }}
-						</div>
-						{{ form_errors(form.category) }}
-					</div>
-
-					<!-- Secondary Images -->
-					<div class="mt-6">
-						<label class="block text-sm sm:text-base font-medium text-gray-700">Images secondaires</label>
-						<div id="images-wrapper" class="space-y-4 mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-						<template id="image-template">
-							<div class="image-item p-4 border rounded-lg bg-white relative">
-								<button type="button" class="remove-image absolute top-2 right-2 text-sm text-red-500">Supprimer</button>
-								<div class="flex items-center gap-4">
-									<input type="file" class="image-input block w-full text-sm"/>
-								</div>
-								<img src="" class="image-preview hidden mt-3 w-full sm:w-40 h-28 object-cover rounded border" alt="preview">
-							</div>
-						</template>
-						<div class="mt-4">
-							<button type="button" id="add-image" class="px-4 py-2 bg-[#007CCB] hover:bg-[#005F9E] text-white rounded-md">Ajouter des images</button>
-						</div>
-					</div>
-
-					<!-- Videos -->
-					<div class="mt-8">
-						<label class="block text-sm sm:text-base font-medium text-gray-700">Vidéos</label>
-						<div id="videos-wrapper" class="space-y-4 mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-						<template id="video-template">
-							<div class="video-item p-4 border rounded-lg bg-white relative">
-								<button type="button" class="remove-video absolute top-2 right-2 text-sm text-red-500">Supprimer</button>
-								<input type="text" placeholder="https://youtu.be/... ou https://vimeo.com/..." class="video-input block w-full text-sm sm:text-base rounded-md border-gray-200 p-2">
-								<div class="video-preview hidden mt-3">
-									<iframe class="w-full aspect-video rounded border" src="" frameborder="0" allowfullscreen></iframe>
-								</div>
-							</div>
-						</template>
-						<div class="mt-4">
-							<button type="button" id="add-video" class="px-4 py-2 bg-[#00A3D9] hover:bg-[#0082B0] text-white rounded-md">Ajouter des vidéos</button>
-						</div>
-					</div>
-
-					<!-- Submit -->
-					<div class="mt-6 flex justify-end">
-						<button type="submit" class="px-4 sm:px-5 py-2 sm:py-3 bg-[#007CCB] hover:bg-[#005F9E] text-white rounded-full font-semibold text-sm sm:text-base">
-							Ajouter la figure
-						</button>
-					</div>
-
-					{{ form_end(form, { render_rest: false }) }}
-				</div>
-			</div>
-		</div>
-
-		<!-- Footer spacing -->
-		<div class="h-20"></div>
-	</section>
-	<section class="bg-[#007CCB] dark:bg-gray-700">
-		<div class="container mx-auto lg:max-w-7xl md:max-w-3xl px-4 pt-20">
-			<div class="grid grid-cols-1 lg:grid-cols-12 items-center ">
-
-				<div class="col-span-12 bg-white dark:bg-gray-800/70
-																																																																																																																												                backdrop-blur-sm p-8 md:p-12 lg:p-16 rounded-2xl shadow-lg">
-					{{ form_start(form, { attr: {'class':'space-y-6'}, render_rest: false }) }}
-
-					<!-- FEATURED IMAGE -->
-					<div class="space-y-2">
-						{{ form_label(form.featuredImage) }}
-
-						<div id="featuredImageArea" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer relative hover:border-blue-500 transition">
-							{{ form_widget(form.featuredImage, { attr: { hidden: true, id: 'featuredImage' } }) }}
-							<div class="placeholder flex flex-col items-center justify-center space-y-2">
-								<i class="fa-solid fa-cloud-arrow-up text-gray-400 text-4xl"></i>
-								<h4 class="text-gray-600 font-medium">Upload Featured Image</h4>
-								<p class="text-gray-400 text-sm">Image size must be less than
-									<span>2MB</span>
-								</p>
-							</div>
-						</div>
-
-						{{ form_errors(form.featuredImage) }}
-						<p id="featuredImageMsg" class="text-red-500 text-sm mt-1"></p>
-					</div>
-
-					<h1 class="text-black text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center">
-						Ajouter une figure
-					</h1>
-
-
-					<!-- TITRE -->
-					<div class="space-y-2">
-						{{ form_label(form.title) }}
-						{{ form_widget(form.title) }}
-						{{ form_errors(form.title) }}
-					</div>
-
-					<!-- DESCRIPTION -->
-					<div class="space-y-2">
-						{{ form_label(form.content) }}
-						{{ form_widget(form.content) }}
-						{{ form_errors(form.content) }}
-					</div>
-
-
-					<!-- CATEGORY -->
-					<div class="space-y-2">
-						{{ form_label(form.category) }}
-						{{ form_widget(form.category) }}
-						{{ form_errors(form.category) }}
-					</div>
-
-					<!-- IMAGES SECONDARY REPEATER -->
-					<div class="space-y-2">
-						<label class="block text-sm font-medium text-gray-700">Images secondaires</label>
-						<div id="images-wrapper" class="space-y-4">
-							<template id="image-template">
-								<div class="image-item p-4 border rounded-lg bg-gray-50 relative">
-									<button type="button" class="remove-image absolute top-2 right-2 text-red-500 text-sm">
-										Supprimer
-									</button>
-									<input type="file" name="add_trick_form[images][__name__]" class="image-input w-full border rounded p-2 mb-2">
-									<img src="" class="image-preview hidden mt-2 w-32 h-32 object-cover rounded border">
-								</div>
-							</template>
-						</div>
-						<button type="button" id="add-image" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+					<!-- Boutons ajout -->
+					<div class="flex justify-center gap-4 mt-4">
+						<button type="button" id="add-image" class="px-4 py-2 bg-[#2789DC] text-white rounded hover:bg-[#1A5EA0]">
+							<i class="bi bi-plus-square-fill"></i>
 							Ajouter une image
 						</button>
-					</div>
-
-					<!-- VIDEOS REPEATER -->
-					<div class="space-y-2">
-						<label class="block text-sm font-medium text-gray-700">Vidéos</label>
-						<div id="videos-wrapper" class="space-y-4">
-							<template id="video-template">
-								<div class="video-item p-4 border rounded-lg bg-gray-50 relative">
-									<button type="button" class="remove-video absolute top-2 right-2 text-red-500 text-sm">
-										Supprimer
-									</button>
-									<input type="text" name="add_trick_form[videos][__name__]" placeholder="https://youtu.be/... ou https://vimeo.com/..." class="video-input w-full border rounded p-2">
-									<div class="video-preview hidden mt-2">
-										<iframe class="w-full aspect-video rounded border" src="" frameborder="0" allowfullscreen></iframe>
-									</div>
-								</div>
-							</template>
-						</div>
-						<button type="button" id="add-video" class="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+						<button type="button" id="add-video" class="px-4 py-2 bg-[#2789DC] text-white rounded hover:bg-[#1A5EA0]">
+							<i class="bi bi-plus-square-fill"></i>
 							Ajouter une vidéo
 						</button>
 					</div>
 
-					<button type="submit" class="w-full bg-[#007CCB] hover:bg-[#005F9E] text-white py-3 px-6 rounded-full font-semibold transition duration-300">
-						Ajouter la figure
-					</button>
+					<!-- ========================
+																																																							        TEMPLATE IMAGE
+																																																							  ======================== -->
+					<div id="media-template" class="media-item hidden flex-shrink-0 w-64">
+						<img class="image-preview hidden mb-3 w-full h-40 object-cover rounded border">
+						<div class="image-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+							<i class="bi bi-image text-2xl text-gray-400"></i>
+						</div>
+						<div class="media-actions flex items-center justify-end gap-2 w-full">
+							<button type="button" class="edit-image-btn media-btn w-12 h-12 border-2 border-gray-300 text-gray-400 rounded-lg flex items-center justify-center hover:bg-gray-100 transition">
+								<i class="bi bi-pencil text-xl"></i>
+							</button>
+							<button type="button" class="remove-media w-12 h-12 bg-red-700 text-white rounded-lg flex items-center justify-center hover:bg-red-800">
+								<i class="bi bi-trash"></i>
+							</button>
+						</div>
+					</div>
 
-					{{ form_end(form, { render_rest: false }) }}
+					<!-- ========================
+																																																							        TEMPLATE VIDEO
+																																																							  ======================== -->
+					<div id="video-template" class="media-item hidden flex-shrink-0 w-64">
+						<div class="video-preview hidden mb-3">
+							<iframe class="w-full aspect-video rounded border" src="" frameborder="0" allowfullscreen></iframe>
+						</div>
+						<div class="video-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+							<i class="bi bi-play-btn text-3xl text-gray-400"></i>
+						</div>
+						<div class="video-actions flex items-center justify-end gap-2 w-full">
+							<button type="button" class="edit-video-btn media-btn w-12 h-12 border-2 border-gray-300 text-gray-400 rounded-lg flex items-center justify-center hover:bg-gray-100 transition">
+								<i class="bi bi-pencil text-xl"></i>
+							</button>
+							<button type="button" class="remove-video w-12 h-12 bg-red-700 text-white rounded-lg flex items-center justify-center hover:bg-red-800">
+								<i class="bi bi-trash"></i>
+							</button>
+						</div>
+					</div>
+
+					<!-- ========================
+																																																							        MODAL EDIT IMAGE
+																																																							  ======================== -->
+					<!-- MODAL EDIT IMAGE -->
+					<div id="editImageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+						<div class="bg-white rounded-lg shadow-lg p-6 w-96 relative transform scale-95 transition-transform duration-300">
+							<button type="button" id="closeEditImageModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+							<h2 class="text-xl font-bold mb-4">Éditer l'image</h2>
+
+							<div id="modalImagePreviewWrapper" class="w-full h-40 bg-gray-100 flex items-center justify-center rounded border mb-3 relative">
+								<i class="bi bi-image text-4xl text-gray-400 absolute"></i>
+								<img id="modalImagePreview" src="" alt="Preview" class="w-full h-full object-cover rounded hidden">
+							</div>
+
+							<input type="file" accept="image/png,image/jpeg,image/webp" class="border rounded p-2 w-full" id="modalImageInput">
+							<button type="button" class="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" id="modalImageSaveBtn">Valider</button>
+						</div>
+					</div>
+
+
+					<!-- ========================
+																																																							        MODAL EDIT VIDEO
+																																																							  ======================== -->
+					<!-- MODAL EDIT VIDEO -->
+					<div id="editVideoModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+						<div class="bg-white rounded-lg shadow-lg p-6 w-96 relative transform scale-95 transition-transform duration-300">
+							<button type="button" id="closeEditVideoModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+							<h2 class="text-xl font-bold mb-4">Éditer la vidéo</h2>
+
+							<div id="modalVideoPreviewWrapper" class="w-full h-40 bg-gray-100 flex items-center justify-center rounded border mb-3 relative">
+								<i class="bi bi-play-btn text-4xl text-gray-400 absolute"></i>
+								<iframe id="modalVideoPreview" class="w-full h-full rounded hidden" src="" frameborder="0" allowfullscreen></iframe>
+							</div>
+
+							<input type="text" placeholder="URL YouTube" class="border rounded p-2 w-full" id="modalVideoInput">
+							<button type="button" class="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" id="modalVideoSaveBtn">Valider</button>
+						</div>
+					</div>
 
 
 				</div>
 
+
+				<!-- Title, Content, Category -->
+				<div class="px-4 md:px-8 lg:px-24 mt-8">
+					<div class="mb-4">
+						{{ form_widget(form.title, { attr: { class: 'w-full border-b pb-2 text-gray-700 focus:outline-none focus:border-blue-400' } }) }}
+						<div class="text-red-500 text-sm">{{ form_errors(form.title) }}</div>
+					</div>
+					<div class="mb-4">
+						{{ form_widget(form.content) }}
+						<div class="text-red-500 text-sm">{{ form_errors(form.content) }}</div>
+					</div>
+					<div class="mb-4">
+						{{ form_widget(form.category) }}
+						<div class="text-red-500 text-sm">{{ form_errors(form.category) }}</div>
+					</div>
+
+					<div class="flex justify-end">
+						<button type="submit" class="px-4 py-2 bg-[#007CCB] hover:bg-[#005F9E] text-white rounded-full font-semibold">
+							Ajouter la figure
+						</button>
+					</div>
+				</div>
+
+				{{ form_end(form) }}
 			</div>
-
-
 		</div>
 	</section>
-
 {% endblock %}
+
 {% block javascripts %}
 	{{ parent() }}
-
-	<script>
-		document.addEventListener("DOMContentLoaded", () => { /*--------------------------------------------------
-                FEATURED IMAGE UPLOAD
-            --------------------------------------------------*/
-const featuredInput = document.getElementById("featuredImage") || document.getElementById("add_trick_form_featuredImage");
-
-const imgArea = document.getElementById("featuredImageArea");
-const placeholder = imgArea ?. querySelector(".placeholder");
-const msg = document.getElementById("featuredImageMsg");
-
-const validTypes = [
-"image/apng",
-"image/bmp",
-"image/gif",
-"image/jpeg",
-"image/pjpeg",
-"image/png",
-"image/svg+xml",
-"image/tiff",
-"image/webp"
-];
-
-if (imgArea && featuredInput) {
-imgArea.addEventListener("click", () => featuredInput.click());
-
-featuredInput.addEventListener("change", (e) => {
-const file = e.target.files[0];
-msg.textContent = "";
-
-if (! file) 
-return;
-
-
-
-if (! validTypes.includes(file.type)) {
-msg.textContent = "Format d'image invalide.";
-return;
-}
-
-if (file.size > 2 * 1024 * 1024) {
-msg.textContent = "L'image doit faire moins de 2MB.";
-return;
-}
-
-const reader = new FileReader();
-reader.onload = () => {
-const existing = imgArea.querySelector("img.preview-featured");
-if (existing) 
-existing.remove();
-
-
-
-const img = document.createElement("img");
-img.src = reader.result;
-img.className = "preview-featured w-full h-auto rounded-lg mt-2";
-
-placeholder.style.display = "none";
-imgArea.appendChild(img);
-};
-reader.readAsDataURL(file);
-});
-}
-
-/*--------------------------------------------------
-                IMAGE REPEATER
-            --------------------------------------------------*/
-const imagesWrapper = document.getElementById("images-wrapper");
-const imgTemplate = document.getElementById("image-template") ?. content;
-const addImageBtn = document.getElementById("add-image");
-
-let imageIndex = 0;
-
-if (addImageBtn && imagesWrapper && imgTemplate) {
-addImageBtn.addEventListener("click", () => {
-const clone = document.importNode(imgTemplate, true);
-
-const input = clone.querySelector(".image-input");
-const preview = clone.querySelector(".image-preview");
-
-input.name = `add_trick_form[images][${imageIndex}]`;
-
-clone.querySelector(".remove-image").addEventListener("click", (e) => {
-e.target.closest(".image-item").remove();
-});
-
-input.addEventListener("change", (e) => {
-if (!e.target.files[0]) 
-return;
-
-
-
-preview.src = URL.createObjectURL(e.target.files[0]);
-preview.classList.remove("hidden");
-});
-
-imagesWrapper.appendChild(clone);
-imageIndex++;
-});
-}
-
-/*--------------------------------------------------
-                VIDEO REPEATER
-            --------------------------------------------------*/
-const videosWrapper = document.getElementById("videos-wrapper");
-const videoTemplate = document.getElementById("video-template") ?. content;
-const addVideoBtn = document.getElementById("add-video");
-
-let videoIndex = 0;
-
-if (addVideoBtn && videosWrapper && videoTemplate) {
-addVideoBtn.addEventListener("click", () => {
-const clone = document.importNode(videoTemplate, true);
-
-const input = clone.querySelector(".video-input");
-const preview = clone.querySelector(".video-preview");
-const iframe = preview.querySelector("iframe");
-
-input.name = `add_trick_form[videos][${videoIndex}]`;
-
-clone.querySelector(".remove-video").addEventListener("click", (e) => {
-e.target.closest(".video-item").remove();
-});
-
-input.addEventListener("input", (e) => {
-let url = e.target.value.trim();
-
-if (! url) {
-preview.classList.add("hidden");
-return;
-}
-
-// Convert YouTube link to embed format
-if (url.includes("youtu")) {
-url = url.replace("watch?v=", "embed/").replace("//youtu.be/", "//www.youtube.com/embed/");
-}
-
-// Convert Vimeo link to embed format
-if (url.includes("vimeo.com")) {
-url = url.replace("vimeo.com", "player.vimeo.com/video");
-}
-
-iframe.src = url;
-preview.classList.remove("hidden");
-});
-
-videosWrapper.appendChild(clone);
-videoIndex++;
-});
-}
-
-});
-	</script>
-
-
-	<div class="mt-6">
-		<label class="block text-sm sm:text-base font-medium text-gray-700">Image principale (featuredImage)</label>
-
-		<!-- ZONE DRAG & DROP -->
-		<div id="drop-zone-featured" class="mt-4 p-6 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-blue-500 transition">
-			Glissez-déposez l’image ici ou cliquez pour en choisir une
-		</div>
-
-		<!-- CONTENEUR QUI RECEVRA L'IMAGE -->
-		<div id="featured-wrapper" class="mt-4"></div>
-
-		<!-- TEMPLATE -->
-		<template id="featured-template">
-			<div class="featured-item p-4 border rounded-lg bg-white relative">
-
-				<button type="button" class="remove-featured absolute top-2 right-2 text-sm text-red-500">Supprimer</button>
-
-				<!-- L’input file EN NOM featuredImage pour le PHP -->
-				<input type="file" name="featuredImage" class="featured-input hidden" accept="image/*">
-
-				<img src="" class="featured-preview mt-3 w-full h-48 object-cover rounded border" alt="preview">
-			</div>
-		</template>
-	</div>
-
-	<script>
-		const dropZoneFeatured = document.getElementById("drop-zone-featured");
-const featuredWrapper = document.getElementById("featured-wrapper");
-const featuredTemplate = document.getElementById("featured-template").content;
-
-// === (1) Ajouter l'image dans l'interface + input file
-function addFeaturedImage(file) {
-
-if (! file || ! file.type.startsWith("image/")) {
-alert("Veuillez sélectionner une image valide.");
-return;
-}
-
-// Limite à UNE seule image
-if (featuredWrapper.children.length >= 1) {
-alert("Vous ne pouvez ajouter qu'une seule image principale.");
-return;
-}
-
-const clone = document.importNode(featuredTemplate, true);
-const preview = clone.querySelector(".featured-preview");
-const input = clone.querySelector(".featured-input");
-
-// Crée une URL temporaire pour l'aperçu
-preview.src = URL.createObjectURL(file);
-
-// Remplit l’input file avec le fichier (hack via DataTransfer)
-const dt = new DataTransfer();
-dt.items.add(file);
-input.files = dt.files;
-
-featuredWrapper.appendChild(clone);
-}
-
-// === (2) Clic sur la zone → ouvrir file explorer
-dropZoneFeatured.addEventListener("click", () => {
-let input = document.createElement("input");
-input.type = "file";
-input.accept = "image/*";
-
-input.onchange = e => {
-addFeaturedImage(e.target.files[0]);
-};
-
-input.click();
-});
-
-// === (3) Drag and Drop
-dropZoneFeatured.addEventListener("dragover", (e) => {
-e.preventDefault();
-dropZoneFeatured.classList.add("border-blue-500", "bg-blue-50");
-});
-
-dropZoneFeatured.addEventListener("dragleave", () => {
-dropZoneFeatured.classList.remove("border-blue-500", "bg-blue-50");
-});
-
-dropZoneFeatured.addEventListener("drop", (e) => {
-e.preventDefault();
-dropZoneFeatured.classList.remove("border-blue-500", "bg-blue-50");
-const file = e.dataTransfer.files[0];
-addFeaturedImage(file);
-});
-
-// === (4) Suppression de l'image
-featuredWrapper.addEventListener("click", (e) => {
-if (e.target.classList.contains("remove-featured")) {
-e.target.closest(".featured-item").remove();
-}
-});
-	</script>
+	<script src="{{ asset('js/hero.js') }}"></script>
+	<script src="{{ asset('js/carousel-media-repeater.js') }}"></script>
 
 {% endblock %}

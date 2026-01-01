@@ -1,0 +1,56 @@
+<!-- MEDIA REPEATER -->
+<div
+	id="media-wrapper" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-4">
+	<!-- Conteneur images -->
+	<div id="repeater-image-container" class="contents"></div>
+
+	<!-- Conteneur vidéos -->
+	<div id="video-container" class="contents"></div>
+
+	<!-- Boutons ajouter -->
+	<div class="col-span-full flex justify-center gap-4">
+		<button id="add-image" type="button" class="px-4 py-2 bg-[#2789DC] text-white rounded hover:bg-[#1A5EA0]">
+			<i class="bi bi-plus-square-fill"></i>
+			Ajouter une image
+		</button>
+		<button id="add-video" type="button" class="px-4 py-2 bg-[#2789DC] text-white rounded hover:bg-[#1A5EA0]">
+			<i class="bi bi-plus-square-fill"></i>
+			Ajouter une vidéo
+		</button>
+	</div>
+</div>
+
+<!-- Templates hidden -->
+<div id="media-template" class="media-item media-image hidden">
+	<img src="" class="image-preview hidden mb-3 w-full h-40 object-cover rounded border">
+	<div class="image-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+		<i class="bi bi-image text-3xl text-gray-400"></i>
+	</div>
+	<div
+		class="media-actions flex items-center gap-2">
+		<!-- Remplacement du label texte par icône -->
+		<label class="image-label flex items-center justify-center w-12 h-12 cursor-pointer border rounded-lg hover:bg-gray-100">
+			<i class="bi bi-camera-fill text-xl text-gray-600"></i>
+			<input type="file" class="image-input hidden" accept="image/png, image/jpeg, image/webp">
+		</label>
+		<button type="button" class="remove-media bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800">
+			<i class="bi bi-trash text-lg"></i>
+		</button>
+	</div>
+</div>
+
+
+<div id="video-template" class="media-item media-video hidden">
+	<div class="video-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+		<i class="bi bi-play-btn text-3xl text-gray-400"></i>
+	</div>
+	<div class="video-actions flex items-center gap-3">
+		{{ form_widget(form.videos, {'attr': {'class': 'video-input w-full hidden'}}) }}
+		<button type="button" class="add-video-btn flex-1 border rounded px-4 py-2 text-lg flex items-center justify-center gap-2 hover:bg-gray-100">
+			<i class="bi bi-pencil"></i>
+		</button>
+		<button type="button" class="remove-video bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800">
+			<i class="bi bi-trash text-lg"></i>
+		</button>
+	</div>
+</div>

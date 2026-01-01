@@ -4,24 +4,33 @@ namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use App\Entity\Videos;
-use App\DataFixtures\TricksFixtures;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use App\Entity\Videos;
 
 class VideosFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Vidéos sûres pour embed
-        $videos = [
+        $videosData = [
             'trick_nos_grab' => [
-                'https://www.youtube.com/embed/M7lc1UVf-VE', // Vidéo officielle YouTube API
-                'https://www.youtube.com/embed/3LrPAz4cjh0', // Vidéo tutoriel
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'https://www.youtube.com/watch?v=9bZkp7q19f0',
             ],
-
+            'trick_mute' => [
+                'https://www.youtube.com/watch?v=3JZ_D3ELwOQ',
+                'https://www.youtube.com/watch?v=L_jWHffIx5E',
+            ],
+            'trick_melon' => [
+                'https://www.youtube.com/watch?v=fJ9rUzIMcZQ',
+                'https://www.youtube.com/watch?v=oRdxUFDoQe0',
+            ],
+            'trick_backside' => [
+                'https://www.youtube.com/watch?v=ZZ5LpwO-An4',
+                'https://www.youtube.com/watch?v=OPf0YbXqDm0',
+            ],
         ];
 
-        foreach ($videos as $trickRef => $urls) {
+        foreach ($videosData as $trickRef => $urls) {
             foreach ($urls as $url) {
                 $video = new Videos();
                 $video->setContent($url);

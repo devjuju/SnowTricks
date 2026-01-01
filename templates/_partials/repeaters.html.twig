@@ -1,0 +1,302 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une figure
+{% endblock %}
+
+{% block body %}
+	<br>
+	<section
+		class="relative pb-12">
+		<!-- Hero background -->
+		<div class="absolute inset-0">
+			<img src="{{ asset('assets/images/image-cover.jpg') }}" alt="Hero" class="w-full h-[400px] sm:h-[500px] md:h-[600px] object-cover brightness-75">
+			<div class="absolute inset-0 bg-linear-to-b from-transparent to-white/80"></div>
+		</div>
+		<!-- Centered card -->
+		<div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 pt-20">
+			<div class="bg-white rounded-xl shadow-lg max-w-6xl mx-auto overflow-hidden pb-12">
+
+
+				{{ form_start(form, { attr: { novalidate: 'novalidate', enctype: 'multipart/form-data' } }) }}
+
+
+				{# Featured Image #}
+				<!-- FEATURED IMAGE -->
+					<div id="image-container" class="w-full aspect-video border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50 bg-[#E5E6EA]"> <img id="image-preview" class="absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-300"/>
+					<span id="image-placeholder" class="absolute text-gray-500 transition-opacity duration-300">
+						Cliquez pour ajouter une image
+					</span>
+					{{ form_widget(form.featuredImage, {
+        'attr': {
+            'class': 'hidden',
+            'accept': 'image/png, image/jpeg, image/webp'
+        }
+    }) }}
+					<div class="absolute top-2 right-2 flex gap-2 opacity-0 transition-opacity duration-300" id="image-actions">
+						<button type="button" id="edit-image" class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
+						<button type="button" id="delete-image" class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600">Delete</button>
+					</div>
+				</div>
+
+				<div class="text-red-500 text-sm">{{ form_errors(form.featuredImage) }}</div>
+
+
+				<!-- MEDIA REPEATER SECTION -->
+				<div
+					class="flex item-center gap-5">
+					<!-- REPEATER IMAGES -->
+					<div id="media-wrapper" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-4">
+						<div class="media-item  hidden" id="media-template">
+							{{ form_widget(form.images) }}
+							<img src="" class="image-preview hidden mb-3 w-full h-40 object-cover rounded border">
+							<div class="image-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+								<i class="bi bi-image"></i>
+							</div>
+							<div class="media-actions flex items-center gap-2">
+								<label class="image-label flex items-center gap-1 cursor-pointer border rounded-lg px-4 py-2 hover:bg-gray-100  text-center">
+									<i class="bi bi-upload text-lg"></i>
+
+
+									<input type="file" class="image-input hidden">
+								</label>
+								<button type="button" class="remove-media bg-red-700 text-white hover:text-white flex items-center gap-1 px-4 py-2 rounded hover:bg-red-800">
+									<i class="bi bi-trash text-lg "></i>
+								</button>
+							</div>
+						</div>
+
+
+						<!-- BOUTON AJOUTER DANS LA GRILLE -->
+						<div class="col-span-full flex justify-center items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer hover:bg-[#E3E9F3] border-dotted border-2 border-[#2789DC]">
+							<button id="add-media" type="button" class="flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 hover:text-[#2789DC] text-[#1A253C] hover:underline">
+								<i class="bi bi-plus-square-fill text-[#2789DC]"></i>
+								Ajouter une image
+							</button>
+						</div>
+
+
+					</div>
+
+
+					<!-- REPEATER VIDÉOS -->
+					<div
+						id="video-wrapper" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-4">
+
+						<!-- TEMPLATE À CLONER -->
+						<div class="video-item hidden" id="video-template">
+
+							{{ form_widget(form.videos) }}
+
+							<!-- PREVIEW -->
+							<div class="video-preview hidden mb-3">
+								<iframe class="w-full aspect-video rounded border"></iframe>
+							</div>
+
+							<!-- FOND GRIS -->
+							<div class="video-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+								<i class="bi bi-play-btn"></i>
+							</div>
+
+							<!-- INPUT + SUPPRIMER -->
+							<div class="video-actions flex items-center gap-3">
+								<input class="video-input flex-1 border rounded p-2 text-lg" placeholder="https://www.youtube" type="text" name="videos[]">
+								<button class="remove-video bg-red-700 text-white hover:text-white flex items-center gap-1 px-4 py-2 rounded hover:bg-red-800">
+									<i class="bi bi-trash text-lg"></i>
+								</button>
+							</div>
+
+						</div>
+
+
+						<!-- BOUTON AJOUTER -->
+						<div class="col-span-full flex justify-center items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer hover:bg-[#E3E9F3] border-dotted border-2 border-[#2789DC]">
+							<button id="add-video" type="button" class="flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 hover:text-[#2789DC] text-[#1A253C] hover:underline">
+								<i class="bi bi-plus-square-fill text-[#2789DC]"></i>
+								Ajouter une vidéo
+							</button>
+						</div>
+
+
+					</div>
+				</div>
+
+
+				<div class="px-4 md:px-8 lg:px-8 mt-8 mb-12">
+
+
+					<br>
+					<h1 class="text-3xl font-bold text-center mb-8">Ajouter une figure</h1>
+
+					<div class=" px-4 md:px-8 lg:px-16 ">
+
+						<div class="max-w-6xl mx-auto mt-10">
+
+
+							<br>
+							{# Title, content, category #}
+							<div class="mb-4">
+								{{ form_widget(form.title, { attr: { class: 'w-full border-b pb-2 text-gray-700 focus:outline-none focus:border-blue-400' } }) }}
+								<div class="text-red-500 text-sm">{{ form_errors(form.title) }}</div>
+							</div>
+
+							{# Content #}
+							<div class="mb-4">
+								{{ form_widget(form.content) }}
+								<div class="text-red-500 text-sm">{{ form_errors(form.content) }}</div>
+							</div>
+
+							{# Category #}
+							<div class="mb-4">
+								{{ form_widget(form.category) }}
+								<div class="text-red-500 text-sm">{{ form_errors(form.category) }}</div>
+							</div>
+
+							<div class="flex justify-end">
+								<button type="submit" class="px-4 py-2 bg-[#007CCB] hover:bg-[#005F9E] text-white rounded-full font-semibold">
+									Ajouter la figure
+								</button>
+							</div>
+
+						</div>
+
+						{{ form_end(form) }}
+					</div>
+				</div>
+
+			</section>
+
+
+			<!-- FEATURED IMAGE -->
+			<div id="single-image-upload" class="w-full ">
+				<div
+					class="relative w-full h-48 bg-gray-100 rounded border flex items-center justify-center overflow-hidden">
+					<!-- Image prévisualisée -->
+					<img
+					class="image-preview w-full h-full object-cover hidden" alt="Prévisualisation">
+
+					<!-- Placeholder -->
+					<div class="image-placeholder flex flex-col items-center justify-center text-gray-400">
+						<i class="bi bi-image text-4xl mb-2"></i>
+						<span>Choisir l'image</span>
+					</div>
+
+					<!-- Actions flottantes -->
+					<div class="absolute top-2 right-2 flex gap-2">
+						<button type="button" class="edit-btn bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 hidden">
+							<i class="bi bi-pencil"></i>
+						</button>
+						<button type="button" class="remove-btn bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 hidden">
+							<i class="bi bi-trash"></i>
+						</button>
+					</div>
+				</div>
+
+				<!-- Input fichier caché -->
+				<input type="file" accept="image/png, image/jpeg, image/webp" class="image-input hidden">
+			</div>
+
+
+		{% endblock %}
+
+		{% block javascripts %}
+			{{ parent() }}
+
+			<script src="{{ asset('js/collapse.js') }}"></script>
+			<script src="{{ asset('js/images.js') }}"></script>
+			<script src="{{ asset('js/repeaterVideos.js') }}"></script>
+
+
+		{% endblock %}
+
+
+		<form method="POST" action="{{ path('app_profile_tricks_delete', { id: trick.id }) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette figure ?');">
+			<input type="hidden" name="_token" value="{{ csrf_token('delete_trick_' ~ trick.id) }}">
+			<button type="submit" class="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"/>
+				</svg>
+				Supprimer
+			</button>
+		</form>
+
+
+		<div class="mb-6">
+			{{ form_label(form.featuredImage) }}
+			<div class="relative w-full h-64 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden">
+				{{ form_widget(form.featuredImage, { attr: { class: 'absolute w-full h-full opacity-0 cursor-pointer' } }) }}
+				<span class="absolute text-gray-500">Cliquez pour ajouter l'image principale</span>
+				<img id="featured-preview" class="absolute inset-0 w-full h-full object-cover object-center hidden"/>
+			</div>
+			<div class="text-red-500 text-sm">{{ form_errors(form.featuredImage) }}</div>
+		</div>
+
+
+		<div
+			id="media-wrapper" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-4">
+
+			<!-- Conteneur images -->
+			<div id="repeater-image-container" class="contents"></div>
+
+			<!-- Conteneur vidéos -->
+			<div id="repeater-video-container" class="contents"></div>
+
+			<!-- Boutons ajouter -->
+			<div class="col-span-full flex justify-center gap-4">
+				<button id="add-image" type="button" class="px-4 py-2 bg-[#2789DC] text-white rounded hover:bg-[#1A5EA0]">
+					<i class="bi bi-plus-square-fill"></i>
+					Ajouter une image
+				</button>
+				<button id="add-video" type="button" class="px-4 py-2 bg-[#2789DC] text-white rounded hover:bg-[#1A5EA0]">
+					<i class="bi bi-plus-square-fill"></i>
+					Ajouter une vidéo
+				</button>
+			</div>
+		</div>
+
+		<!-- Templates images -->
+		<div id="media-template" class="media-item media-image hidden">
+			<img src="" class="image-preview hidden mb-3 w-full h-40 object-cover rounded border">
+			<div class="image-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+				<i class="bi bi-image text-2xl text-gray-400"></i>
+
+			</div>
+			<div class="media-actions flex items-center justify-end gap-2">
+				<label class="image-label flex items-center justify-center w-12 h-12 cursor-pointer border rounded-lg hover:bg-gray-100">
+					<i class="bi bi-pencil text-xl text-gray-600"></i>
+
+					{{ form_widget(form.images, {
+                    'attr': {
+                        'class': 'image-input hidden',
+                        'accept': 'image/png, image/jpeg, image/webp'
+                    }
+                }) }}
+
+
+				</label>
+				<button type="button" class="remove-media bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800">
+					<i class="bi bi-trash text-lg"></i>
+				</button>
+			</div>
+		</div>
+		<!-- Templates vidéos -->
+		<div id="video-template" class="media-item media-video hidden">
+			<div class="video-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+				<i class="bi bi-play-btn text-3xl text-gray-400"></i>
+			</div>
+
+			<div class="video-actions flex items-center justify-end gap-2 w-full">
+				{{ form_widget(form.videos, {
+            'attr': { 'class': 'video-input hidden' }
+        }) }}
+
+				<button type="button" class="add-video-btn w-12 h-12 border-2 border-gray-300 text-gray-400
+														           rounded-lg flex items-center justify-center
+														           hover:bg-gray-100 transition">
+					<i class="bi bi-pencil text-xl text-gray-600"></i>
+				</button>
+
+				<button type="button" class="remove-video w-12 h-12 bg-red-700 text-white rounded-lg flex items-center justify-center hover:bg-red-800">
+					<i class="bi bi-trash text-lg"></i>
+				</button>
+			</div>
+		</div>

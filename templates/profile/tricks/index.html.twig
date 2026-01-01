@@ -1,59 +1,164 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TricksController!
+{% block title %}Ajouter une figure
 {% endblock %}
 
 {% block body %}
-	<style>
-		.example-wrapper {
-			margin: 1em auto;
-			max-width: 800px;
-			width: 95%;
-			font: 18px / 1.5 sans-serif;
-		}
-		.example-wrapper code {
-			background: #F5F5F5;
-			padding: 2px 6px;
-		}
-	</style>
+	<section class="relative pb-12">
+		<div class="container mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 pt-20">
+			<div class="bg-white rounded-xl shadow-lg max-w-4xl mx-auto overflow-hidden pb-12">
 
-	<div class="example-wrapper">
-		<h1>Hello
-			{{ controller_name }}! ✅</h1>
+				<h1 class="text-3xl font-bold text-center mb-8">Ajouter une figure</h1>
 
-		This friendly message is coming from:
-		<ul>
-			<li>Your controller at
-				<code>/Users/justineleleu/Desktop/Alternance/Openclassrooms/PARCOURS 2/PROJET 6/SNOWTRICKS/app/src/Controller/Profile/TricksController.php</code>
-			</li>
-			<li>Your template at
-				<code>/Users/justineleleu/Desktop/Alternance/Openclassrooms/PARCOURS 2/PROJET 6/SNOWTRICKS/app/templates/profile/tricks/index.html.twig</code>
-			</li>
-		</ul>
-	</div>
+				{{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
 
-	<section id="home-section" class="bg-[#007CCB] dark:bg-gray-700">
-		<div class="container mx-auto lg:max-w-7xl md:max-w-3xl px-4 pt-20">
-			<div class="grid grid-cols-1 lg:grid-cols-12 items-center ">
+				{# Featured Image #}
+				<div id="image-container" class="w-full aspect-video border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50">
+					<img id="image-preview" class="absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-300"/>
+					<span id="image-placeholder" class="absolute text-gray-500 transition-opacity duration-300">Cliquez pour ajouter une image</span>
 
-				<div class="col-span-12 bg-white/70 dark:bg-gray-800/70
-																																								                backdrop-blur-sm p-8 md:p-12 lg:p-16 rounded-2xl shadow-lg">
-					<h1 class="text-4xl lg:text-7xl font-semibold mb-5 text-black dark:text-white md:4px lg:text-start text-center">Cook anything with the experts</h1>
-					<p class="text-black/55 dark:text-white/50 lg:text-lg font-normal mb-10 lg:text-start text-center">Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-						<!-- -->
-						<br>
-						accusantium doloremque laudantium, totam</p>
-					<div class="md:flex align-middle justify-center lg:justify-start">
-						<a class="text-xl w-full md:w-auto font-medium rounded-full text-white py-5 px-6 bg-primary hover:text-primary lg:px-14 mr-6 border border-primary hover:bg-transparent" href="#cook-section">Lets cook</a>
-						<a class="flex border w-full md:w-auto mt-5 md:mt-0 border-primary justify-center rounded-full text-xl font-medium items-center py-5 px-10 text-primary hover:text-white hover:bg-primary" href="#about-section">Explore now</a>
+					{{ form_widget(form.featuredImage, {
+        'attr': {
+            'class': 'absolute w-full h-full opacity-0 cursor-pointer',
+            'accept': 'image/png, image/jpeg, image/webp'
+        }
+    }) }}
+
+					<div class="absolute top-2 right-2 flex gap-2 opacity-0 transition-opacity duration-300" id="image-actions">
+						<button type="button" id="edit-image" class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
+						<button type="button" id="delete-image" class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600">Delete</button>
 					</div>
 
-
+					<!-- Div pour les erreurs -->
+					<div id="image-error" class="absolute bottom-2 left-2 text-red-500 text-sm"></div>
 				</div>
 
+				{# Ici l'ajout de plusieurs images #}
+				<div
+					id="images-wrapper" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+					<!-- Template caché -->
+					<template id="image-template">
+						<div class="image-item w-full aspect-video border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50">
+							<img class="image-preview absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-300"/>
+							<span class="image-placeholder absolute text-gray-500 transition-opacity duration-300 text-center px-2">Cliquez pour ajouter une image</span>
+							<input type="file" class="absolute w-full h-full opacity-0 cursor-pointer" accept="image/png, image/jpeg, image/webp"/>
+							<div class="absolute top-2 right-2 flex gap-2 opacity-0 transition-opacity duration-300 image-actions">
+								<button type="button" class="edit-image bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
+								<button type="button" class="delete-image bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600">Delete</button>
+							</div>
+							<div class="image-error absolute bottom-2 left-2 text-red-500 text-sm"></div>
+						</div>
+					</template>
+
+					<!-- Bouton Ajouter -->
+					<button type="button" id="add-image" class="col-span-2 sm:col-span-3 lg:col-span-6 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-max justify-self-start">Ajouter une image</button>
+				</div>
+
+				{# Ici l'ajout de plusieurs videos #}
+				<div
+					id="videos-wrapper" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+					<!-- Template caché -->
+					<template id="video-template">
+						<div
+							class="video-item w-full aspect-video border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50">
+							<!-- Aperçu iframe -->
+							<iframe class="video-preview hidden w-full h-full rounded" frameborder="0" allowfullscreen></iframe>
+
+							<!-- Placeholder -->
+							<span class="video-placeholder absolute text-gray-500 transition-opacity duration-300 text-center px-2">Entrez un lien YouTube</span>
+
+							<!-- Input pour le lien -->
+							<input
+							type="url" class="absolute w-full h-full opacity-0 cursor-pointer" placeholder="https://www.youtube.com/watch?v=..."/>
+
+							<!-- Boutons Edit/Delete -->
+							<div class="absolute top-2 right-2 flex gap-2 opacity-0 transition-opacity duration-300 video-actions">
+								<button type="button" class="edit-video bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
+								<button type="button" class="delete-video bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600">Delete</button>
+							</div>
+
+							<!-- Div pour les erreurs -->
+							<div class="video-error absolute bottom-2 left-2 text-red-500 text-sm"></div>
+						</div>
+					</template>
+
+					<!-- Bouton Ajouter -->
+					<button type="button" id="add-video" class="col-span-2 sm:col-span-3 lg:col-span-6 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-max justify-self-start">Ajouter une vidéo</button>
+				</div>
+
+
+				{# Collapse images & vidéos secondaires #}
+				<input type="checkbox" id="collapseToggle" class="peer hidden">
+				<label for="collapseToggle" class="block cursor-pointer px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center font-medium mb-4">
+					Ajouter des images et vidéos secondaires
+				</label>
+
+				<div class="max-h-0 overflow-hidden peer-checked:max-h-[9999px] transition-all duration-300 ease-in-out mb-6">
+					<div
+						class="p-4 bg-gray-100 border border-gray-300 rounded-b space-y-8">
+
+						{# Images secondaires #}
+						<div id="images-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>
+						<template id="image-template">
+							<div class="image-item item-card border-2 border-dotted relative">
+								<button type="button" class="remove-image absolute top-2 right-2 bg-red-600 text-white p-1 rounded-xl hover:bg-red-700">✕</button>
+								<input type="file" name="images[]" class="image-input hidden" accept="image/jpeg,image/png,image/webp">
+								<div class="placeholder w-full h-full flex flex-col items-center justify-center text-center text-gray-500 pointer-events-none">
+									<h4 class="text-sm font-medium">Cliquer ou glisser une image ici</h4>
+									<p class="text-xs">JPG / PNG — Max 2 MB</p>
+								</div>
+								<img src="" class="image-preview hidden w-full h-[150px] object-cover rounded-xl border mt-3">
+							</div>
+						</template>
+						<button type="button" id="add-image" class="px-4 py-2 bg-[#007CCB] hover:bg-[#005F9E] text-white rounded-xl">Ajouter des images</button>
+
+						{# Vidéos secondaires #}
+						<div id="videos-wrapper" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>
+						<template id="video-template">
+							<div class="video-item item-card relative">
+								<button type="button" class="remove-video absolute top-2 right-2 bg-red-600 text-white p-1 rounded-xl hover:bg-red-700">✕</button>
+								<input type="text" name="videos[]" class="video-input block w-full rounded-xl border-gray-200 p-2 text-sm" placeholder="https://youtu.be/...">
+								<div class="video-preview hidden mt-3 w-full">
+									<iframe class="w-full h-[150px] rounded-xl border" src="" frameborder="0" allowfullscreen></iframe>
+								</div>
+							</div>
+						</template>
+						<button type="button" id="add-video" class="px-4 py-2 bg-[#00A3D9] hover:bg-[#0082B0] text-white rounded-xl">Ajouter des vidéos</button>
+
+					</div>
+				</div>
+
+				{# Title, content, category #}
+				<div class="mb-4">
+					{{ form_widget(form.title, { attr: { class: 'w-full border-b pb-2 text-gray-700 focus:outline-none focus:border-blue-400' } }) }}
+					<div class="text-red-500 text-sm">{{ form_errors(form.title) }}</div>
+				</div>
+
+				<div class="mb-4">
+					{{ form_widget(form.content, { attr: { class: 'w-full rounded-xl border border-gray-300 px-4 py-2 focus:outline-none' } }) }}
+					<div class="text-red-500 text-sm">{{ form_errors(form.content) }}</div>
+				</div>
+
+				<div class="mb-4">
+					{{ form_widget(form.category, { attr: { class: 'rounded-xl border border-gray-300 px-4 py-2' } }) }}
+					<div class="text-red-500 text-sm">{{ form_errors(form.category) }}</div>
+				</div>
+
+				<div class="flex justify-end">
+					<button type="submit" class="px-4 py-2 bg-[#007CCB] hover:bg-[#005F9E] text-white rounded-full font-semibold">
+						Ajouter la figure
+					</button>
+				</div>
+
+				{{ form_end(form, { render_rest: false }) }}
 			</div>
-
-
 		</div>
 	</section>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script src="{{ asset('js/addFeaturedImage.js') }}"></script>
+	<script src="{{ asset('js/repeaters.js') }}"></script>
+	<script src="{{ asset('js/repeaterVideos.js') }}"></script>
 {% endblock %}

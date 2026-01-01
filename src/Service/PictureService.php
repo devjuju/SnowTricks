@@ -86,4 +86,24 @@ class PictureService
 
         return $file;
     }
+
+    public function delete(string $folder, string $filename): void
+    {
+        $basePath = $this->params->get('uploads_directory') . $folder;
+
+        // Image originale
+        $original = $basePath . '/' . $filename;
+
+        if (file_exists($original)) {
+            unlink($original);
+        }
+
+        // Miniatures
+        $miniDir = $basePath . '/mini/';
+        if (is_dir($miniDir)) {
+            foreach (glob($miniDir . '*-' . $filename) as $mini) {
+                unlink($mini);
+            }
+        }
+    }
 }

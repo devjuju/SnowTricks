@@ -36,23 +36,27 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50)]
     private ?string $username = null;
 
-    #[ORM\OneToMany(
-        mappedBy: 'user',
-        targetEntity: Tricks::class,
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
-    )]
+    #[ORM\Column(length: 255, nullable: true, unique: true)]
+    private ?string $slug = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $avatar = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Tricks::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $tricks;
 
-    #[ORM\OneToMany(
-        mappedBy: 'user',
-        targetEntity: Comments::class,
-        orphanRemoval: true
-    )]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comments::class, orphanRemoval: true)]
     private Collection $comments;
 
     #[ORM\Column]
     private bool $isVerified = false;
+
+    #[Assert\Length(
+        min: 6,
+        max: 4096,
+        minMessage: 'Votre mot de passe doit contenir au moins {{ limit }} caractères'
+    )]
+    private ?string $plainPassword = null;
 
     public function __construct()
     {
@@ -63,28 +67,23 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     // -------------------
     // USER INTERFACE
     // -------------------
-
     public function getId(): ?int
     {
         return $this->id;
     }
-
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
-
     public function eraseCredentials(): void {}
 
     // -------------------
     // GETTERS / SETTERS
     // -------------------
-
     public function getEmail(): ?string
     {
         return $this->email;
     }
-
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -95,7 +94,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return array_unique(array_merge($this->roles, ['ROLE_USER']));
     }
-
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -106,7 +104,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->password;
     }
-
     public function setPassword(string $password): self
     {
         $this->password = $password;
@@ -117,32 +114,57 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->username;
     }
-
     public function setUsername(string $username): self
     {
         $this->username = $username;
         return $this;
     }
 
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+    public function setAvatar(?string $avatar): self
+    {
+        $this->avatar = $avatar;
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
     // -------------------
     // RELATIONS
     // -------------------
-
     public function getTricks(): Collection
     {
         return $this->tricks;
     }
-
     public function addTrick(Tricks $trick): self
     {
         if (!$this->tricks->contains($trick)) {
             $this->tricks->add($trick);
             $trick->setUser($this);
         }
-
         return $this;
     }
-
     public function removeTrick(Tricks $trick): self
     {
         if ($this->tricks->removeElement($trick)) {
@@ -150,7 +172,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
                 $trick->setUser(null);
             }
         }
-
         return $this;
     }
 
@@ -163,10 +184,27 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->isVerified;
     }
-
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
         return $this;
+    }
+
+    // -------------------
+    // LIFECYCLE CALLBACK
+    // -------------------
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function initializeSlugAndAvatar(): void
+    {
+        // Slug automatique
+        if (empty($this->slug) && $this->username) {
+            $this->slug = strtolower(trim(preg_replace('/[^a-z0-9]+/', '-', $this->username)));
+        }
+
+        // Avatar par défaut
+        if (empty($this->avatar)) {
+            $this->avatar = 'default-avatar.png'; // fichier à placer dans /public/uploads/avatars/
+        }
     }
 }

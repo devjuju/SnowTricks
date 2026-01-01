@@ -13,25 +13,47 @@ class UsersFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // Admin
-        $admin = new Users();
-        $admin->setUsername('Admin');
-        $admin->setEmail('admin@example.com');
-        $admin->setPassword($this->hasher->hashPassword($admin, 'motdepasse'));
-        $admin->setIsVerified(true);
-        $admin->setRoles(['ROLE_ADMIN']);
-        $manager->persist($admin);
-        $this->setReference('Admin', $admin);
+        $usersData = [
+            [
+                'username' => 'Jimmy',
+                'email' => 'jimmy@example.com',
+                'password' => 'motdepasse',
+                'roles' => ['ROLE_MEMBER']
+            ],
+            [
+                'username' => 'Anonyme',
+                'email' => 'anonyme@example.com',
+                'password' => 'passesecret',
+                'roles' => ['ROLE_MEMBER']
+            ],
+            [
+                'username' => 'Incognito',
+                'email' => 'incognito@example.com',
+                'password' => 'passecache',
+                'roles' => ['ROLE_MEMBER']
+            ],
+        ];
 
-        // Jimmy
-        $jimmy = new Users();
-        $jimmy->setUsername('Jimmy');
-        $jimmy->setEmail('jimmy@example.com');
-        $jimmy->setPassword($this->hasher->hashPassword($jimmy, 'motdepasse'));
-        $jimmy->setIsVerified(true);
-        $jimmy->setRoles(['ROLE_MEMBER']);
-        $manager->persist($jimmy);
-        $this->setReference('Jimmy', $jimmy);
+        foreach ($usersData as $data) {
+            $user = new Users();
+            $user->setUsername($data['username']);
+            $user->setEmail($data['email']);
+            $user->setPassword($this->hasher->hashPassword($user, $data['password']));
+            $user->setRoles($data['roles']);
+            $user->setIsVerified(true);
+
+            // --- slug automatique (optionnel ici car LifecycleCallback le gère)
+            $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/', '-', $data['username'])));
+            $user->setSlug($slug);
+
+            // --- avatar par défaut si non défini
+            $user->setAvatar('default-avatar.png'); // doit exister dans public/uploads/avatars/
+
+            $manager->persist($user);
+
+            // Créer une référence pour pouvoir l'utiliser dans d'autres fixtures
+            $this->setReference($data['username'], $user);
+        }
 
         $manager->flush();
     }

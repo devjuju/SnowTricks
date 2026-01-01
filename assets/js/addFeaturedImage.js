@@ -1,89 +1,62 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
 
-    // 1️⃣ Récupération de l'input file pour la featured image
-    let input = document.getElementById("featuredImage_raw")
-        || document.querySelector('#featuredImageArea input[type="file"]')
-        || document.querySelector('input[type="file"]');
+    const featuredContainer = document.getElementById('featured-image-container');
+    const featuredInput = document.getElementById('featured-input');
+    const featuredPreview = document.getElementById('featured-preview');
+    const featuredPlaceholder = document.getElementById('featured-placeholder');
+    const featuredActions = document.getElementById('image-actions');
+    const editBtn = document.getElementById('edit-image');
+    const deleteBtn = document.getElementById('delete-image');
 
-    const placeholder = document.getElementById("placeholder");
-    const previewContainer = document.getElementById("previewContainer");
-    const imagePreview = document.getElementById("imagePreview");
-    const deleteBtn = document.getElementById("deleteImageBtn");
-    const featuredArea = document.getElementById("featuredImageArea");
-    const msgEl = document.getElementById("featuredImageMsg");
+    if (!featuredContainer || !featuredInput) return;
 
-    if (!input || !featuredArea) {
-        console.error("featured image : input ou zone introuvable", { input, featuredArea });
-        return;
-    }
+    const resetFeaturedImage = () => {
+        featuredInput.value = '';
+        featuredPreview.src = '';
+        featuredPreview.classList.add('opacity-0');
+        featuredPlaceholder.classList.remove('opacity-0');
+        featuredActions.classList.remove('opacity-100');
+    };
 
-    // 2️⃣ Ouvrir le sélecteur au clic sur la zone (sauf sur le bouton supprimer)
-    featuredArea.addEventListener("click", (e) => {
-        if (e.target.closest("#deleteImageBtn")) return;
-        input.click();
+    // Click sur le container = ouvrir le file input
+    featuredContainer.addEventListener('click', () => {
+        featuredInput.click();
     });
 
-    // 3️⃣ Afficher l'aperçu lors du changement de fichier
-    input.addEventListener("change", () => {
-        if (!input.files || !input.files[0]) return;
+    // Sélection d’un fichier
+    featuredInput.addEventListener('change', () => {
+        const file = featuredInput.files[0];
 
-        const file = input.files[0];
-        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-        const maxSize = 2 * 1024 * 1024; // 2MB
-
-        // ✅ Vérification type et taille
-        if (!allowedTypes.includes(file.type)) {
-            msgEl.textContent = "Format non supporté (JPG, PNG ou WebP).";
-            input.value = "";
+        if (!file) {
+            resetFeaturedImage();
             return;
         }
-        if (file.size > maxSize) {
-            msgEl.textContent = "Fichier trop volumineux (max 2MB).";
-            input.value = "";
+
+        if (!file.type.startsWith('image/')) {
+            alert('Veuillez sélectionner une image valide.');
+            resetFeaturedImage();
             return;
         }
-        msgEl.textContent = "";
 
-        // ✅ Créer et afficher l'URL d'aperçu
-        const objectUrl = URL.createObjectURL(file);
-        imagePreview.src = objectUrl;
-        imagePreview.onload = () => URL.revokeObjectURL(objectUrl); // libération mémoire
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            featuredPreview.src = e.target.result;
+            featuredPreview.classList.remove('opacity-0');
+            featuredPlaceholder.classList.add('opacity-0');
+            featuredActions.classList.add('opacity-100');
+        };
 
-        placeholder.classList.add("hidden");
-        previewContainer.classList.remove("hidden");
+        reader.readAsDataURL(file);
     });
 
-    // 4️⃣ Supprimer l'image sélectionnée
-    deleteBtn.addEventListener("click", (e) => {
+    editBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
+        featuredInput.click();
+    });
 
-        try {
-            input.value = "";
-            if (input.value !== "") {
-                // Recréer l'input pour certains navigateurs
-                const newInput = input.cloneNode();
-                input.parentNode.replaceChild(newInput, input);
-                input = newInput;
-                input.addEventListener("change", () => {
-                    if (input.files && input.files[0]) {
-                        const file = input.files[0];
-                        const objectUrl = URL.createObjectURL(file);
-                        imagePreview.src = objectUrl;
-                        imagePreview.onload = () => URL.revokeObjectURL(objectUrl);
-                        placeholder.classList.add("hidden");
-                        previewContainer.classList.remove("hidden");
-                    }
-                });
-            }
-        } catch (err) {
-            console.error("Erreur lors du reset de l'input :", err);
-        }
-
-        // ✅ Remise à zéro visuelle
-        imagePreview.src = "";
-        previewContainer.classList.add("hidden");
-        placeholder.classList.remove("hidden");
-        msgEl.textContent = "";
+    deleteBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetFeaturedImage();
     });
 
 });

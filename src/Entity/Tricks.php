@@ -173,4 +173,16 @@ class Tricks
         $this->slug = $slug;
         return $this;
     }
+
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function initializeSlug(): void
+    {
+        if (empty($this->slug) && $this->title) {
+            // Génère le slug à partir du titre
+            $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/', '-', $this->title)));
+            $this->slug = rtrim($slug, '-'); // supprime le tiret final
+        }
+    }
 }
