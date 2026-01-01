@@ -1,0 +1,297 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier une figure
+{% endblock %}
+
+{% block body %}
+	<br>
+	<section
+		class="relative pb-12">
+		<!-- Hero background -->
+		<div class="absolute inset-0">
+			<img src="{{ asset('assets/images/image-cover.jpg') }}" alt="Hero" class="w-full h-[400px] sm:h-[500px] md:h-[600px] object-cover brightness-75">
+			<div class="absolute inset-0 bg-linear-to-b from-transparent to-white/80"></div>
+		</div>
+		<!-- Centered card -->
+		<div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 pt-20">
+			<div class="bg-white rounded-xl shadow-lg max-w-6xl mx-auto overflow-hidden pb-12">
+
+
+				{{ form_start(form, { attr: { novalidate: 'novalidate', enctype: 'multipart/form-data' } }) }}
+
+
+				{# Featured Image #}
+				<div
+					id="image-container" data-existing-image="{{ trick.featuredImage ? asset('uploads/tricks/' ~ trick.featuredImage) : '' }}" class="w-full aspect-video border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50 bg-[#E5E6EA]">
+
+					<!-- Preview -->
+					<img
+					id="image-preview" class="absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-300"/>
+
+					<!-- Placeholder -->
+					<span id="image-placeholder" class="absolute text-gray-500 transition-opacity duration-300">
+						Cliquez pour ajouter une image
+					</span>
+
+					<!-- Champ file Symfony -->
+					{{ form_widget(form.featuredImage, {
+        'attr': {
+            'class': 'absolute w-full h-full opacity-0 cursor-pointer',
+            'accept': 'image/png, image/jpeg, image/webp'
+        }
+    }) }}
+
+					<!-- Actions Edit / Delete -->
+					<div class="absolute top-2 right-2 flex gap-2 opacity-0 transition-opacity duration-300" id="image-actions">
+						<button type="button" id="edit-image" class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">Edit</button>
+						<button type="button" id="delete-image" class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600">Delete</button>
+					</div>
+
+					<!-- Affichage des erreurs Symfony -->
+					<div id="image-error" class="absolute bottom-2 left-2 text-red-500 text-sm">
+						{{ form_errors(form.featuredImage) }}
+					</div>
+				</div>
+
+				<br>
+				{# Carousel médias secondaires #}
+				<div class="w-full overflow-hidden relative group p-6">
+
+					<div id="marquee-container" class="overflow-hidden mx-auto max-w-[1100px] relative">
+						<div id="marquee" class="flex gap-6 transition-transform duration-300">
+							{% for item in media %}
+								<div
+									class="min-w-[200px] sm:min-w-[240px] md:min-w-[280px] lg:min-w-[320px] bg-white rounded-lg shadow overflow-hidden flex flex-col items-center justify-start">
+
+									{# Contenu du média #}
+									{% if item.getType() == 'video' %}
+										{% if item.youtubeId %}
+											<div class="relative w-full aspect-[16/9] cursor-pointer group video-container" data-youtube-id="{{ item.youtubeId }}">
+												<img src="https://img.youtube.com/vi/{{ item.youtubeId }}/hqdefault.jpg" class="w-full h-full object-cover rounded-t-lg" alt="Vidéo {{ loop.index }}">
+												<div class="absolute inset-0 flex items-center justify-center">
+													<div class="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center text-2xl opacity-80 group-hover:scale-110 transition-transform">
+														▶
+													</div>
+												</div>
+											</div>
+										{% endif %}
+									{% else %}
+										<div class="w-full aspect-[16/9]">
+											<img src="{{ asset('uploads/tricks/' ~ item.content) }}" class="w-full h-full object-cover rounded-t-lg" alt="Media {{ loop.index }}">
+										</div>
+									{% endif %}
+
+									{# Boutons Edition / Suppression #}
+									<div class="flex gap-2 mt-2 mb-2">
+										<button type="button" class="edit-btn px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600" data-id="{{ item.id }}">
+											Edit
+										</button>
+										<button type="button" class="delete-btn px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600" data-id="{{ item.id }}">
+											Delete
+										</button>
+									</div>
+
+								</div>
+							{% else %}
+								<div class="min-w-[200px] aspect-[16/9] bg-gray-200 rounded-lg flex items-center justify-center">
+									Aucun média disponible
+								</div>
+							{% endfor %}
+						</div>
+
+						<!-- Flèches -->
+						<button id="prev" class="absolute top-1/2 left-2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 text-2xl shadow-md flex items-center justify-center z-20">‹</button>
+						<button id="next" class="absolute top-1/2 right-2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 text-2xl shadow-md flex items-center justify-center z-20">›</button>
+					</div>
+
+
+				</div>
+
+
+				<br>
+				<h1 class="text-3xl font-bold text-center mb-8">Modifier une figure</h1>
+
+				<div
+					class=" px-4 md:px-8 lg:px-16 ">
+					{# Collapse images & vidéos secondaires #}
+					<div class="max-w-6xl mx-auto mt-10">
+
+
+						<br>
+						{# Title, content, category #}
+						<div class="mb-4">
+							{{ form_widget(form.title, { attr: { class: 'w-full border-b pb-2 text-gray-700 focus:outline-none focus:border-blue-400' } }) }}
+							<div class="text-red-500 text-sm">{{ form_errors(form.title) }}</div>
+						</div>
+
+						{# Content #}
+						<div class="mb-4">
+							{{ form_widget(form.content) }}
+							<div class="text-red-500 text-sm">{{ form_errors(form.content) }}</div>
+						</div>
+
+						{# Category #}
+						<div class="mb-4">
+							{{ form_widget(form.category) }}
+							<div class="text-red-500 text-sm">{{ form_errors(form.category) }}</div>
+						</div>
+
+						<div class="flex justify-end">
+							<button type="submit" class="px-4 py-2 bg-[#007CCB] hover:bg-[#005F9E] text-white rounded-full font-semibold">
+								Modifier la figure
+							</button>
+						</div>
+
+					</div>
+
+					{{ form_end(form) }}
+				</div>
+			</div>
+
+		</section>
+
+
+		<!-- REPEATER IMAGES -->
+		<div
+			id="media-wrapper" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 pb-4">
+			<!-- TEMPLATE À CLONER -->
+			<div class="media-item p-4 border bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 hidden " id="media-template">
+
+				{{ form_widget(form.images) }}
+
+				<!-- PREVIEW (AU-DESSUS) -->
+				<!-- Si une image est sélectionnée, afficher la preview -->
+				<img
+				src="" class="image-preview hidden mb-3 w-full h-40 object-cover rounded border"> <!-- Fond gris si pas d'image -->
+				<div class="image-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border">
+					<span class="text-gray-400">Aucune image sélectionnée</span>
+				</div>
+				<!-- BARRE D'ACTIONS -->
+				<div
+					class="media-actions flex items-center gap-2">
+
+
+					<!-- Bouton édition -->
+					<label class="image-label flex items-center gap-2 cursor-pointer border rounded-lg px-4 py-2 hover:bg-gray-100 w-full text-center">
+						<i class="bi bi-pencil-square text-xl"></i>
+						<span class="label-text text-lg">Choisir une image
+						</span>
+						<input type="file" class="image-input hidden">
+					</label>
+
+					<!-- Bouton supprimer -->
+					<button type="button" class="remove-media bg-red-700 text-white hover:text-white flex items-center gap-1 px-4 py-2 rounded hover:bg-red-800">
+						<i class="bi bi-trash text-lg"></i>
+					</button>
+
+				</div>
+
+			</div>
+
+
+		</div>
+
+		<button id="add-media" type="button" class="flex items-center justify-center gap-2     rounded-full font-semibold transition-all duration-200 hover:text-[#2789DC]  text-[#1A253C] hover:underline">
+			<i class="bi bi-plus-square-fill text-[#2789DC]"></i>
+			Ajouter une image
+		</button>
+
+
+		<hr class="border-0 h-px bg-gray-300 my-8">
+
+		<div>
+			<!-- REPEATER IMAGES -->
+			<div
+				id="media-wrapper" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 pb-4">
+				<!-- TEMPLATE À CLONER -->
+				<div class="media-item p-4 border bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 hidden " id="media-template">
+
+					{{ form_widget(form.images) }}
+
+					<!-- PREVIEW (AU-DESSUS) -->
+					<!-- Si une image est sélectionnée, afficher la preview -->
+					<img
+					src="" class="image-preview hidden mb-3 w-full h-40 object-cover rounded border"> <!-- Fond gris si pas d'image -->
+					<div class="image-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+						<span class="text-gray-400">Aucune image sélectionnée</span>
+					</div>
+					<!-- BARRE D'ACTIONS -->
+					<div
+						class="media-actions flex items-center gap-2">
+
+
+						<!-- Bouton édition -->
+						<label class="image-label flex items-center gap-2 cursor-pointer border rounded-lg px-4 py-2 hover:bg-gray-100 w-full text-center">
+							<i class="bi bi-pencil-square text-xl"></i>
+							<span class="label-text text-lg">Choisir une image
+							</span>
+							<input type="file" class="image-input hidden">
+						</label>
+
+						<!-- Bouton supprimer -->
+						<button type="button" class="remove-media bg-red-700 text-white hover:text-white flex items-center gap-1 px-4 py-2 rounded hover:bg-red-800">
+							<i class="bi bi-trash text-lg"></i>
+						</button>
+
+					</div>
+
+				</div>
+
+
+			</div>
+
+			<button id="add-media" type="button" class="flex items-center justify-center gap-2     rounded-full font-semibold transition-all duration-200 hover:text-[#2789DC]  text-[#1A253C] hover:underline">
+				<i class="bi bi-plus-square-fill text-[#2789DC]"></i>
+				Ajouter une image
+			</button>
+
+			<hr
+			class="border-0 h-px bg-gray-300 my-8">
+
+
+			<!-- REPEATER VIDÉOS -->
+			<div
+				id="video-wrapper" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 pb-4">
+
+				<!-- TEMPLATE À CLONER -->
+				<div class="video-item p-4 border bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 hidden " id="video-template">
+
+					{{ form_widget(form.videos) }}
+					<!-- PREVIEW EN PREMIER -->
+					<div class="video-preview hidden mb-3">
+						<iframe class="w-full aspect-video rounded border"></iframe>
+					</div>
+
+					<!-- Fond gris si pas de vidéo -->
+					<div class="video-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+						<span class="text-gray-400">Aucune video sélectionnée</span>
+					</div>
+
+
+					<div class="video-actions flex items-center gap-3">
+						<input class="video-input flex-1 border rounded p-2 text-lg" placeholder="Collez l'URL de la vidéo ici" type="text" name="videos[]">
+						<button class="remove-video bg-red-700 text-white hover:text-white flex items-center gap-1 px-4 py-2 rounded hover:bg-red-800">
+							<i class="bi bi-trash text-lg"></i>
+						</button>
+					</div>
+
+
+				</div>
+			</div>
+
+			<button id="add-video" type="button" class="flex items-center justify-center gap-2     rounded-full font-semibold transition-all duration-200 hover:text-[#2789DC]  text-[#1A253C] hover:underline">
+				<i class="bi bi-plus-square-fill text-[#2789DC]"></i>
+				Ajouter une vidéo
+			</button>
+		</div>
+	{% endblock %}
+
+	{% block javascripts %}
+		{{ parent() }}
+		<script src="{{ asset('js/addFeaturedImage.js') }}"></script>
+		<script src="{{ asset('js/collapse.js') }}"></script>
+		<script src="{{ asset('js/repeaters.js') }}"></script>
+		<script src="{{ asset('js/marquee.js') }}"></script>
+
+
+	{% endblock %}

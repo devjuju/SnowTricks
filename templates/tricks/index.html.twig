@@ -1,20 +1,72 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TricksController!{% endblock %}
+{% block title %}Hello TricksController!
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+	</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+	<div class="example-wrapper">
+		<h1>Hello
+			{{ controller_name }}! ✅</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/justineleleu/Desktop/Alternance/Openclassrooms/PARCOURS 2/PROJET 6/SNOWTRICKS/app/src/Controller/TricksController.php</code></li>
-        <li>Your template at <code>/Users/justineleleu/Desktop/Alternance/Openclassrooms/PARCOURS 2/PROJET 6/SNOWTRICKS/app/templates/tricks/index.html.twig</code></li>
-    </ul>
-</div>
+		This friendly message is coming from:
+		<ul>
+			<li>Your controller at
+				<code>/Users/justineleleu/Desktop/Alternance/Openclassrooms/PARCOURS 2/PROJET 6/SNOWTRICKS/app/src/Controller/TricksController.php</code>
+			</li>
+			<li>Your template at
+				<code>/Users/justineleleu/Desktop/Alternance/Openclassrooms/PARCOURS 2/PROJET 6/SNOWTRICKS/app/templates/tricks/index.html.twig</code>
+			</li>
+		</ul>
+	</div>
+
+	<div
+		class="w-full overflow-hidden relative group p-6">
+
+		<!-- Conteneur visible -->
+		<div id="marquee-container" class="overflow-hidden mx-auto max-w-[1100px]">
+			<div id="marquee" class="flex gap-6 transition-transform duration-300">
+
+				{% for item in media %}
+					<div class="min-w-[160px] aspect-video bg-white rounded-lg shadow overflow-hidden">
+						{% if item.getType() == 'video' %}
+							<iframe src="{{ item.content }}" class="w-full h-full" allowfullscreen></iframe>
+						{% else %}
+							<img src="{{ asset('uploads/tricks/' ~ item.content) }}" class="w-full h-full object-cover">
+						{% endif %}
+					</div>
+				{% endfor %}
+
+			</div>
+		</div>
+
+
+		<!-- Flèche gauche -->
+		<button id="prev" class="absolute top-1/2 left-2 -translate-y-1/4 w-10 h-10 rounded-full
+																																																																																																																																																																																																						bg-white/80 text-2xl shadow-md flex items-center justify-center opacity-0 -translate-x-1/2 group-hover:opacity-100 group-hover:translate-x-0
+																																																																																																																																																																																																						transition duration-300 hover:bg-white hover:scale-110 z-20">
+			‹
+		</button>
+
+		<!-- Flèche droite -->
+		<button id="next" class="absolute top-1/2 right-2 -translate-y-1/4 w-10 h-10 rounded-full
+																																																																																																																																																																																																						bg-white/80 text-2xl shadow-md flex items-center justify-center
+																																																																																																																																																																																																						opacity-0 -translate-x-1/2 group-hover:opacity-100 group-hover:translate-x-0
+																																																																																																																																																																																																						transition duration-300 hover:bg-white hover:scale-110 z-20">
+			›
+		</button>
+
+	</div>
 {% endblock %}

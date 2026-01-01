@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Éditer mon profil
+{% endblock %}
+
+{% block body %}
+	<br>
+	<section class="bg-[#007CCB] min-h-screen flex flex-col items-center pt-24 px-4">
+
+		<h1 class="text-white text-3xl font-bold mb-8 text-center">Éditer mon profil</h1>
+
+		<div
+			class="w-full max-w-md bg-white py-12 px-8 rounded-xl shadow space-y-6">
+
+			{# Messages flash #}
+			{% for label, messages in app.flashes %}
+				{% for message in messages %}
+					<div class="p-3 rounded text-white {{ label == 'success' ? 'bg-green-500' : 'bg-red-500' }}">
+						{{ message }}
+					</div>
+				{% endfor %}
+			{% endfor %}
+
+			{{ form_start(profileForm, { attr: { novalidate: 'novalidate', enctype: 'multipart/form-data' } }) }}
+
+			{# Avatar interactif #}
+			<div class="flex flex-col items-center space-y-2">
+
+				<div id="avatarArea" class="relative w-32 h-32 rounded-full overflow-hidden border-2 border-dashed
+																		                border-gray-300 cursor-pointer hover:border-blue-500 transition">
+
+					{{ form_widget(profileForm.avatar, {
+            attr: {
+                class: 'hidden',
+                id: 'avatarInput',
+                accept: 'image/jpeg,image/png,image/webp'
+            }
+        }) }}
+
+					{# Placeholder #}
+					<div id="avatarPlaceholder" class="flex flex-col items-center justify-center text-gray-400 h-full
+																					                    {% if app.user.avatar %}hidden{% endif %}">
+						<i class="bi bi-person-circle text-4xl"></i>
+						<span class="text-xs mt-1">Changer</span>
+					</div>
+
+					{# Preview #}
+					<div id="avatarPreviewContainer" class="w-full h-full {% if not app.user.avatar %}hidden{% endif %}">
+						<img id="avatarPreview" src="{{ app.user.avatar ? asset('uploads/avatars/mini/250x250-' ~ app.user.avatar) : '' }}" class="w-full h-full object-cover rounded-full">
+
+						<button id="avatarDeleteBtn" type="button" class="absolute bottom-1 right-1 bg-red-600 text-white p-2 rounded-full shadow">
+							<i class="bi bi-trash text-xs"></i>
+						</button>
+
+						<input type="hidden" name="delete_avatar" id="delete_avatar" value="0">
+					</div>
+				</div>
+
+				<p id="avatarMsg" class="text-red-500 text-xs"></p>
+				<div class="text-red-500 text-sm">{{ form_errors(profileForm.avatar) }}</div>
+			</div>
+
+			<hr>
+
+
+			{# Username #}
+			<div class="space-y-2 text-center">
+				{{ form_label(profileForm.username) }}
+				{{ form_widget(profileForm.username, { attr: { class: 'w-full border-b pb-2 text-gray-700 text-center focus:outline-none focus:border-blue-400' } }) }}
+				<div class="text-red-500 text-sm">{{ form_errors(profileForm.username) }}</div>
+			</div>
+
+			{# Email #}
+			<div class="space-y-2 text-center">
+				{{ form_label(profileForm.email) }}
+				{{ form_widget(profileForm.email, { attr: { class: 'w-full border-b pb-2 text-gray-700 text-center focus:outline-none focus:border-blue-400' } }) }}
+				<div class="text-red-500 text-sm">{{ form_errors(profileForm.email) }}</div>
+			</div>
+
+			{# Password #}
+			<div class="space-y-2 text-center">
+				{{ form_label(profileForm.plainPassword.first, 'Nouveau mot de passe') }}
+				{{ form_widget(profileForm.plainPassword.first, { attr: { class: 'w-full border-b pb-2 text-gray-700 text-center focus:outline-none focus:border-blue-400' } }) }}
+				{{ form_label(profileForm.plainPassword.second, 'Répéter le mot de passe') }}
+				{{ form_widget(profileForm.plainPassword.second, { attr: { class: 'w-full border-b pb-2 text-gray-700 text-center focus:outline-none focus:border-blue-400' } }) }}
+				<div class="text-red-500 text-sm">{{ form_errors(profileForm.plainPassword) }}</div>
+			</div>
+
+
+			{# Submit button #}
+			<button type="submit" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition">
+				Mettre à jour
+			</button>
+
+			{{ form_end(profileForm) }}
+
+		</div>
+	</section>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script src="{{ asset('js/addAvatar.js') }}"></script>
+
+
+{% endblock %}

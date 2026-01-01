@@ -16,12 +16,12 @@
 
 		<!-- Centered card -->
 		<div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 pt-20">
-			<div class="bg-white rounded-xl shadow-lg max-w-4xl mx-auto overflow-hidden">
+			<div class="bg-white rounded-xl shadow-lg max-w-6xl mx-auto overflow-hidden">
 
 				<div class="px-6 md:px-[93px]
-																																																																																																																																																																																																																																																																																																																																																																																																																																														bg-[url('{{ asset('uploads/images/' ~ trick.featuredImage) }}')]
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												bg-cover bg-center bg-no-repeat min-h-[70vh] md:min-h-[60vh]
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												flex items-center justify-center">
+																																																																																												bg-[url('{{ asset('uploads/tricks/' ~ trick.featuredImage) }}')]
+																																																																		bg-cover bg-center bg-no-repeat min-h-[70vh] md:min-h-[60vh]
+																																																																																								flex items-center justify-center">
 
 					<div class="bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl text-center">
 						<h1 class="text-white font-bold uppercase mb-4" style="font-size: 48px">
@@ -39,35 +39,53 @@
 						<div id="marquee" class="flex gap-6 transition-transform duration-300">
 
 							{% for item in media %}
-								<div class="min-w-[160px] aspect-video bg-white rounded-lg shadow overflow-hidden">
+								<div class="min-w-[160px] sm:min-w-[200px] md:min-w-[240px] lg:min-w-[280px] aspect-video bg-white rounded-lg shadow overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center">
+
 									{% if item.getType() == 'video' %}
-										<iframe src="{{ item.content }}" class="w-full h-full" allowfullscreen></iframe>
+										{% if item.youtubeId %}
+											<div
+												class="relative w-full h-full cursor-pointer group video-container" data-youtube-id="{{ item.youtubeId }}">
+												<!-- Thumbnail -->
+												<img
+												src="https://img.youtube.com/vi/{{ item.youtubeId }}/hqdefault.jpg" class="w-full h-full object-cover rounded-lg" alt="Vidéo {{ loop.index }}">
+												<!-- Play Button -->
+												<div class="absolute inset-0 flex items-center justify-center">
+													<div class="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center text-2xl opacity-80 group-hover:scale-110 transition-transform">
+														▶
+													</div>
+												</div>
+											</div>
+										{% endif %}
 									{% else %}
-										<img src="{{ asset('uploads/images/' ~ item.content) }}" class="w-full h-full object-cover">
+										<img src="{{ asset('uploads/tricks/' ~ item.content) }}" class="w-full h-full object-cover rounded-lg" alt="Media {{ loop.index }}">
 									{% endif %}
+
+								</div>
+							{% else %}
+								<div class="min-w-[160px] aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
+									Aucun média disponible
 								</div>
 							{% endfor %}
 
 						</div>
 					</div>
 
-
 					<!-- Flèche gauche -->
-					<button id="prev" class="absolute top-1/2 left-2 -translate-y-1/4 w-10 h-10 rounded-full
-																																																																																																																																																	bg-white/80 text-2xl shadow-md flex items-center justify-center opacity-0 -translate-x-1/2 group-hover:opacity-100 group-hover:translate-x-0
-																																																																																																																																																	transition duration-300 hover:bg-white hover:scale-110 z-20">
+					<button id="prev" class="absolute top-1/2 left-2 -translate-y-1/2 w-10 h-10 rounded-full
+																																																															        bg-white/80 text-2xl shadow-md flex items-center justify-center opacity-0 -translate-x-1/2
+																																																															        group-hover:opacity-100 group-hover:translate-x-0 transition duration-300 hover:bg-white hover:scale-110 z-20">
 						‹
 					</button>
 
 					<!-- Flèche droite -->
-					<button id="next" class="absolute top-1/2 right-2 -translate-y-1/4 w-10 h-10 rounded-full
-																																																																																																																																																	bg-white/80 text-2xl shadow-md flex items-center justify-center
-																																																																																																																																																	opacity-0 -translate-x-1/2 group-hover:opacity-100 group-hover:translate-x-0
-																																																																																																																																																	transition duration-300 hover:bg-white hover:scale-110 z-20">
+					<button id="next" class="absolute top-1/2 right-2 -translate-y-1/2 w-10 h-10 rounded-full
+																																																															        bg-white/80 text-2xl shadow-md flex items-center justify-center opacity-0 -translate-x-1/2
+																																																															        group-hover:opacity-100 group-hover:translate-x-0 transition duration-300 hover:bg-white hover:scale-110 z-20">
 						›
 					</button>
 
 				</div>
+
 
 				<div class=" px-4 md:px-8 lg:px-16 ">
 
@@ -86,19 +104,17 @@
 
 						<!-- Date de création -->
 						<div class="flex items-center border-r pr-4">
-							<span class="text-sm">
+							<div class="text-sm text-gray-500">
 								Créé le
 								{{ trick.createdAt|date('d/m/Y') }}
-							</span>
+								{% if trick.updatedAt %}
+									• Modifié le
+									{{ trick.updatedAt|date('d/m/Y') }}
+								{% endif %}
+							</div>
+
 						</div>
 
-						<!-- Date de modification -->
-						<div class="flex items-center">
-							<span class="text-sm">
-								Modifié le
-								{{ trick.updatedAt ? trick.updatedAt|date('d/m/Y') : 'Jamais' }}
-							</span>
-						</div>
 
 					</div>
 					<hr class="border-0 h-px bg-gray-300 my-8">
@@ -141,9 +157,11 @@
 						</div>
 
 						{% if trick.comments|length > 5 %}
-							<button id="load-more-comments" data-offset="0" data-url="{{ path('app_tricks_comments_load', { slug: trick.slug }) }}" class="mt-6 px-6 py-2 bg-secondary text-white rounded-lg">
-								Charger plus de commentaires
-							</button>
+							<div class="text-center mt-6">
+								<button id="load-more-comments" data-offset="0" data-url="{{ path('app_tricks_comments_load', { slug: trick.slug }) }}" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-800">
+									Charger plus de commentaires
+								</button>
+							</div>
 						{% endif %}
 
 					</div>

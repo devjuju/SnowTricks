@@ -1,0 +1,106 @@
+<!-- ========================
+     MEDIA REPEATER
+======================== -->
+<div
+	class="relative w-full px-4 md:px-8 lg:px-8 overflow-hidden">
+
+	<!-- Conteneur carousel -->
+	<div
+		id="media-wrapper" class="flex gap-4 transition-transform duration-300">
+
+		<!-- Conteneur images -->
+		<div id="repeater-image-container" class="flex gap-4"></div>
+
+		<!-- Conteneur vidéos -->
+		<div id="repeater-video-container" class="flex gap-4"></div>
+
+	</div>
+
+	<!-- Navigation carousel -->
+	<button id="prev" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-10">
+		<i class="bi bi-chevron-left"></i>
+	</button>
+	<button id="next" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-10">
+		<i class="bi bi-chevron-right"></i>
+	</button>
+
+	<!-- Boutons ajout -->
+	<div class="flex justify-center gap-4 mt-4">
+		<button id="add-image" class="px-4 py-2 bg-[#2789DC] text-white rounded hover:bg-[#1A5EA0]">
+			<i class="bi bi-plus-square-fill"></i>
+			Ajouter une image
+		</button>
+		<button id="add-video" class="px-4 py-2 bg-[#2789DC] text-white rounded hover:bg-[#1A5EA0]">
+			<i class="bi bi-plus-square-fill"></i>
+			Ajouter une vidéo
+		</button>
+	</div>
+
+	<!-- ========================
+	       TEMPLATE IMAGE
+	  ======================== -->
+	<div id="media-template" class="media-item hidden flex-shrink-0 w-64">
+		<img class="image-preview hidden mb-3 w-full h-40 object-cover rounded border">
+		<div class="image-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+			<i class="bi bi-image text-2xl text-gray-400"></i>
+		</div>
+		<div class="media-actions flex items-center justify-end gap-2 w-full">
+			<button type="button" class="edit-image-btn media-btn w-12 h-12 border-2 border-gray-300 text-gray-400 rounded-lg flex items-center justify-center hover:bg-gray-100 transition">
+				<i class="bi bi-pencil text-xl"></i>
+			</button>
+			<button type="button" class="remove-media w-12 h-12 bg-red-700 text-white rounded-lg flex items-center justify-center hover:bg-red-800">
+				<i class="bi bi-trash"></i>
+			</button>
+		</div>
+	</div>
+
+	<!-- ========================
+	       TEMPLATE VIDEO
+	  ======================== -->
+	<div id="video-template" class="media-item hidden flex-shrink-0 w-64">
+		<div class="video-preview hidden mb-3">
+			<iframe class="w-full aspect-video rounded border" src="" frameborder="0" allowfullscreen></iframe>
+		</div>
+		<div class="video-placeholder bg-gray-100 w-full h-40 flex items-center justify-center rounded border mb-3">
+			<i class="bi bi-play-btn text-3xl text-gray-400"></i>
+		</div>
+		<div class="video-actions flex items-center justify-end gap-2 w-full">
+			<button type="button" class="edit-video-btn media-btn w-12 h-12 border-2 border-gray-300 text-gray-400 rounded-lg flex items-center justify-center hover:bg-gray-100 transition">
+				<i class="bi bi-pencil text-xl"></i>
+			</button>
+			<button type="button" class="remove-video w-12 h-12 bg-red-700 text-white rounded-lg flex items-center justify-center hover:bg-red-800">
+				<i class="bi bi-trash"></i>
+			</button>
+		</div>
+	</div>
+
+	<!-- ========================
+	       MODAL EDIT IMAGE
+	  ======================== -->
+	<div id="editImageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+		<div class="bg-white rounded-lg shadow-lg p-6 w-96 relative transform scale-95 transition-transform duration-300">
+			<button type="button" id="closeEditImageModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+			<h2 class="text-xl font-bold mb-4">Éditer l'image</h2>
+			<input type="file" accept="image/png,image/jpeg,image/webp" class="border rounded p-2 w-full" id="modalImageInput">
+			<button type="button" class="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" id="modalImageSaveBtn">
+				Valider
+			</button>
+		</div>
+	</div>
+
+	<!-- ========================
+	       MODAL EDIT VIDEO
+	  ======================== -->
+	<div id="editVideoModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+		<div class="bg-white rounded-lg shadow-lg p-6 w-96 relative transform scale-95 transition-transform duration-300">
+			<button type="button" id="closeEditVideoModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+			<h2 class="text-xl font-bold mb-4">Éditer la vidéo</h2>
+			<input type="text" placeholder="URL YouTube" class="border rounded p-2 w-full" id="modalVideoInput">
+			<button type="button" class="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" id="modalVideoSaveBtn">
+				Valider
+			</button>
+		</div>
+	</div>
+
+</div>
+<!-- ======================== END MEDIA REPEATER ======================== -->
