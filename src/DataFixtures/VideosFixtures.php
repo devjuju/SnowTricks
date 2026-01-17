@@ -33,7 +33,7 @@ class VideosFixtures extends Fixture implements DependentFixtureInterface
         foreach ($videosData as $trickRef => $urls) {
             foreach ($urls as $url) {
                 $video = new Videos();
-                $video->setContent($url);
+                $video->setUrl($url);
                 $video->setTrick($this->getReference($trickRef, \App\Entity\Tricks::class));
                 $manager->persist($video);
             }

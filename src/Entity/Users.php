@@ -51,11 +51,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
-    #[Assert\Length(
-        min: 6,
-        max: 4096,
-        minMessage: 'Votre mot de passe doit contenir au moins {{ limit }} caractères'
-    )]
+    #[Assert\Length(min: 6, max: 4096)]
     private ?string $plainPassword = null;
 
     public function __construct()
@@ -167,10 +163,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     }
     public function removeTrick(Tricks $trick): self
     {
-        if ($this->tricks->removeElement($trick)) {
-            if ($trick->getUser() === $this) {
-                $trick->setUser(null);
-            }
+        if ($this->tricks->removeElement($trick) && $trick->getUser() === $this) {
+            $trick->setUser(null);
         }
         return $this;
     }
@@ -191,20 +185,17 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     // -------------------
-    // LIFECYCLE CALLBACK
+    // LIFECYCLE CALLBACKS
     // -------------------
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
     public function initializeSlugAndAvatar(): void
     {
-        // Slug automatique
         if (empty($this->slug) && $this->username) {
             $this->slug = strtolower(trim(preg_replace('/[^a-z0-9]+/', '-', $this->username)));
         }
-
-        // Avatar par défaut
         if (empty($this->avatar)) {
-            $this->avatar = 'default-avatar.png'; // fichier à placer dans /public/uploads/avatars/
+            $this->avatar = 'default-avatar.png';
         }
     }
 }

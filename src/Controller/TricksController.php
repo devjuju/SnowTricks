@@ -6,72 +6,67 @@ use App\Entity\Comments;
 use App\Repository\CommentsRepository;
 use App\Repository\TricksRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RateLimiter\RequestRateLimiterInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\AddCommentFormType;
 
-
 #[Route('/tricks', name: 'app_tricks_')]
 final class TricksController extends AbstractController
 {
-
     #[Route('/details/{slug}', name: 'details')]
     public function details(
-        $slug,
+        string $slug,
         Request $request,
         TricksRepository $tricksRepository,
         CommentsRepository $commentsRepository,
-        EntityManagerInterface $entityManagerInterface,
-
+        EntityManagerInterface $entityManager
     ): Response {
         $trick = $tricksRepository->findOneBy(['slug' => $slug]);
-
         if (!$trick) {
             throw $this->createNotFoundException('Cette figure n\'existe pas');
         }
 
-        // Formulaire d'ajout d'un commentaire
+        // Formulaire commentaire
         $comment = new Comments();
         $form = $this->createForm(AddCommentFormType::class, $comment);
         $form->handleRequest($request);
 
-
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // Sécurité : utilisateur connecté
             if (!$this->getUser()) {
                 throw $this->createAccessDeniedException();
             }
 
-            $comment
-                ->setUsers($this->getUser())
-                ->setTricks($trick);
+            $comment->setUser($this->getUser())
+                ->setTrick($trick);
 
-            $entityManagerInterface->persist($comment);
-            $entityManagerInterface->flush();
+            $entityManager->persist($comment);
+            $entityManager->flush();
 
             return $this->redirectToRoute('app_tricks_details', [
                 'slug' => $slug
             ]);
         }
 
-
+        // Pagination commentaires
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
 
         $comments = $commentsRepository->findBy(
-            ['tricks' => $trick],
+            ['trick' => $trick],
             ['createdAt' => 'DESC'],
-            5,
-            0
+            $limit,
+            $offset
         );
 
-        // Calculer les médias à passer à Twig
-        $media = array_merge(
-            $trick->getImages()->toArray(),
-            $trick->getVideos()->toArray()
-        );
+        // Nombre total de commentaires pour le calcul des pages
+        $totalComments = $commentsRepository->count(['trick' => $trick]);
+        $totalPages = (int) ceil($totalComments / $limit);
+
+        // Média
+        $media = array_merge($trick->getImages()->toArray(), $trick->getVideos()->toArray());
         usort($media, fn($a, $b) => $a->getId() <=> $b->getId());
 
         return $this->render('tricks/details.html.twig', [
@@ -79,14 +74,17 @@ final class TricksController extends AbstractController
             'comments' => $comments,
             'media' => $media,
             'commentForm' => $form->createView(),
+            'page' => $page,
+            'totalPages' => $totalPages,
         ]);
     }
+
 
 
     #[Route('/{slug}/comments/load', name: 'comments_load')]
     public function loadMoreComments(
         string $slug,
-        Request $request, // <-- corrigé
+        Request $request,
         TricksRepository $tricksRepository,
         CommentsRepository $commentsRepository
     ): Response {
@@ -99,7 +97,7 @@ final class TricksController extends AbstractController
         }
 
         $comments = $commentsRepository->findBy(
-            ['tricks' => $trick],
+            ['trick' => $trick],
             ['createdAt' => 'DESC'],
             5,
             $offset

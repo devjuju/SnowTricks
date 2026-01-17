@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: TricksRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -20,13 +22,22 @@ class Tricks
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le titre est obligatoire.")]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: "Le contenu est obligatoire.")]
     private ?string $content = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $featuredImage = null;
+
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $slug = null;
+
+    /* ===================== */
+    /*      RELATIONS        */
+    /* ===================== */
 
     #[ORM\ManyToOne(inversedBy: 'tricks')]
     #[ORM\JoinColumn(nullable: false)]
@@ -34,6 +45,7 @@ class Tricks
 
     #[ORM\ManyToOne(inversedBy: 'tricks')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: "La catégorie est obligatoire.")]
     private ?Categories $category = null;
 
     #[ORM\OneToMany(
@@ -53,25 +65,28 @@ class Tricks
     private Collection $videos;
 
     #[ORM\OneToMany(
-        mappedBy: 'tricks',
+        mappedBy: 'trick',
         targetEntity: Comments::class,
+        cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private Collection $comments;
 
-    #[ORM\Column(length: 255)]
-    private ?string $slug = null;
+    /* ===================== */
+    /*      CONSTRUCTOR      */
+    /* ===================== */
 
     public function __construct()
     {
-        $this->images = new ArrayCollection();
-        $this->videos = new ArrayCollection();
+        $this->images   = new ArrayCollection();
+        $this->videos   = new ArrayCollection();
         $this->comments = new ArrayCollection();
     }
 
-    // -------------------
-    // GETTERS / SETTERS
-    // -------------------
+    /* ===================== */
+    /*        GETTERS        */
+    /* ===================== */
 
     public function getId(): ?int
     {
@@ -83,21 +98,9 @@ class Tricks
         return $this->title;
     }
 
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-        return $this;
-    }
-
     public function getContent(): ?string
     {
         return $this->content;
-    }
-
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
-        return $this;
     }
 
     public function getFeaturedImage(): ?string
@@ -105,10 +108,9 @@ class Tricks
         return $this->featuredImage;
     }
 
-    public function setFeaturedImage(string $featuredImage): self
+    public function getSlug(): ?string
     {
-        $this->featuredImage = $featuredImage;
-        return $this;
+        return $this->slug;
     }
 
     public function getUser(): ?Users
@@ -116,36 +118,9 @@ class Tricks
         return $this->user;
     }
 
-    public function setUser(?Users $user): self
-    {
-        if ($this->user === $user) {
-            return $this;
-        }
-
-        // Retire de l'ancien user
-        if ($this->user !== null) {
-            $this->user->getTricks()->removeElement($this);
-        }
-
-        $this->user = $user;
-
-        // Ajoute au nouveau user
-        if ($user !== null && !$user->getTricks()->contains($this)) {
-            $user->getTricks()->add($this);
-        }
-
-        return $this;
-    }
-
     public function getCategory(): ?Categories
     {
         return $this->category;
-    }
-
-    public function setCategory(?Categories $category): self
-    {
-        $this->category = $category;
-        return $this;
     }
 
     public function getImages(): Collection
@@ -163,9 +138,26 @@ class Tricks
         return $this->comments;
     }
 
-    public function getSlug(): ?string
+    /* ===================== */
+    /*        SETTERS        */
+    /* ===================== */
+
+    public function setTitle(string $title): self
     {
-        return $this->slug;
+        $this->title = $title;
+        return $this;
+    }
+
+    public function setContent(string $content): self
+    {
+        $this->content = $content;
+        return $this;
+    }
+
+    public function setFeaturedImage(?string $featuredImage): self
+    {
+        $this->featuredImage = $featuredImage;
+        return $this;
     }
 
     public function setSlug(string $slug): self
@@ -174,15 +166,89 @@ class Tricks
         return $this;
     }
 
+    public function setUser(?Users $user): self
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    public function setCategory(?Categories $category): self
+    {
+        $this->category = $category;
+        return $this;
+    }
+
+    /* ===================== */
+    /*     RELATION OPS      */
+    /* ===================== */
+
+    public function addImage(Images $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setTrick($this);
+        }
+        return $this;
+    }
+
+    public function removeImage(Images $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            if ($image->getTrick() === $this) {
+                $image->setTrick(null);
+            }
+        }
+        return $this;
+    }
+
+    public function addVideo(Videos $video): self
+    {
+        if (!$this->videos->contains($video)) {
+            $this->videos->add($video);
+            $video->setTrick($this);
+        }
+        return $this;
+    }
+
+    public function removeVideo(Videos $video): self
+    {
+        if ($this->videos->removeElement($video)) {
+            if ($video->getTrick() === $this) {
+                $video->setTrick(null);
+            }
+        }
+        return $this;
+    }
+
+    public function addComment(Comments $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setTrick($this);
+        }
+        return $this;
+    }
+
+    public function removeComment(Comments $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            if ($comment->getTrick() === $this) {
+                $comment->setTrick(null);
+            }
+        }
+        return $this;
+    }
+
+    /* ===================== */
+    /*   LIFECYCLE EVENTS    */
+    /* ===================== */
 
     #[ORM\PrePersist]
-    #[ORM\PreUpdate]
     public function initializeSlug(): void
     {
         if (empty($this->slug) && $this->title) {
-            // Génère le slug à partir du titre
             $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/', '-', $this->title)));
-            $this->slug = rtrim($slug, '-'); // supprime le tiret final
+            $this->slug = rtrim($slug, '-');
         }
     }
 }

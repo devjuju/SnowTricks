@@ -6,6 +6,7 @@ Encore
     .addEntry('app', './assets/app.js')
     .enablePostCssLoader() // si tu utilises Tailwind
     .cleanupOutputBeforeBuild()
+
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())
     .enableSingleRuntimeChunk();

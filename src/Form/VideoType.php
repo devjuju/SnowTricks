@@ -1,31 +1,27 @@
 <?php
-
+// src/Form/VideoType.php
 namespace App\Form;
 
+use App\Entity\Videos;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class VideoType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('content', TextType::class, [
-            'label' => false,
-            'attr' => [
-                'placeholder' => 'URL de la vidéo (YouTube)',
-                'class' => 'w-full rounded-xl border border-gray-300 px-4 py-2 focus:border-blue-400 focus:ring-blue-400'
-            ],
-            'constraints' => [
-                new NotBlank(['message' => 'Veuillez entrer l’URL de la vidéo.'])
-            ]
-        ]);
+        $builder
+            ->add('url', UrlType::class, [
+                'label' => 'URL YouTube',
+            ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([]);
+        $resolver->setDefaults([
+            'data_class' => Videos::class,
+        ]);
     }
 }
