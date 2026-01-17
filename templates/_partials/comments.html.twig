@@ -1,12 +1,12 @@
 {% for comment in comments %}
 	<div class="flex gap-4 py-4 border-b">
 		<div class="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold" style="font-size:24px;">
-			{{ comment.users.username|first|upper }}
+			{{ comment.user.username|first|upper }}
 		</div>
 
 		<div class="flex-1 p-4 border rounded-lg">
 			<div class="flex justify-between">
-				<strong>{{ comment.users.username }}</strong>
+				<strong>{{ comment.user.username }}</strong>
 				<span class="text-sm text-gray-500">
 					{{ comment.createdAt|date('d/m/Y H:i') }}
 				</span>

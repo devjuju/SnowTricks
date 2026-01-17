@@ -17,9 +17,6 @@ return [
         'entrypoint' => true,
     ],
 
-
-
-
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],

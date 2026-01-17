@@ -22,47 +22,43 @@ class Comments
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Users $users = null;
+    private ?Users $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Tricks $tricks = null;
+    private ?Tricks $trick = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-
     public function getContent(): ?string
     {
         return $this->content;
     }
-
     public function setContent(string $content): static
     {
         $this->content = $content;
         return $this;
     }
 
-    public function getUsers(): ?Users
+    public function getUser(): ?Users
     {
-        return $this->users;
+        return $this->user;
     }
-
-    public function setUsers(?Users $users): static
+    public function setUser(?Users $user): static
     {
-        $this->users = $users;
+        $this->user = $user;
         return $this;
     }
 
-    public function getTricks(): ?Tricks
+    public function getTrick(): ?Tricks
     {
-        return $this->tricks;
+        return $this->trick;
     }
-
-    public function setTricks(?Tricks $tricks): static
+    public function setTrick(?Tricks $trick): static
     {
-        $this->tricks = $tricks;
+        $this->trick = $trick;
         return $this;
     }
 }

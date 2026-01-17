@@ -14,7 +14,7 @@ class Videos
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $content = null;
+    private ?string $url = null;
 
     #[ORM\ManyToOne(inversedBy: 'videos')]
     #[ORM\JoinColumn(nullable: false)]
@@ -24,60 +24,44 @@ class Videos
     {
         return $this->id;
     }
-
-    public function getContent(): ?string
+    public function getUrl(): ?string
     {
-        return $this->content;
+        return $this->url;
     }
-
-    public function setContent(string $content): static
+    public function setUrl(string $url): static
     {
-        $this->content = $content;
+        $this->url = $url;
         return $this;
     }
-
     public function getTrick(): ?Tricks
     {
         return $this->trick;
     }
-
     public function setTrick(?Tricks $trick): static
     {
         $this->trick = $trick;
         return $this;
     }
-
-    // Dans Videos pour le carousel
     public function getType(): string
     {
         return 'video';
     }
 
-
     public function getYoutubeId(): ?string
     {
-        // youtube.com/watch?v=XXXX
-        if (str_contains($this->content, 'youtube.com')) {
-            parse_str(parse_url($this->content, PHP_URL_QUERY), $vars);
+        if (str_contains($this->url, 'youtube.com')) {
+            parse_str(parse_url($this->url, PHP_URL_QUERY), $vars);
             return $vars['v'] ?? null;
         }
-
-        // youtu.be/XXXX
-        if (str_contains($this->content, 'youtu.be')) {
-            return basename($this->content);
+        if (str_contains($this->url, 'youtu.be')) {
+            return basename($this->url);
         }
-
         return null;
     }
 
     public function getEmbedUrl(): ?string
     {
         $id = $this->getYoutubeId();
-
-        if (!$id) {
-            return null;
-        }
-
-        return 'https://www.youtube.com/embed/' . $id;
+        return $id ? 'https://www.youtube.com/embed/' . $id : null;
     }
 }

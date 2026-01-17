@@ -6,6 +6,7 @@ use App\Repository\ImagesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ImagesRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Images
 {
     #[ORM\Id]
@@ -14,7 +15,7 @@ class Images
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $content = null;
+    private ?string $picture = null;
 
     #[ORM\ManyToOne(inversedBy: 'images')]
     #[ORM\JoinColumn(nullable: false)]
@@ -24,32 +25,39 @@ class Images
     {
         return $this->id;
     }
-
-    public function getContent(): ?string
+    public function getPicture(): ?string
     {
-        return $this->content;
+        return $this->picture;
     }
-
-    public function setContent(string $content): static
+    public function setPicture(string $picture): static
     {
-        $this->content = $content;
+        $this->picture = $picture;
         return $this;
     }
-
     public function getTrick(): ?Tricks
     {
         return $this->trick;
     }
-
     public function setTrick(?Tricks $trick): static
     {
         $this->trick = $trick;
         return $this;
     }
-
-    // Dans Images
     public function getType(): string
     {
         return 'image';
+    }
+    public function getPath(): ?string
+    {
+        return $this->picture ? '/uploads/tricks/' . $this->picture : null;
+    }
+
+    #[ORM\PreRemove]
+    public function deleteFile(): void
+    {
+        if ($this->picture) {
+            $file = __DIR__ . '/../../public/uploads/tricks/' . $this->picture;
+            if (file_exists($file) && is_file($file)) unlink($file);
+        }
     }
 }

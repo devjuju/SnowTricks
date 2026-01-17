@@ -12,9 +12,6 @@ trait Timestampable
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    // -----------------------
-    // GETTERS
-    // -----------------------
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -25,38 +22,14 @@ trait Timestampable
         return $this->updatedAt;
     }
 
-    // -----------------------
-    // SETTERS (pour tests ou overrides)
-    // -----------------------
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
-    // -----------------------
-    // CALLBACKS AUTOMATIQUES
-    // -----------------------
     #[ORM\PrePersist]
-    public function initializeTimestamps(): void
+    public function onPrePersist(): void
     {
-        $now = new \DateTimeImmutable();
-        if ($this->createdAt === null) {
-            $this->createdAt = $now;
-        }
-        if ($this->updatedAt === null) {
-            $this->updatedAt = null; // reste null à la création
-        }
+        $this->createdAt ??= new \DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
-    public function updateTimestamp(): void
+    public function onPreUpdate(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
     }

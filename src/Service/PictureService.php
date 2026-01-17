@@ -106,4 +106,16 @@ class PictureService
             }
         }
     }
+
+    /**
+     * Génère un hash unique pour une image (UploadedFile)
+     */
+    public function hash(UploadedFile $picture): string
+    {
+        // Lire le contenu temporaire du fichier
+        $content = file_get_contents($picture->getRealPath());
+
+        // Retourne un hash MD5
+        return md5($content);
+    }
 }

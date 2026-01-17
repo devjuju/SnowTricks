@@ -23,7 +23,7 @@ class ImagesFixtures extends Fixture implements DependentFixtureInterface
         foreach ($imagesData as $trickRef => $files) {
             foreach ($files as $file) {
                 $image = new Images();
-                $image->setContent($file);
+                $image->setPicture($file);
                 $image->setTrick($this->getReference($trickRef, \App\Entity\Tricks::class));
                 $manager->persist($image);
             }

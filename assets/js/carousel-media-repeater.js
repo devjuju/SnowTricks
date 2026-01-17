@@ -1,270 +1,163 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-    // ======= Variables =======
-    const form = document.querySelector('form');
-    const hiddenContainer = document.querySelector('.hidden'); // conteneur pour inputs Symfony cachés
-
-    const imageContainer = document.getElementById('repeater-image-container');
-    const imageTemplate = document.getElementById('media-template');
-    const addImageButton = document.getElementById('add-image');
-
-    const videoContainer = document.getElementById('repeater-video-container');
-    const videoTemplate = document.getElementById('video-template');
-    const addVideoButton = document.getElementById('add-video');
-
-    const editImageModal = document.getElementById('editImageModal');
-    const closeEditImageModal = document.getElementById('closeEditImageModal');
-    const editImageContent = editImageModal.firstElementChild;
-    const modalImageInput = document.getElementById('modalImageInput');
-    const modalImageSaveBtn = document.getElementById('modalImageSaveBtn');
-    const modalImagePreview = document.getElementById('modalImagePreview');
-    const modalImageIcon = document.querySelector('#modalImagePreviewWrapper i');
-    let currentImagePreview = null;
-
-    const editVideoModal = document.getElementById('editVideoModal');
-    const closeEditVideoModal = document.getElementById('closeEditVideoModal');
-    const editVideoContent = editVideoModal.firstElementChild;
-    const modalVideoInput = document.getElementById('modalVideoInput');
-    const modalVideoSaveBtn = document.getElementById('modalVideoSaveBtn');
-    const modalVideoPreview = document.getElementById('modalVideoPreview');
-    const modalVideoIcon = document.querySelector('#modalVideoPreviewWrapper i');
-    let currentVideoIframe = null;
-
-    const mediaWrapper = document.getElementById('media-wrapper');
-    const prevBtn = document.getElementById('prev');
+document.addEventListener('DOMContentLoaded', () => {
+    const wrapper = document.getElementById('media-wrapper');
     const nextBtn = document.getElementById('next');
-    const pagination = document.getElementById('carousel-pagination');
+    const prevBtn = document.getElementById('prev');
 
-    // ======= Utils =======
-    function getYoutubeId(url) {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
-    }
+    let imageIndex = wrapper.querySelectorAll('.media-image').length;
+    let videoIndex = wrapper.querySelectorAll('.media-video').length;
 
-    function openModal(modal, content) {
-        modal.classList.remove('opacity-0', 'pointer-events-none');
-        content.classList.remove('scale-95');
-        content.classList.add('scale-100');
-    }
+    // ---------- Utils ----------
+    const getItemWidth = () => {
+        const item = wrapper.querySelector('.media-item');
+        if (!item) return 300;
+        const gap = parseInt(getComputedStyle(wrapper).gap) || 16;
+        return item.offsetWidth + gap;
+    };
 
-    function closeModal(modal, content) {
-        modal.classList.add('opacity-0', 'pointer-events-none');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-    }
+    const updateButtons = () => {
+        if (!prevBtn || !nextBtn) return;
+        prevBtn.style.display = wrapper.scrollLeft <= 0 ? 'none' : 'block';
+        nextBtn.style.display =
+            wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth
+                ? 'none'
+                : 'block';
+    };
 
-    // ======= Carousel helpers =======
-    function getItemWidth() {
-        const first = mediaWrapper.querySelector('.media-item:not(.hidden)');
-        if (!first) return 0;
-        const style = getComputedStyle(first);
-        const gap = parseInt(style.marginRight || 16);
-        return first.offsetWidth + gap;
-    }
+    const extractYoutubeId = (url) => {
+        try {
+            const parsed = new URL(url);
+            if (parsed.hostname.includes('youtube.com')) return parsed.searchParams.get('v');
+            if (parsed.hostname === 'youtu.be') return parsed.pathname.substring(1);
+        } catch (e) { return null; }
+        return null;
+    };
 
-    function updateArrowState() {
-        const maxScroll = mediaWrapper.scrollWidth - mediaWrapper.clientWidth;
-        prevBtn.style.opacity = mediaWrapper.scrollLeft <= 0 ? 0 : 1;
-        nextBtn.style.opacity = mediaWrapper.scrollLeft >= maxScroll ? 0 : 1;
-    }
+    // ---------- Carousel scroll ----------
+    nextBtn?.addEventListener('click', () => wrapper.scrollBy({ left: getItemWidth(), behavior: 'smooth' }));
+    prevBtn?.addEventListener('click', () => wrapper.scrollBy({ left: -getItemWidth(), behavior: 'smooth' }));
+    wrapper.addEventListener('scroll', updateButtons);
+    updateButtons();
 
-    function createPagination() {
-        pagination.innerHTML = '';
-        const items = mediaWrapper.querySelectorAll('.media-item:not(.hidden)');
-        items.forEach((_, i) => {
-            const dot = document.createElement('div');
-            dot.className = 'carousel-dot';
-            dot.addEventListener('click', () => {
-                mediaWrapper.scrollTo({ left: i * getItemWidth(), behavior: 'smooth' });
-            });
-            pagination.appendChild(dot);
-        });
-        updatePagination();
-        updateArrowState();
-    }
+    // ---------- Init media item ----------
+    const initItem = (item, type) => {
+        const input = item.querySelector('.item-input');
+        if (!input) return;
 
-    function updatePagination() {
-        const width = getItemWidth();
-        const index = Math.round(mediaWrapper.scrollLeft / width);
-        const dots = pagination.querySelectorAll('.carousel-dot');
-        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-    }
+        const preview = type === 'image'
+            ? item.querySelector('.image-preview') || item.querySelector('img')
+            : item.querySelector('iframe');
 
-    mediaWrapper.addEventListener('scroll', () => {
-        updateArrowState();
-        updatePagination();
-    });
+        const placeholder = type === 'image'
+            ? item.querySelector('.image-placeholder')
+            : item.querySelector('.video-placeholder');
 
-    prevBtn.addEventListener('click', () => {
-        const width = getItemWidth();
-        const target = Math.max(mediaWrapper.scrollLeft - width, 0);
-        mediaWrapper.scrollTo({ left: target, behavior: 'smooth' });
-        setTimeout(updatePagination, 100);
-    });
+        const addBtn = item.querySelector('.item-add');
+        const editBtn = item.querySelector('.item-edit');
+        const closeBtn = item.querySelector('.item-close');
+        const removeBtn = item.querySelector('.remove-item');
 
-    nextBtn.addEventListener('click', () => {
-        const width = getItemWidth();
-        const maxScroll = mediaWrapper.scrollWidth - mediaWrapper.clientWidth;
-        const target = Math.min(mediaWrapper.scrollLeft + width, maxScroll);
-        mediaWrapper.scrollTo({ left: target, behavior: 'smooth' });
-        setTimeout(updatePagination, 100);
-    });
-
-    const observer = new MutationObserver(createPagination);
-    observer.observe(mediaWrapper, { childList: true, subtree: true });
-
-    // ======= Add items =======
-    function addItem(template, container, type) {
-        const clone = template.cloneNode(true);
-        clone.classList.remove('hidden');
-        clone.id = '';
-        container.appendChild(clone);
-
-        // Remove
-        clone.querySelector('.remove-media, .remove-video')?.addEventListener('click', () => {
-            // Supprime le input Symfony correspondant
-            const hiddenInput = clone.querySelector('input[type="hidden"]');
-            hiddenInput?.remove();
-            clone.remove();
-            createPagination();
-        });
-
-        // Edit
-        const editBtn = type === 'image' ? clone.querySelector('.edit-image-btn') : clone.querySelector('.edit-video-btn');
-        editBtn?.addEventListener('click', () => {
+        // ---------- Preview ----------
+        const updatePreview = () => {
             if (type === 'image') {
-                currentImagePreview = clone.querySelector('.image-preview');
-                if (currentImagePreview && currentImagePreview.src) {
-                    modalImagePreview.src = currentImagePreview.src;
-                    modalImagePreview.classList.remove('hidden');
-                    modalImageIcon.classList.add('hidden');
-                } else {
-                    modalImagePreview.classList.add('hidden');
-                    modalImageIcon.classList.remove('hidden');
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        if (placeholder) placeholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(input.files[0]);
                 }
-                modalImageInput.value = '';
-                openModal(editImageModal, editImageContent);
             } else {
-                currentVideoIframe = clone.querySelector('.video-preview iframe');
-                const src = currentVideoIframe?.src || '';
-                const id = getYoutubeId(src);
-                if (currentVideoIframe && id) {
-                    modalVideoPreview.src = `https://www.youtube.com/embed/${id}?enablejsapi=1`;
-                    modalVideoPreview.classList.remove('hidden');
-                    modalVideoIcon.classList.add('hidden');
-                    modalVideoInput.value = src;
+                const videoId = extractYoutubeId(input.value.trim());
+                if (videoId) {
+                    preview.src = `https://www.youtube.com/embed/${videoId}`;
+                    preview.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
                 } else {
-                    modalVideoPreview.src = '';
-                    modalVideoPreview.classList.add('hidden');
-                    modalVideoIcon.classList.remove('hidden');
-                    modalVideoInput.value = '';
+                    preview.src = '';
+                    if (placeholder) placeholder.style.display = 'flex';
                 }
-                openModal(editVideoModal, editVideoContent);
             }
+        };
+
+        // ---------- UI ----------
+        const updateUI = () => {
+            const hasValue = type === 'image' ? input.files.length > 0 : input.value.trim() !== '';
+            const isOpen = !input.classList.contains('w-0');
+            addBtn?.classList.toggle('hidden', isOpen || hasValue);
+            editBtn?.classList.toggle('hidden', !(hasValue && !isOpen));
+            closeBtn?.classList.toggle('hidden', !isOpen);
+            removeBtn?.classList.toggle('hidden', isOpen);
+        };
+
+        const openInput = () => {
+            input.classList.remove('w-0', 'opacity-0');
+            input.classList.add('w-full', 'opacity-100');
+            addBtn?.classList.add('hidden');
+            editBtn?.classList.add('hidden');
+            closeBtn?.classList.remove('hidden');
+            removeBtn?.classList.add('hidden');
+        };
+
+        const closeInput = () => {
+            input.classList.add('w-0', 'opacity-0');
+            input.classList.remove('w-full', 'opacity-100');
+            updateUI();
+        };
+
+        if (type === 'image') input.addEventListener('change', () => { updatePreview(); updateUI(); });
+        else input.addEventListener('input', () => { updatePreview(); updateUI(); });
+
+        addBtn?.addEventListener('click', openInput);
+        editBtn?.addEventListener('click', openInput);
+        closeBtn?.addEventListener('click', closeInput);
+
+        removeBtn?.addEventListener('click', () => {
+            const removedInput = item.querySelector(type === 'image' ? '.removed-image' : '.removed-video');
+            if (removedInput) removedInput.value = type === 'image'
+                ? item.querySelector('img[data-filename]')?.dataset.filename || 'new'
+                : removedInput.value || 'new';
+            item.style.display = 'none';
+            updateButtons();
         });
 
-        createPagination();
-    }
+        updatePreview();
+        updateUI();
+    };
 
-    addImageButton?.addEventListener('click', () => addItem(imageTemplate, imageContainer, 'image'));
-    addVideoButton?.addEventListener('click', () => addItem(videoTemplate, videoContainer, 'video'));
+    // ---------- Add new media ----------
+    const addMedia = (type) => {
+        const hasOpenInput = wrapper.querySelector(`.media-${type} .item-input:not(.w-0)`);
+        if (hasOpenInput) { hasOpenInput.focus(); return; }
 
-    // ======= Modal Image =======
-    modalImageInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = ev => {
-                modalImagePreview.src = ev.target.result;
-                modalImagePreview.classList.remove('hidden');
-                modalImageIcon.classList.add('hidden');
-            }
-            reader.readAsDataURL(file);
-        }
+        const proto = document.getElementById(`${type}-prototype`).dataset.prototype;
+        const div = document.createElement('div');
+        div.className = `media-item media-${type} flex-shrink-0 w-40 snap-start relative`;
+
+        const index = type === 'image' ? imageIndex++ : videoIndex++;
+        div.innerHTML = proto.replace(new RegExp(`__${type}__`, 'g'), index);
+
+        if (type === 'image') {
+            const firstVideo = wrapper.querySelector('.media-video');
+            wrapper.insertBefore(div, firstVideo);
+        } else wrapper.appendChild(div);
+
+        initItem(div, type);
+
+        const input = div.querySelector('.item-input');
+        if (input) { input.classList.remove('w-0', 'opacity-0'); input.classList.add('w-full', 'opacity-100'); input.focus(); }
+
+        div.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+        updateButtons();
+    };
+
+    document.getElementById('add-image')?.addEventListener('click', () => addMedia('image'));
+    document.getElementById('add-video')?.addEventListener('click', () => addMedia('video'));
+
+    // ---------- Init existing items ----------
+    wrapper.querySelectorAll('.media-item').forEach(item => {
+        const type = item.classList.contains('media-image') ? 'image' : 'video';
+        initItem(item, type);
     });
-
-    modalImageSaveBtn.addEventListener('click', () => {
-        if (currentImagePreview && modalImageInput.files[0]) {
-            const file = modalImageInput.files[0];
-
-            // Ajout input caché pour Symfony
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.name = 'images[]';
-            input.files = modalImageInput.files;
-            input.classList.add('hidden');
-            hiddenContainer.appendChild(input);
-
-            // Mise à jour preview
-            const reader = new FileReader();
-            reader.onload = ev => {
-                currentImagePreview.src = ev.target.result;
-                currentImagePreview.classList.remove('hidden');
-                currentImagePreview.closest('.media-item').querySelector('.image-placeholder').classList.add('hidden');
-            }
-            reader.readAsDataURL(file);
-        }
-        resetImageModal();
-    });
-
-    function resetImageModal() {
-        modalImagePreview.src = '';
-        modalImagePreview.classList.add('hidden');
-        modalImageIcon.classList.remove('hidden');
-        modalImageInput.value = '';
-        closeModal(editImageModal, editImageContent);
-    }
-
-    closeEditImageModal?.addEventListener('click', resetImageModal);
-    window.addEventListener('click', e => { if (e.target === editImageModal) resetImageModal(); });
-
-    // ======= Modal Video =======
-    modalVideoInput.addEventListener('input', (e) => {
-        const id = getYoutubeId(e.target.value);
-        if (id) {
-            modalVideoPreview.src = `https://www.youtube.com/embed/${id}?enablejsapi=1`;
-            modalVideoPreview.classList.remove('hidden');
-            modalVideoIcon.classList.add('hidden');
-        } else {
-            modalVideoPreview.src = '';
-            modalVideoPreview.classList.add('hidden');
-            modalVideoIcon.classList.remove('hidden');
-        }
-    });
-
-    modalVideoSaveBtn.addEventListener('click', () => {
-        if (currentVideoIframe) {
-            const id = getYoutubeId(modalVideoInput.value);
-            if (id) {
-                currentVideoIframe.src = `https://www.youtube.com/embed/${id}?enablejsapi=1`;
-                currentVideoIframe.parentElement.classList.remove('hidden');
-                currentVideoIframe.closest('.media-item').querySelector('.video-placeholder').classList.add('hidden');
-
-                // Ajout input caché pour Symfony
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'videos[]';
-                input.value = modalVideoInput.value;
-                input.classList.add('hidden');
-                hiddenContainer.appendChild(input);
-            }
-        }
-        resetVideoModal();
-    });
-
-    function resetVideoModal() {
-        modalVideoPreview.src = '';
-        modalVideoPreview.classList.add('hidden');
-        modalVideoIcon.classList.remove('hidden');
-        modalVideoInput.value = '';
-        closeModal(editVideoModal, editVideoContent);
-    }
-
-    closeEditVideoModal?.addEventListener('click', resetVideoModal);
-    window.addEventListener('click', e => { if (e.target === editVideoModal) resetVideoModal(); });
-
-    // ======= Initial carousel setup =======
-    updateArrowState();
-    createPagination();
 });

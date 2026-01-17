@@ -21,15 +21,11 @@ final class ProfileController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(Request $request, TricksRepository $tricksRepository): Response
     {
-        $user = $this->getUser();
-
         $page = max(1, (int) $request->query->get('page', 1));
         $limit = 10;
         $offset = ($page - 1) * $limit;
 
         $query = $tricksRepository->createQueryBuilder('t')
-            ->andWhere('t.user = :user')
-            ->setParameter('user', $user)
             ->orderBy('t.id', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
@@ -48,6 +44,8 @@ final class ProfileController extends AbstractController
             'page' => $page,
         ]);
     }
+
+
 
     #[Route('/edit', name: 'edit')]
     public function edit(

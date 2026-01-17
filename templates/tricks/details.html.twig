@@ -1,13 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% endblock %}
-{% block body %}
+{% block title %}
+	{{ trick.title }}
+{% endblock %}
 
+{% block body %}
 
 	<br>
 
 	<section
 		class="relative">
+
 		<!-- Hero background -->
 		<div class="absolute inset-0">
 			<img src="{{ asset('assets/images/image-cover.jpg') }}" alt="Hero" class="w-full h-[400px] sm:h-[500px] md:h-[600px] object-cover brightness-75">
@@ -16,12 +19,14 @@
 
 		<!-- Centered card -->
 		<div class="relative z-10 container mx-auto px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32 pt-20">
-			<div class="bg-white rounded-xl shadow-lg max-w-6xl mx-auto overflow-hidden">
+			<div
+				class="bg-white rounded-xl shadow-lg max-w-6xl mx-auto overflow-hidden">
 
+				<!-- Featured Image Hero -->
 				<div class="px-6 md:px-[93px]
-																																																																																												bg-[url('{{ asset('uploads/tricks/' ~ trick.featuredImage) }}')]
-																																																																		bg-cover bg-center bg-no-repeat min-h-[70vh] md:min-h-[60vh]
-																																																																																								flex items-center justify-center">
+						                        bg-[url('{{ asset('uploads/tricks/' ~ trick.featuredImage) }}')]
+						                        bg-cover bg-center bg-no-repeat min-h-[70vh] md:min-h-[60vh]
+						                        flex items-center justify-center">
 
 					<div class="bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl text-center">
 						<h1 class="text-white font-bold uppercase mb-4" style="font-size: 48px">
@@ -30,79 +35,18 @@
 					</div>
 				</div>
 
-
-				<div
-					class="w-full overflow-hidden relative group p-6">
-
-					<!-- Conteneur visible -->
-					<div id="marquee-container" class="overflow-hidden mx-auto max-w-[1100px]">
-						<div id="marquee" class="flex gap-6 transition-transform duration-300">
-
-							{% for item in media %}
-								<div class="min-w-[160px] sm:min-w-[200px] md:min-w-[240px] lg:min-w-[280px] aspect-video bg-white rounded-lg shadow overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center">
-
-									{% if item.getType() == 'video' %}
-										{% if item.youtubeId %}
-											<div
-												class="relative w-full h-full cursor-pointer group video-container" data-youtube-id="{{ item.youtubeId }}">
-												<!-- Thumbnail -->
-												<img
-												src="https://img.youtube.com/vi/{{ item.youtubeId }}/hqdefault.jpg" class="w-full h-full object-cover rounded-lg" alt="Vidéo {{ loop.index }}">
-												<!-- Play Button -->
-												<div class="absolute inset-0 flex items-center justify-center">
-													<div class="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center text-2xl opacity-80 group-hover:scale-110 transition-transform">
-														▶
-													</div>
-												</div>
-											</div>
-										{% endif %}
-									{% else %}
-										<img src="{{ asset('uploads/tricks/' ~ item.content) }}" class="w-full h-full object-cover rounded-lg" alt="Media {{ loop.index }}">
-									{% endif %}
-
-								</div>
-							{% else %}
-								<div class="min-w-[160px] aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
-									Aucun média disponible
-								</div>
-							{% endfor %}
-
-						</div>
-					</div>
-
-					<!-- Flèche gauche -->
-					<button id="prev" class="absolute top-1/2 left-2 -translate-y-1/2 w-10 h-10 rounded-full
-																																																															        bg-white/80 text-2xl shadow-md flex items-center justify-center opacity-0 -translate-x-1/2
-																																																															        group-hover:opacity-100 group-hover:translate-x-0 transition duration-300 hover:bg-white hover:scale-110 z-20">
-						‹
-					</button>
-
-					<!-- Flèche droite -->
-					<button id="next" class="absolute top-1/2 right-2 -translate-y-1/2 w-10 h-10 rounded-full
-																																																															        bg-white/80 text-2xl shadow-md flex items-center justify-center opacity-0 -translate-x-1/2
-																																																															        group-hover:opacity-100 group-hover:translate-x-0 transition duration-300 hover:bg-white hover:scale-110 z-20">
-						›
-					</button>
-
-				</div>
-
-
-				<div class=" px-4 md:px-8 lg:px-16 ">
-
+				<!-- Trick Content -->
+				<div class="px-4 md:px-8 lg:px-16">
 					<p>{{ trick.content }}</p>
 
 					<hr class="border-0 h-px bg-gray-300 my-8">
-					<div
-						class="flex flex-col md:flex-row items-center justify-center gap-4 text-gray-500 mb-6">
 
-						<!-- Catégorie -->
+					<div class="flex flex-col md:flex-row items-center justify-center gap-4 text-gray-500 mb-6">
 						<div class="flex items-center border-r pr-4">
 							<span class="inline-block bg-blue-100 text-blue-600 text-sm font-semibold px-3 py-1 rounded-full">
 								{{ trick.category ? trick.category.name : 'Aucune catégorie' }}
 							</span>
 						</div>
-
-						<!-- Date de création -->
 						<div class="flex items-center border-r pr-4">
 							<div class="text-sm text-gray-500">
 								Créé le
@@ -112,33 +56,60 @@
 									{{ trick.updatedAt|date('d/m/Y') }}
 								{% endif %}
 							</div>
-
 						</div>
-
-
 					</div>
+
 					<hr class="border-0 h-px bg-gray-300 my-8">
-
-
 				</div>
-				<div class="mt-12">
 
+				<!-- Media Gallery -->
+				<div class="w-full overflow-hidden relative group p-6">
+					<div id="marquee-container" class="overflow-hidden mx-auto max-w-[1100px]">
+						<div id="marquee" class="flex gap-6 transition-transform duration-300">
+							{% for item in media %}
+								<div class="min-w-[160px] sm:min-w-[200px] md:min-w-[240px] lg:min-w-[280px] aspect-video bg-white rounded-lg shadow overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center">
+									{% if item.getType() == 'video' %}
+										{% if item.youtubeId %}
+											<div class="relative w-full h-full cursor-pointer group video-container" data-youtube-id="{{ item.youtubeId }}">
+												<img src="https://img.youtube.com/vi/{{ item.youtubeId }}/hqdefault.jpg" class="w-full h-full object-cover rounded-lg" alt="Vidéo {{ loop.index }}">
+												<div class="absolute inset-0 flex items-center justify-center">
+													<div class="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center text-2xl opacity-80 group-hover:scale-110 transition-transform">
+														▶
+													</div>
+												</div>
+											</div>
+										{% endif %}
+									{% else %}
+										<img src="{{ asset('uploads/tricks/' ~ item.picture) }}" class="w-full h-full object-cover rounded-lg" alt="Media {{ loop.index }}">
+									{% endif %}
+								</div>
+							{% else %}
+								<div class="min-w-[160px] aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
+									Aucun média disponible
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+
+					<button id="prev" class="absolute top-1/2 left-2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 text-2xl shadow-md flex items-center justify-center opacity-0 -translate-x-1/2 group-hover:opacity-100 group-hover:translate-x-0 transition duration-300 hover:bg-white hover:scale-110 z-20">‹</button>
+					<button id="next" class="absolute top-1/2 right-2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 text-2xl shadow-md flex items-center justify-center opacity-0 -translate-x-1/2 group-hover:opacity-100 group-hover:translate-x-0 transition duration-300 hover:bg-white hover:scale-110 z-20">›</button>
+				</div>
+
+				<!-- Comment Form -->
+				<div class="mt-12">
 					{% if app.user %}
 						{{ form_start(commentForm, { attr: { class: 'w-full max-w-xl mx-auto bg-white p-4 rounded-lg ' } }) }}
-
 						<div class="flex gap-2">
 							{{ form_widget(commentForm.content, {
-                attr: {
-                    class: 'flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 h-12 resize-none',
-                    placeholder: 'Écrire un commentaire...'
-                }
-            }) }}
-
+                            attr: {
+                                class: 'flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 h-12 resize-none',
+                                placeholder: 'Écrire un commentaire...'
+                            }
+                        }) }}
 							<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition h-12">
 								Laisser un commentaire
 							</button>
 						</div>
-
 						{{ form_end(commentForm) }}
 					{% else %}
 						<p class="text-gray-600 text-center mt-4">
@@ -146,43 +117,44 @@
 							pour laisser un commentaire.
 						</p>
 					{% endif %}
+				</div>
 
+				<!-- Comment List -->
+				<div class="w-full max-w-xl mx-auto bg-white p-4 rounded-lg mt-6">
+					<h2 class="text-2xl font-bold mb-6">Commentaires ({{ trick.comments|length }})</h2>
+					<div id="comments-container" class="space-y-6">
+						{% include '_partials/comments.html.twig' with { comments: comments } %}
+					</div>
 
-					<div class="w-full max-w-xl mx-auto bg-white p-4 rounded-lg">
-						<h2 class="text-2xl font-bold mb-6">
-							Commentaires ({{ trick.comments|length }})
-						</h2>
-						<div id="comments-container" class="space-y-6">
-							{% include '_partials/comments.html.twig' with { comments: comments } %}
-						</div>
-
-						{% if trick.comments|length > 5 %}
-							<div class="text-center mt-6">
-								<button id="load-more-comments" data-offset="0" data-url="{{ path('app_tricks_comments_load', { slug: trick.slug }) }}" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-800">
-									Charger plus de commentaires
-								</button>
-							</div>
+					<!-- Pagination -->
+					<div class="mt-6 flex justify-center gap-2">
+						{% if page > 1 %}
+							<a href="{{ path('app_tricks_details', { slug: trick.slug, page: page-1 }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Précédent</a>
 						{% endif %}
 
+						{% for p in 1..totalPages %}
+							{% if p == page %}
+								<span class="px-3 py-1 bg-blue-600 text-white rounded">{{ p }}</span>
+							{% else %}
+								<a href="{{ path('app_tricks_details', { slug: trick.slug, page: p }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">{{ p }}</a>
+							{% endif %}
+						{% endfor %}
+
+						{% if page < totalPages %}
+							<a href="{{ path('app_tricks_details', { slug: trick.slug, page: page+1 }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Suivant</a>
+						{% endif %}
 					</div>
 				</div>
 
-
 			</div>
-
-
 		</div>
-
 
 		<div class="h-20"></div>
 	</section>
-
 
 {% endblock %}
 
 {% block javascripts %}
 	{{ parent() }}
-	<script src="{{ asset('js/loadMoreComments.js') }}"></script>
 	<script src="{{ asset('js/marquee.js') }}"></script>
-
 {% endblock %}

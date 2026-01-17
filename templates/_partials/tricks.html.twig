@@ -22,11 +22,20 @@
 						Éditer
 					</a>
 
-
 					{# Bouton Supprimer #}
+					<form action="{{ path('app_profile_tricks_delete', {'slug': trick.slug}) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cette figure ?');" class="inline">
+						<input type="hidden" name="_token" value="{{ csrf_token('delete-trick-' ~ trick.id) }}">
+						<button type="submit" class="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+							</svg>
+							Supprimer
+						</button>
+					</form>
 
 				</div>
 			{% endif %}
+
 		</div>
 	</div>
 {% endfor %}
