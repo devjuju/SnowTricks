@@ -20,28 +20,48 @@ class Videos
     #[ORM\JoinColumn(nullable: false)]
     private ?Tricks $trick = null;
 
+    #[ORM\ManyToOne(inversedBy: 'videos')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Users $users = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
+
     public function getUrl(): ?string
     {
         return $this->url;
     }
+
     public function setUrl(string $url): static
     {
         $this->url = $url;
         return $this;
     }
+
     public function getTrick(): ?Tricks
     {
         return $this->trick;
     }
+
     public function setTrick(?Tricks $trick): static
     {
         $this->trick = $trick;
         return $this;
     }
+
+    public function getUsers(): ?Users
+    {
+        return $this->users;
+    }
+
+    public function setUsers(?Users $users): static
+    {
+        $this->users = $users;
+        return $this;
+    }
+
     public function getType(): string
     {
         return 'video';

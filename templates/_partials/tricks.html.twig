@@ -2,40 +2,38 @@
 	<div
 		class="relative overflow-hidden rounded-xl shadow-lg group trick-card">
 		{# Image principale #}
-		<img src="{{ asset('uploads/tricks/' ~ trick.featuredImage) }}" alt="{{ trick.title }}" class="w-full h-56 object-cover transform group-hover:scale-110 transition duration-500 ease-in-out">
+		<a href="{{ path('app_tricks_details', {slug: trick.slug}) }}">
+			<img src="{{ asset('uploads/tricks/' ~ trick.featuredImage) }}" alt="{{ trick.title }}" class="w-full h-56 object-cover transform group-hover:scale-110 transition duration-500 ease-in-out">
+		</a>
 
 		<div class="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm px-4 py-3">
 			<h3 class="text-white text-lg font-semibold uppercase">
-				<a href="{{ path('app_tricks_details', {slug: trick.slug}) }}">{{ trick.title }}</a>
+				{{ trick.title }}
 			</h3>
 
-			{# Actions seulement pour le propriétaire #}
-			{% if app.user and trick.user.id == app.user.id %}
-				<div
-					class="flex gap-2 mt-2">
-
-					{# Bouton Éditer #}
-					<a href="{{ path('app_profile_tricks_edit', { slug: trick.slug }) }}" class="flex items-center gap-1 bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-sm">
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewbox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5m-7-7l7 7m0 0L13 4m7 7l-7 7"/>
-						</svg>
-						Éditer
+			<div
+				class="flex justify-end gap-2 mt-2">
+				{# Actions pour le propriétaire #}
+				{% if app.user and trick.user.id == app.user.id %}
+					<a href="{{ path('app_profile_tricks_edit', { slug: trick.slug }) }}" class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">
+						<i class="bi bi-pencil"></i>
 					</a>
 
-					{# Bouton Supprimer #}
 					<form action="{{ path('app_profile_tricks_delete', {'slug': trick.slug}) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cette figure ?');" class="inline">
 						<input type="hidden" name="_token" value="{{ csrf_token('delete-trick-' ~ trick.id) }}">
 						<button type="submit" class="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewbox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-							</svg>
-							Supprimer
+							<i class="bi bi-trash3"></i>
 						</button>
 					</form>
+				{% endif %}
 
-				</div>
-			{% endif %}
-
+				{# Bouton Contribuer pour les autres utilisateurs #}
+				{% if app.user and trick.user.id != app.user.id %}
+					<a href="{{ path('app_profile_tricks_edit_or_contribute', { slug: trick.slug }) }}" class="flex items-center gap-1 bg-[#f1f1f4] text-[#252f4a] hover:text-white px-3 py-1 rounded hover:bg-blue-500 text-sm">
+						<i class="bi bi-plus-lg"></i>
+					</a>
+				{% endif %}
+			</div>
 		</div>
 	</div>
 {% endfor %}

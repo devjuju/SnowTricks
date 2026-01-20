@@ -88,8 +88,13 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return array_unique(array_merge($this->roles, ['ROLE_USER']));
+        // Toujours inclure ROLE_USER + ROLE_MEMBER par défaut
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_MEMBER';
+        return array_unique($roles);
     }
+
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;

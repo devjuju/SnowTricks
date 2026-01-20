@@ -263,14 +263,6 @@
 						{% endfor %}
 					</div>
 
-					{# Navigation carousel #}
-					<button type="button" id="prev" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-10">
-						<i class="bi bi-chevron-left"></i>
-					</button>
-					<button type="button" id="next" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-10">
-						<i class="bi bi-chevron-right"></i>
-					</button>
-
 					{# Boutons ajout #}
 					<div class="flex justify-center gap-4 mt-[42px] mb-[42px]">
 						<button type="button" id="add-image" class="px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:text-white hover:bg-[#056ee9]">
@@ -327,5 +319,5 @@
 {% block javascripts %}
 	{{ parent() }}
 	<script src="{{ asset('js/hero.js') }}"></script>
-	<script src="{{ asset('js/carousel.js') }}"></script>
+	<script src="{{ asset('js/carousel-media-repeater.js') }}"></script>
 {% endblock %}
