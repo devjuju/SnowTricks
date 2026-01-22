@@ -1,79 +1,59 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const container = document.getElementById('image-container');
-    const input = container.querySelector('input[type="file"]');
-    const preview = document.getElementById('image-preview');
-    const placeholder = document.getElementById('image-placeholder');
-    const actions = document.getElementById('image-actions');
-    const editBtn = document.getElementById('edit-image');
-    const deleteBtn = document.getElementById('delete-image');
-    const form = document.querySelector('form');
-    const errorDiv = document.getElementById('image-error');
+document.addEventListener("DOMContentLoaded", () => {
+    const imageContainer = document.getElementById("image-container");
+    const imagePreview = document.getElementById("image-preview");
+    const imagePlaceholder = document.getElementById("image-placeholder");
+    const imageActions = document.getElementById("image-actions");
+    const editButton = document.getElementById("edit-image");
+    const deleteButton = document.getElementById("delete-image");
 
-    const deleteHidden = document.getElementById('delete-featured-image');
+    // Le champ file Symfony (input type="file")
+    const fileInput = imageContainer.querySelector('input[type="file"]');
 
-    // Affiche image existante ou placeholder
-    const existingImage = container.dataset.existingImage;
-    if (existingImage) {
-        preview.src = existingImage;
-        preview.style.opacity = 1;
-        placeholder.style.opacity = 0;
-        actions.style.opacity = 1;
-    } else {
-        preview.style.opacity = 0;
-        placeholder.style.opacity = 1;
-        actions.style.opacity = 0;
-    }
-
-    // Upload nouvelle image
-    input.addEventListener('change', function () {
-        const file = input.files[0];
-        if (!file) return;
-        if (!file.type.startsWith('image/')) {
-            alert('Veuillez sélectionner une image');
-            input.value = '';
-            return;
+    // Afficher l'aperçu de l'image
+    fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                imagePreview.src = event.target.result;
+                imagePreview.style.opacity = "1";
+                imagePlaceholder.style.opacity = "0";
+                imageActions.style.opacity = "1";
+            };
+            reader.readAsDataURL(file);
         }
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            preview.style.opacity = 1;
-            placeholder.style.opacity = 0;
-            actions.style.opacity = 1;
-
-            deleteHidden.value = 0; // annule suppression si nouveau fichier
-        };
-        reader.readAsDataURL(file);
     });
 
-    // Edit → re-sélection
-    editBtn.addEventListener('click', () => input.click());
-
-    // Delete → réinitialiser
-    deleteBtn.addEventListener('click', function () {
-        input.value = '';
-        preview.src = '';
-        preview.style.opacity = 0;
-        placeholder.style.opacity = 1;
-        actions.style.opacity = 0;
-
-        container.dataset.existingImage = '';
-        deleteHidden.value = 1; // signal backend suppression
+    // Cliquer sur l'image pour ouvrir le selecteur
+    imageContainer.addEventListener("click", (e) => {
+        // Évite de réouvrir si on clique sur Edit/Delete
+        if (e.target.closest("#edit-image") || e.target.closest("#delete-image")) return;
+        fileInput.click();
     });
 
-    // Hover actions
-    container.addEventListener('mouseenter', () => { if (preview.src) actions.style.opacity = 1; });
-    container.addEventListener('mouseleave', () => { if (preview.src) actions.style.opacity = 1; });
+    // Edit button (réouvre le sélecteur)
+    editButton.addEventListener("click", () => {
+        fileInput.click();
+    });
 
-    // Validation frontend : image obligatoire
-    form.addEventListener('submit', function (e) {
-        const hasExisting = container.dataset.existingImage;
-        const hasNewFile = input.files.length > 0;
+    // Delete button (réinitialise l'image)
+    deleteButton.addEventListener("click", () => {
+        fileInput.value = ""; // réinitialise le champ file
+        imagePreview.src = "";
+        imagePreview.style.opacity = "0";
+        imagePlaceholder.style.opacity = "1";
+        imageActions.style.opacity = "0";
+    });
 
-        if (!hasExisting && !hasNewFile) {
-            e.preventDefault();
-            errorDiv.textContent = 'L’image principale est obligatoire.';
-        } else {
-            errorDiv.textContent = '';
+    // Hover pour montrer les actions
+    imageContainer.addEventListener("mouseenter", () => {
+        if (imagePreview.src) {
+            imageActions.style.opacity = "1";
+        }
+    });
+    imageContainer.addEventListener("mouseleave", () => {
+        if (imagePreview.src) {
+            imageActions.style.opacity = "0.8";
         }
     });
 });

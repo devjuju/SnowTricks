@@ -8,14 +8,18 @@
 
 	<!-- Section Hero -->
 	<section class="px-6 md:px-[93px] bg-[#D3DCEB] pt-[120px] pb-[42px]
-																																																																								    bg-[url('{{ asset('assets/images/image-cover.jpg') }}')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center">
+																																																																											    bg-[url('{{ asset('assets/images/image-cover.jpg') }}')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center">
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
 			<div class="flex items-center justify-center">
 				<div class="bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl">
 					<div class="flex gap-4 py-4 border-b">
-						<div class="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold" style="font-size:24px;">
-							{{ app.user.username|first|upper }}
-						</div>
+						{% if app.user.avatar %}
+							<img src="{{ asset('uploads/avatars/' ~ app.user.avatar) }}" alt="Avatar de {{ app.user.username }}" class="w-20 h-20 rounded-full object-cover">
+						{% else %}
+							<div class="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold" style="font-size:24px;">
+								{{ app.user.username|first|upper }}
+							</div>
+						{% endif %}
 
 						<div class="flex-1 p-4 ">
 

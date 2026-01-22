@@ -9,10 +9,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\PictureService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\ProfileFormType;
+use App\Service\AvatarUploaderService;
+use App\Service\ImageUploaderService;
+
+
 
 
 #[Route('/profile', name: 'app_profile_')]
@@ -52,13 +55,14 @@ final class ProfileController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         UserPasswordHasherInterface $passwordHasher,
-        PictureService $pictureService
+        AvatarUploaderService $avatarUploaderService
     ): Response {
         /** @var \App\Entity\Users $user */
         $user = $this->getUser();
 
         $form = $this->createForm(ProfileFormType::class, $user);
         $form->handleRequest($request);
+
 
         if ($form->isSubmitted() && $form->isValid()) {
 
@@ -71,30 +75,40 @@ final class ProfileController extends AbstractController
                 $user->setPassword($hashedPassword);
             }
 
-
-
             // -----------------
-            // Avatar avec PictureService
+            // Avatar
             // -----------------
-            $avatarFile = $form->get('avatar')->getData();
-            if ($avatarFile) {
-                $filename = $pictureService->square($avatarFile, '/avatars', 250);
-                $user->setAvatar($filename);
+            $avatarImageFile = $form->get('avatar')->getData();
+            $deleteAvatar = (bool) $form->get('deleteAvatar')->getData();
+
+            if ($deleteAvatar && $user->getAvatar()) {
+                $avatarUploaderService->delete($user->getAvatar());
+                $user->setAvatar(null);
+            }
+
+            if ($avatarImageFile) {
+                if ($user->getAvatar()) {
+                    $avatarUploaderService->delete($user->getAvatar());
+                }
+                $user->setAvatar(
+                    $avatarUploaderService->upload($avatarImageFile)
+                );
             }
 
             // -----------------
             // Enregistrement
             // -----------------
-            $em->persist($user);
             $em->flush();
 
             $this->addFlash('success', 'Profil mis à jour avec succès !');
 
-            return $this->redirectToRoute('app_profile_edit');
+            return $this->redirectToRoute('app_profile_index');
         }
+
 
         return $this->render('profile/profile/edit.html.twig', [
             'profileForm' => $form->createView(),
+            'user' => $user, // ← ici
         ]);
     }
 }

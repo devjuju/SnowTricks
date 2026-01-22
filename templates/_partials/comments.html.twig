@@ -1,18 +1,28 @@
 {% for comment in comments %}
-	<div class="flex gap-4 py-4 border-b">
-		<div class="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold" style="font-size:24px;">
-			{{ comment.user.username|first|upper }}
-		</div>
+	<div
+		class="flex gap-4 items-start">
 
-		<div class="flex-1 p-4 border rounded-lg">
-			<div class="flex justify-between">
-				<strong>{{ comment.user.username }}</strong>
-				<span class="text-sm text-gray-500">
+		{# ---------- AVATAR ---------- #}
+		{% if comment.user.avatar %}
+			<img src="{{ asset('uploads/avatars/' ~ comment.user.avatar) }}" alt="Avatar de {{ comment.user.username }}" class="w-16 h-16 rounded-full object-cover">
+		{% else %}
+			<div class="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold" style="font-size:16px;">
+				{{ comment.user.username|first|upper }}
+			</div>
+		{% endif %}
+
+		{# ---------- CONTENU ---------- #}
+		<div class="flex-1 bg-gray-50 p-3 rounded-lg">
+			<div class="flex justify-between items-center mb-1">
+				<strong class="text-sm text-gray-800">
+					{{ comment.user.username }}
+				</strong>
+				<span class="text-xs text-gray-500">
 					{{ comment.createdAt|date('d/m/Y H:i') }}
 				</span>
 			</div>
 
-			<p class="mt-2 text-gray-700">
+			<p class="text-gray-700 text-sm">
 				{{ comment.content }}
 			</p>
 		</div>

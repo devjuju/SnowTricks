@@ -199,8 +199,5 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         if (empty($this->slug) && $this->username) {
             $this->slug = strtolower(trim(preg_replace('/[^a-z0-9]+/', '-', $this->username)));
         }
-        if (empty($this->avatar)) {
-            $this->avatar = 'default-avatar.png';
-        }
     }
 }
