@@ -6,6 +6,7 @@ use App\Entity\Users;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -45,19 +46,24 @@ class ProfileFormType extends AbstractType
             ])
             ->add('avatar', FileType::class, [
                 'label' => 'Avatar',
-                'mapped' => false,
+                'mapped' => false, // upload géré manuellement
                 'required' => false,
                 'constraints' => [
-                    new Image([
+                    new File([
                         'maxSize' => '2M',
                         'mimeTypes' => [
                             'image/jpeg',
                             'image/png',
-                            'image/webp',
+                            'image/webp'
                         ],
-                        'mimeTypesMessage' => 'Format invalide (JPG, PNG ou WebP)',
+                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (jpeg, png, webp).',
                     ])
                 ],
+            ])
+            // Champ caché pour suppression côté frontend/backend
+            ->add('deleteAvatar', HiddenType::class, [
+                'mapped' => false,
+                'data' => 0,
             ]);
     }
 

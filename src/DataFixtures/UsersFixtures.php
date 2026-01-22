@@ -46,9 +46,6 @@ class UsersFixtures extends Fixture
             $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/', '-', $data['username'])));
             $user->setSlug($slug);
 
-            // --- avatar par défaut si non défini
-            $user->setAvatar('default-avatar.png'); // doit exister dans public/uploads/avatars/
-
             $manager->persist($user);
 
             // Créer une référence pour pouvoir l'utiliser dans d'autres fixtures

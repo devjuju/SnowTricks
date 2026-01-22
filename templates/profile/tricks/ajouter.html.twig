@@ -124,3 +124,89 @@
 	<script src="{{ asset('js/featured-image.js') }}"></script>
 	<script src="{{ asset('js/carousel.js') }}"></script>
 {% endblock %}
+
+
+<!-- Featured Image Container -->
+<div class="mb-[42px]">
+	<div
+		id="image-container" class="w-full aspect-video border-2  rounded-t-xl flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50 bg-[#E5E6EA]">
+
+		{# Aperçu image #}
+		<img
+		id="image-preview" class="absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-300"/>
+
+		{# Placeholder #}
+		<span id="image-placeholder" class="absolute text-gray-500 transition-opacity duration-300">
+			Cliquez pour ajouter une image
+		</span>
+
+		{# Overlay texte/hero (facultatif) #}
+		<div class="bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl text-center pointer-events-none">
+			<h1 class="text-white font-bold uppercase mb-4 text-4xl">Nouvel figure</h1>
+			<p class="text-white text-2xl">Ajouter la figure</p>
+		</div>
+
+		{# Champ file Symfony #}
+		{{ form_widget(form.featuredImage, { 
+            attr: { 
+                class: 'absolute w-full h-full opacity-0 cursor-pointer', 
+                accept: 'image/png, image/jpeg, image/webp' 
+            } 
+        }) }}
+
+		{# Actions Edit/Delete #}
+		<div class="absolute top-2 right-2 flex gap-2 opacity-0 transition-opacity duration-300" id="image-actions">
+			<button type="button" id="edit-image" class="p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white">
+				<i class="bi bi-pencil"></i>
+				<span class="sr-only">Edit</span>
+			</button>
+			<button type="button" id="delete-image" class="p-2 rounded border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+				<i class="bi bi-trash"></i>
+				<span class="sr-only">Delete</span>
+			</button>
+		</div>
+
+		{# Erreur validation #}
+		<div id="image-error" class="absolute bottom-2 left-2 text-red-500 text-sm">
+			{{ form_errors(form.featuredImage) }}
+		</div>
+	</div>
+</div>
+
+
+<div class="media-item media-image flex-shrink-0 w-40 snap-start relative">
+	<div class="mb-3 w-full aspect-video rounded overflow-hidden border relative">
+		<img class="image-preview hidden w-full h-full object-cover object-center"/>
+		<div class="image-placeholder absolute inset-0 bg-gray-100 flex items-center justify-center rounded border">
+			<i class="bi bi-image text-2xl text-gray-400"></i>
+		</div>
+	</div>
+	<div class="media-actions flex justify-end gap-2 mt-2">
+		<div class="flex flex-row-reverse items-center gap-2">
+			<button type="button" class="remove-item p-2 rounded border  border-[#f8285a] bg-white  text-[#f8285a] hover:bg-[#f8285a] hover:text-white">
+				<i class="bi bi-x-square-fill"></i>
+			</button>
+			<button type="button" class="item-add p-2 rounded border border-[#1b84ff]  bg-white hover:bg-[#1b84ff] hover:text-white text-[#1b84ff]  transition">
+				<i class="bi bi-plus-square-fill"></i>
+			</button>
+			<button type="button" class="item-edit p-2  rounded  bg-[#e9f3ff] hover:bg-[#1b84ff] hover:text-white text-[#1b84ff] transition hidden ">
+				<i class="bi bi-plus-square-fill"></i>
+			</button>
+			<button type="button" class="item-close p-2 rounded border border-[#f6c000]  bg-white hover:bg-[#f6c000] hover:text-white text-[#f6c000] transition hidden">
+				<i class="bi bi-eye-slash-fill"></i>
+			</button>
+			{{ form_widget(form.images.vars.prototype.file, {
+    attr: {
+        class: 'item-input h-10 w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm file:h-full file:border-0 file:bg-transparent',
+        accept: 'image/png,image/jpeg,image/webp'
+    }
+}) }}
+
+		</div>
+	</div>
+
+	<div class="text-[#f8285a] text-sm">
+		{{ form_errors(form.images.vars.prototype.file) }}
+	</div>
+
+</div>

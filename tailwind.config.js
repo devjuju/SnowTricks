@@ -5,17 +5,6 @@ module.exports = {
         './assets/**/*.js',
         "./node_modules/flowbite/**/*.js"         // pour scanner ton JS
     ],
-    theme: {
-        extend: {
-
-            colors: {
-                primary: '#2C76B1',
-            },
-
-
-
-        },
-    },
     plugins: [
         require('flowbite/plugin')
     ],

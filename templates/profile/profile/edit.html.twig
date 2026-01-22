@@ -1,106 +1,122 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Éditer mon profil
+{% block title %}Mon profil
 {% endblock %}
 
 {% block body %}
-	<br>
-	<section class="bg-[#007CCB] min-h-screen flex flex-col items-center pt-24 px-4">
+<section class="bg-[#007CCB] min-h-screen flex flex-col items-center pt-24 sm:pt-32 pd:pt-40 px-4 sm:mx-0">
 
-		<h1 class="text-white text-3xl font-bold mb-8 text-center">Éditer mon profil</h1>
+	<h1 class="text-white text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center uppercase">
+		Mon profil
+	</h1>
 
-		<div
-			class="w-full max-w-md bg-white py-12 px-8 rounded-xl shadow space-y-6">
+	<div class="w-full max-w-md sm:max-w-lg mx-4 sm:mx-auto
+																																																																																																																																																																																																            bg-white
+																																																																																																																																																																																																            py-12 px-8
+																																																																																																																																																																																																            sm:py-16 sm:px-12
+																																																																																																																																																																																																            md:px-20
+																																																																																																																																																																																																            rounded-[20px]
+																																																																																																																																																																																																            shadow-[0_18px_45px_rgba(0,0,0,0.12)]
+																																																																																																																																																																																																            space-y-6">
 
-			{# Messages flash #}
-			{% for label, messages in app.flashes %}
-				{% for message in messages %}
-					<div class="p-3 rounded text-white {{ label == 'success' ? 'bg-green-500' : 'bg-red-500' }}">
-						{{ message }}
-					</div>
-				{% endfor %}
-			{% endfor %}
+		{{ form_start(profileForm, { attr: { novalidate: 'novalidate', enctype:'multipart/form-data' } }) }}
 
-			{{ form_start(profileForm, { attr: { novalidate: 'novalidate', enctype: 'multipart/form-data' } }) }}
 
-			{# Avatar interactif #}
-			<div class="flex flex-col items-center space-y-2">
+		{# Avatar Upload #}
+		<div class="mb-6 flex flex-col items-center relative group">
+			<div
+				id="avatar-container" data-existing-image="{{ user.avatar ? asset('uploads/avatars/' ~ user.avatar) : '' }}" class="w-32 h-32 border-2 rounded-full flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50 bg-blue-600 ">
 
-				<div id="avatarArea" class="relative w-32 h-32 rounded-full overflow-hidden border-2 border-dashed
-																		                border-gray-300 cursor-pointer hover:border-blue-500 transition">
+				{# Aperçu image #}
+				<img
+				id="avatar-preview" class="absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-300 rounded-full"/>
 
-					{{ form_widget(profileForm.avatar, {
-            attr: {
-                class: 'hidden',
-                id: 'avatarInput',
-                accept: 'image/jpeg,image/png,image/webp'
-            }
+				{# Placeholder #}
+				<span id="avatar-placeholder" class="absolute text-white transition-opacity duration-300 text-center hover:text-black" style="font-size:24px;">
+					{{ app.user.username|first|upper }}
+				</span>
+
+				{# Champ file Symfony #}
+				{{ form_widget(profileForm.avatar, { 
+            attr: { 
+                class: 'absolute w-full h-full opacity-0 cursor-pointer rounded-full', 
+                accept: 'image/png, image/jpeg, image/webp' 
+            } 
         }) }}
 
-					{# Placeholder #}
-					<div id="avatarPlaceholder" class="flex flex-col items-center justify-center text-gray-400 h-full
-																					                    {% if app.user.avatar %}hidden{% endif %}">
-						<i class="bi bi-person-circle text-4xl"></i>
-						<span class="text-xs mt-1">Changer</span>
-					</div>
-
-					{# Preview #}
-					<div id="avatarPreviewContainer" class="w-full h-full {% if not app.user.avatar %}hidden{% endif %}">
-						<img id="avatarPreview" src="{{ app.user.avatar ? asset('uploads/avatars/mini/250x250-' ~ app.user.avatar) : '' }}" class="w-full h-full object-cover rounded-full">
-
-						<button id="avatarDeleteBtn" type="button" class="absolute bottom-1 right-1 bg-red-600 text-white p-2 rounded-full shadow">
-							<i class="bi bi-trash text-xs"></i>
-						</button>
-
-						<input type="hidden" name="delete_avatar" id="delete_avatar" value="0">
-					</div>
-				</div>
-
-				<p id="avatarMsg" class="text-red-500 text-xs"></p>
-				<div class="text-red-500 text-sm">{{ form_errors(profileForm.avatar) }}</div>
 			</div>
 
-			<hr>
-
-
-			{# Username #}
-			<div class="space-y-2 text-center">
-				{{ form_label(profileForm.username) }}
-				{{ form_widget(profileForm.username, { attr: { class: 'w-full border-b pb-2 text-gray-700 text-center focus:outline-none focus:border-blue-400' } }) }}
-				<div class="text-red-500 text-sm">{{ form_errors(profileForm.username) }}</div>
+			{# Actions Edit/Delete sous le cercle #}
+			<div class="flex gap-2 mt-2 " id="avatar-actions">
+				<button type="button" id="edit-avatar" class="p-1 rounded bg-[#1b84ff] hover:bg-[#056ee9] text-white text-xs">
+					<i class="bi bi-pencil"></i>
+					<span class="sr-only">Edit</span>
+				</button>
+				<button type="button" id="delete-avatar" class="p-1 rounded border-[#f8285a] bg-[#f8285a] text-white hover:bg-[#d81a48] text-xs">
+					<i class="bi bi-trash"></i>
+					<span class="sr-only">Delete</span>
+				</button>
 			</div>
 
-			{# Email #}
-			<div class="space-y-2 text-center">
-				{{ form_label(profileForm.email) }}
-				{{ form_widget(profileForm.email, { attr: { class: 'w-full border-b pb-2 text-gray-700 text-center focus:outline-none focus:border-blue-400' } }) }}
-				<div class="text-red-500 text-sm">{{ form_errors(profileForm.email) }}</div>
+			{# Erreur validation #}
+			<div id="avatar-error" class="absolute bottom-1 left-1 text-red-500 text-sm">
+				{{ form_errors(profileForm.avatar) }}
 			</div>
 
-			{# Password #}
-			<div class="space-y-2 text-center">
-				{{ form_label(profileForm.plainPassword.first, 'Nouveau mot de passe') }}
+
+			{# Champ caché suppression (backend) #}
+			{{ form_widget(profileForm.deleteAvatar) }}
+
+
+		</div>
+
+
+		{# Email #}
+		<div class="space-y-2 text-center">
+			{{ form_label(profileForm.email, 'Email', { label_attr: { class: 'font-medium text-gray-700' } }) }}
+			{{ form_widget(profileForm.email, { attr: {
+                class: 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'
+            }}) }}
+
+			<div class="text-red-500 text-sm">
+				{{ form_errors(profileForm.email) }}
+			</div>
+		</div>
+
+		{# Username #}
+		<div class="space-y-2 text-center">
+			{{ form_label(profileForm.username, 'Nom d\'utilisateur', { label_attr: { class: 'font-medium text-gray-700' } }) }}
+            {{ form_widget(profileForm.username, { attr: {
+                class: 'w-full text-center border-b border-gray-300 focus:outline-none focus:border-blue-400 pb-2 text-gray-700'
+            }}) }}
+
+            <div class="text-red-500 text-sm">
+                {{ form_errors(profileForm.username) }}
+            </div>
+        </div>
+
+        {# Password #}
+        <div class="space-y-2 text-center">
+           {{ form_label(profileForm.plainPassword.first, 'Nouveau mot de passe') }}
 				{{ form_widget(profileForm.plainPassword.first, { attr: { class: 'w-full border-b pb-2 text-gray-700 text-center focus:outline-none focus:border-blue-400' } }) }}
 				{{ form_label(profileForm.plainPassword.second, 'Répéter le mot de passe') }}
 				{{ form_widget(profileForm.plainPassword.second, { attr: { class: 'w-full border-b pb-2 text-gray-700 text-center focus:outline-none focus:border-blue-400' } }) }}
 				<div class="text-red-500 text-sm">{{ form_errors(profileForm.plainPassword) }}</div>
-			</div>
+        </div>
 
+        {# SUBMIT #}
+        <button type="submit"
+                class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition">
+            Modifier mon profil
+        </button>
 
-			{# Submit button #}
-			<button type="submit" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition">
-				Mettre à jour
-			</button>
+        {{ form_end(profileForm) }}
 
-			{{ form_end(profileForm) }}
+    </div>
+</section>
 
-		</div>
-	</section>
 {% endblock %}
-
 {% block javascripts %}
 	{{ parent() }}
-	<script src="{{ asset('js/addAvatar.js') }}"></script>
-
-
+	<script src="{{ asset('js/avatar.js') }}"></script>
 {% endblock %}

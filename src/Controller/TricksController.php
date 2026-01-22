@@ -65,14 +65,12 @@ final class TricksController extends AbstractController
         $totalComments = $commentsRepository->count(['trick' => $trick]);
         $totalPages = (int) ceil($totalComments / $limit);
 
-        // Média
-        $media = array_merge($trick->getImages()->toArray(), $trick->getVideos()->toArray());
-        usort($media, fn($a, $b) => $a->getId() <=> $b->getId());
+
+
 
         return $this->render('tricks/details.html.twig', [
             'trick' => $trick,
             'comments' => $comments,
-            'media' => $media,
             'commentForm' => $form->createView(),
             'page' => $page,
             'totalPages' => $totalPages,
