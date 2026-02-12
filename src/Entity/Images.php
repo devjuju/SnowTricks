@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ImagesRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: ImagesRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -24,6 +25,7 @@ class Images
     #[ORM\ManyToOne(inversedBy: 'images')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Users $users = null;
+
 
     public function getId(): ?int
     {

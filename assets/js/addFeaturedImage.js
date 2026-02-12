@@ -1,59 +1,63 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const imageContainer = document.getElementById("image-container");
-    const imagePreview = document.getElementById("image-preview");
-    const imagePlaceholder = document.getElementById("image-placeholder");
-    const imageActions = document.getElementById("image-actions");
-    const editButton = document.getElementById("edit-image");
-    const deleteButton = document.getElementById("delete-image");
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('featured-container');
+    const preview = document.getElementById('featured-preview');
+    const placeholder = document.getElementById('featured-placeholder');
+    const fileInput = container.querySelector('input[type="file"]');
+    const deleteInput = document.querySelector('[name$="[deleteFeaturedImage]"]');
+    const deleteBtn = document.getElementById('delete-featured');
+    const editBtn = document.getElementById('edit-featured');
 
-    // Le champ file Symfony (input type="file")
-    const fileInput = imageContainer.querySelector('input[type="file"]');
+    // Vérifie s'il y a déjà une image au chargement
+    const existingImage = container.dataset.existingImage;
+    if (!existingImage) {
+        hideFeaturedImage();
+    } else {
+        showFeaturedImage();
+    }
 
-    // Afficher l'aperçu de l'image
-    fileInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                imagePreview.src = event.target.result;
-                imagePreview.style.opacity = "1";
-                imagePlaceholder.style.opacity = "0";
-                imageActions.style.opacity = "1";
-            };
-            reader.readAsDataURL(file);
+    function showFeaturedImage() {
+        preview.classList.remove('opacity-0');
+        placeholder.classList.add('opacity-0');
+        deleteBtn.classList.remove('hidden');
+    }
+
+    function hideFeaturedImage() {
+        preview.src = '';
+        preview.classList.add('opacity-0');
+        placeholder.classList.remove('opacity-0');
+        deleteBtn.classList.add('hidden');
+    }
+
+    // Upload temporaire
+    fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('featuredImage', file);
+
+        const response = await fetch('/profile/featured-image/temp', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.url) {
+            preview.src = data.url;
+            showFeaturedImage();
+            deleteInput.value = 0; // indique que l'image n'est pas supprimée
         }
     });
 
-    // Cliquer sur l'image pour ouvrir le selecteur
-    imageContainer.addEventListener("click", (e) => {
-        // Évite de réouvrir si on clique sur Edit/Delete
-        if (e.target.closest("#edit-image") || e.target.closest("#delete-image")) return;
-        fileInput.click();
+    // Supprimer l'image temporaire
+    deleteBtn.addEventListener('click', () => {
+        hideFeaturedImage();
+        fileInput.value = '';
+        deleteInput.value = 1; // Symfony saura qu'il faut supprimer l'image
     });
 
-    // Edit button (réouvre le sélecteur)
-    editButton.addEventListener("click", () => {
-        fileInput.click();
-    });
+    // Editer / re-choisir une image
+    editBtn.addEventListener('click', () => fileInput.click());
 
-    // Delete button (réinitialise l'image)
-    deleteButton.addEventListener("click", () => {
-        fileInput.value = ""; // réinitialise le champ file
-        imagePreview.src = "";
-        imagePreview.style.opacity = "0";
-        imagePlaceholder.style.opacity = "1";
-        imageActions.style.opacity = "0";
-    });
 
-    // Hover pour montrer les actions
-    imageContainer.addEventListener("mouseenter", () => {
-        if (imagePreview.src) {
-            imageActions.style.opacity = "1";
-        }
-    });
-    imageContainer.addEventListener("mouseleave", () => {
-        if (imagePreview.src) {
-            imageActions.style.opacity = "0.8";
-        }
-    });
 });

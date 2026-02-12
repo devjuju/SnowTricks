@@ -1,0 +1,11 @@
+<div class="trick-preview">
+	<h3>{{ trick.title }}</h3>
+
+	{% if featuredImagePreview %}
+		<img src="{{ featuredImagePreview }}" alt="Image temporaire" style="max-width:300px;">
+	{% elseif trick.featuredImage %}
+		<img src="{{ asset('uploads/tricks/' ~ trick.featuredImage) }}" alt="Image de la figure" style="max-width:300px;">
+	{% endif %}
+
+	<p>{{ trick.content|nl2br }}</p>
+</div>

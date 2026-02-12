@@ -1,39 +1,96 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const box = document.getElementById('featured-image-box');
-    const input = box.querySelector('.item-input');
-    const preview = document.getElementById('featured-image-preview');
-    const placeholder = document.getElementById('featured-image-placeholder');
-    const removeBtn = document.getElementById('featured-image-remove');
+    const container = document.getElementById('image-container');
+    const preview = document.getElementById('featured-preview');
+    const placeholder = document.getElementById('featured-placeholder');
+    const fileInput = container.querySelector('input[type="file"]');
+    const deleteBtn = document.getElementById('delete-featured');
+    const editBtn = document.getElementById('edit-featured');
+    const deleteInput = document.querySelector('[name$="[deleteFeaturedImage]"]');
+    const errorDiv = document.getElementById('image-error');
 
-    const updatePreview = () => {
-        if (input.files?.[0]) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-            };
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            preview.src = '';
-            preview.classList.add('hidden');
-            placeholder.classList.remove('hidden');
-        }
+    // Vérifie si une image existait au chargement
+    const existingImage = preview.src && !preview.classList.contains('opacity-0');
+    if (!existingImage) {
+        preview.classList.add('opacity-0');
+        placeholder.classList.remove('opacity-0');
+        if (deleteBtn) deleteBtn.classList.add('hidden');
+    } else {
+        preview.classList.remove('opacity-0');
+        placeholder.classList.add('opacity-0');
+        if (deleteBtn) deleteBtn.classList.remove('hidden');
+    }
+
+    const showPreview = (url) => {
+        preview.src = url;
+        preview.classList.remove('opacity-0');
+        placeholder.classList.add('opacity-0');
+        if (deleteBtn) deleteBtn.classList.remove('hidden');
+        deleteInput.value = 0;
+        errorDiv.innerText = '';
     };
 
-    // Open file selector when clicking on the box
-    box.addEventListener('click', () => input.click());
+    const hidePreview = () => {
+        preview.src = '';
+        preview.classList.add('opacity-0');
+        placeholder.classList.remove('opacity-0');
+        if (deleteBtn) deleteBtn.classList.add('hidden');
+        deleteInput.value = 1;
+    };
 
-    // Update preview on file selection
-    input.addEventListener('change', updatePreview);
+    // Upload async vers temp
+    fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
 
-    // Remove image
-    removeBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent triggering the box click
-        input.value = '';
-        updatePreview();
+        const formData = new FormData();
+        formData.append('featuredImage', file);
+
+        try {
+            const response = await fetch('/profile/tricks/featured-image/temp', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.url) {
+                showPreview(data.url);
+            } else if (data.error) {
+                errorDiv.innerText = data.error;
+                fileInput.value = '';
+                hidePreview();
+            }
+        } catch (err) {
+            console.error(err);
+            errorDiv.innerText = 'Erreur lors de l’upload de l’image.';
+            fileInput.value = '';
+            hidePreview();
+        }
     });
 
-    // Initialize preview if already has a value
-    updatePreview();
+    // Bouton delete
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+            hidePreview();
+            fileInput.value = '';
+        });
+    }
+
+    // Bouton edit → clique sur input file
+    if (editBtn) {
+        editBtn.addEventListener('click', () => fileInput.click());
+    }
+
+    // Bloquer submit si pas d'image (UX instantanée)
+    const form = container.closest('form');
+    form.addEventListener('submit', (e) => {
+        if (!preview.src || preview.classList.contains('opacity-0')) {
+            e.preventDefault();
+            errorDiv.innerText = 'Une image mise en avant est obligatoire.';
+            fileInput.focus();
+        }
+    });
 });

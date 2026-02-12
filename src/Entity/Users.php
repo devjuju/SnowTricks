@@ -25,16 +25,16 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180)]
     #[Assert\Email]
-    private ?string $email = null;
+    private string $email;
 
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column]
-    private ?string $password = null;
+    private string $password;
 
     #[ORM\Column(length: 50)]
-    private ?string $username = null;
+    private string $username;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
     private ?string $slug = null;
@@ -69,14 +69,14 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     }
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return $this->email;
     }
     public function eraseCredentials(): void {}
 
     // -------------------
     // GETTERS / SETTERS
     // -------------------
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -88,20 +88,15 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        // Toujours inclure ROLE_USER + ROLE_MEMBER par défaut
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
-        $roles[] = 'ROLE_MEMBER';
-        return array_unique($roles);
+        return array_unique(array_merge($this->roles, ['ROLE_USER', 'ROLE_MEMBER']));
     }
-
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -111,7 +106,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
         return $this->username;
     }

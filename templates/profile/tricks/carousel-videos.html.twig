@@ -1,0 +1,219 @@
+{# Prototypes Symfony pour ajout dynamique #}
+{% set imagePrototype %}
+<div class="media-item media-image flex-shrink-0 w-40 snap-start relative">
+	<div class="mb-3 w-full aspect-video rounded overflow-hidden border relative">
+		<img class="image-preview hidden w-full h-full object-cover object-center"/>
+		<div class="image-placeholder absolute inset-0 bg-gray-100 flex items-center justify-center rounded border">
+			<i class="bi bi-image text-2xl text-gray-400"></i>
+		</div>
+	</div>
+	<input type="hidden" class="removed-image" name="removed_images[]">
+	<div class="media-actions flex justify-end gap-2 mt-2">
+		<div class="flex flex-row-reverse items-center gap-2">
+			<button type="button" class="remove-item p-2 rounded  border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+				<i class="bi bi-trash "></i>
+			</button>
+			<button type="button" class="item-add p-2 rounded border border-[#1b84ff]  bg-white hover:bg-[#1b84ff] hover:text-white text-[#1b84ff]  transition">
+				<i class="bi bi-pencil"></i>
+			</button>
+			<button type="button" class="item-edit p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+				<i class="bi bi-pencil"></i>
+			</button>
+			<button type="button" class="item-close p-2 rounded border border-[#f6c000]  bg-white hover:bg-[#f6c000] hover:text-white text-[#f6c000] transition hidden">
+				<i class="bi bi-eye-slash-fill"></i>
+			</button>
+			{{ form_widget(form.images.vars.prototype.file, {
+    attr: {
+        class: 'item-input h-10 w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm file:h-full file:border-0 file:bg-transparent',
+        accept: 'image/png,image/jpeg,image/webp'
+    }
+}) }}
+
+		</div>
+	</div>
+
+	<div class="text-[#f8285a] text-sm">
+		{{ form_errors(form.images.vars.prototype.file) }}
+	</div>
+
+</div>
+{% endset %}
+
+{% set videoPrototype %}
+<div class="media-item media-video flex-shrink-0 w-40 snap-start relative ">
+	<div class="mb-3 w-full aspect-video rounded border relative">
+		<iframe class="hidden w-full h-full rounded border" frameborder="0" allowfullscreen></iframe>
+		<div class="video-placeholder absolute inset-0 bg-gray-100 flex items-center justify-center rounded border">
+			<i class="bi bi-play-btn text-3xl text-gray-400"></i>
+		</div>
+	</div>
+	<input type="hidden" class="removed-video" name="removed_videos[]">
+
+	<div class="media-actions flex justify-end gap-2 mt-2">
+		<div class="flex flex-row-reverse items-center gap-2">
+			<button type="button" class="remove-item p-2 rounded  border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+				<i class="bi bi-trash "></i>
+			</button>
+			<button type="button" class="item-add p-2  rounded border border-[#1b84ff]  bg-white hover:bg-[#1b84ff] hover:text-white text-[#1b84ff]   transition">
+				<i class="bi bi-pencil"></i>
+			</button>
+			<button type="button" class="item-edit p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+				<i class="bi bi-pencil"></i>
+			</button>
+			<button type="button" class="item-close p-2 rounded border border-[#f6c000]  bg-white hover:bg-[#f6c000] hover:text-white text-[#f6c000] transition hidden">
+				<i class="bi bi-eye-slash-fill"></i>
+			</button>
+			{{ form_widget(form.videos.vars.prototype.url, {
+                                attr: { class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2', placeholder: 'Lien YouTube' }
+                            }) }}
+		</div>
+	</div>
+
+	<div class="text-[#f8285a] text-sm">
+		{{ form_errors(form.videos.vars.prototype.url) }}
+	</div>
+</div>
+{% endset %}
+
+<div id="image-prototype" class="hidden" data-prototype="{{ imagePrototype|e('html_attr') }}"></div>
+<div id="video-prototype" class="hidden" data-prototype="{{ videoPrototype|e('html_attr') }}"></div>
+
+
+<div
+	class="grid md:grid-cols-2 grid-cols-1 items-center lg:gap-2 gap-2">
+
+	{# ----------------- CAROUSEL ----------------- #}
+	<div class="relative w-full px-4 md:px-8 lg:px-8 overflow-hidden ">
+		<div
+			id="image-wrapper" class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory">
+			{# Images existantes #}
+			{% for imageForm in form.images %}
+				<div class="media-item media-image flex-shrink-0 w-40 snap-start relative ">
+					{% if imageForm.vars.data and imageForm.vars.data.picture %}
+						<div class="mb-3 w-full aspect-video rounded overflow-hidden border">
+							<img src="{{ asset('uploads/images/' ~ imageForm.vars.data.picture) }}" class="w-full h-full object-cover" data-filename="{{ imageForm.vars.data.picture }}">
+						</div>
+					{% else %}
+						<div class="image-placeholder bg-gray-100 w-full aspect-video flex items-center justify-center rounded border mb-3">
+							<i class="bi bi-image text-2xl text-gray-400"></i>
+						</div>
+					{% endif %}
+					<input type="hidden" class="removed-image" name="removed_images[]">
+
+
+					<div class="media-actions flex justify-end gap-2 mt-2">
+
+						<div class="flex flex-row-reverse items-center gap-2">
+							<button type="button" class="remove-item p-2 rounded  border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+								<i class="bi bi-trash "></i>
+							</button>
+
+
+							<button type="button" class="item-add p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+								<i class="bi bi-pencil"></i>
+							</button>
+							<button type="button" class="item-edit p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+								<i class="bi bi-pencil"></i>
+							</button>
+							<button type="button" class="item-close p-2 rounded  bg-[#f6c000]  hover:bg-[#dead00] text-white  transition hidden">
+								<i class="bi bi-eye-slash"></i>
+							</button>
+
+							{{ form_widget(imageForm.file, {
+    attr: {
+        class: 'item-input h-10 w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm file:h-full file:border-0 file:bg-transparent',
+        accept: 'image/png,image/jpeg,image/webp'
+    }
+}) }}
+
+
+						</div>
+
+
+					</div>
+
+
+					<div class="text-red-500 text-sm">
+						{{ form_errors(imageForm.file) }}
+					</div>
+
+				</div>
+			{% endfor %}
+
+
+		</div>
+
+
+		{# Boutons ajout #}
+		<div class="flex justify-center gap-4 mt-[42px] mb-[42px]">
+			<button type="button" id="add-image" class="w-full px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:text-white hover:bg-[#056ee9]">
+				<i class="bi bi-plus-square-fill"></i>
+				Ajouter une image
+			</button>
+
+		</div>
+	</div>
+
+	{# ----------------- CAROUSEL ----------------- #}
+	<div class="relative w-full px-4 md:px-8 lg:px-8 overflow-hidden ">
+		<div
+			id="video-wrapper" class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory">
+
+			{# Vidéos existantes #}
+			{% for videoForm in form.videos %}
+				<div class="media-item media-video flex-shrink-0 w-40 snap-start relative">
+					<div class="video-container mb-3 w-full aspect-video rounded border relative">
+						<iframe src="{{ videoForm.vars.data.getEmbedUrl()|default('') }}" class="w-full h-full rounded border" frameborder="0" allowfullscreen></iframe>
+						<div class="video-placeholder bg-gray-100 w-full h-full flex items-center justify-center rounded border absolute inset-0 {{ videoForm.vars.data.getEmbedUrl() ? 'hidden' : '' }}">
+							<i class="bi bi-play-btn text-3xl text-gray-400"></i>
+						</div>
+					</div>
+					<input type="hidden" class="removed-video" name="removed_videos[]">
+					<div class="media-actions flex justify-end gap-2 mt-2">
+
+						<div class="flex flex-row-reverse items-center gap-2">
+							<button type="button" class="remove-item p-2 rounded   border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+								<i class="bi bi-trash "></i>
+							</button>
+
+
+							<button type="button" class="item-add p-2 rounded   bg-[#1b84ff] hover:bg-[#056ee9] transition hidden">
+								<i class="bi bi-pencil  text-white"></i>
+							</button>
+							<button type="button" class="item-edit p-2 rounded   bg-[#1b84ff]  hover:bg-[#056ee9]  transition hidden">
+								<i class="bi bi-pencil text-white"></i>
+							</button>
+							<button type="button" class="item-close p-2 rounded   bg-[#f6c000]  hover:bg-[#dead00] transition hidden">
+								<i class="bi bi-eye-slash text-white"></i>
+							</button>
+
+							{{ form_widget(videoForm.url, {
+                 attr: {
+            class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2',
+            placeholder: 'Lien YouTube'
+        }
+    }) }}
+
+
+						</div>
+					</div>
+
+					<div class="text-[#f8285a] text-sm">
+						{{ form_errors(videoForm.url) }}
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+
+
+		{# Boutons ajout #}
+		<div class="flex justify-center gap-4 mt-[42px] mb-[42px]">
+
+			<button type="button" id="add-video" class="w-full px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:text-white hover:bg-[#056ee9]">
+				<i class="bi bi-plus-square-fill "></i>
+				Ajouter une vidéo
+			</button>
+		</div>
+	</div>
+
+</div>

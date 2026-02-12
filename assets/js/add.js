@@ -33,4 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialisation si déjà une image existante
     updatePreview();
+
+
+
+
 });
