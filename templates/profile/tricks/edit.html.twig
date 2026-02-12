@@ -28,54 +28,61 @@
 				{% endfor %}
 				{{ form_start(form, { attr: { novalidate:'novalidate', enctype:'multipart/form-data' } }) }}
 
-				<!-- Featured Image Container -->
-				<div class="mb-[42px]">
+				{# Featured image Upload #}
+				<div
+					class="mb-[42px]">
+					{# Détermination du chemin de l'image mise en avant à afficher #}
+					{% set featuredPath =
+    tempFeaturedImage
+        ? asset('uploads/featured_images_tmp/' ~ tempFeaturedImage)
+        : (trick.featuredImage ? asset('uploads/featured_images/' ~ trick.featuredImage) : null)
+%}
+
+					{# Conteneur featured image #}
 					<div
-						id="image-container" data-existing-image="{{ trick.featuredImage ? asset('uploads/tricks/' ~ trick.featuredImage) : '' }}" class="w-full aspect-video border-2  rounded-t-xl flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50 bg-[#E5E6EA]">
+						id="featured-container" data-existing-image="{{ featuredPath ?? '' }}" class="w-full aspect-video border-2 flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50 bg-[#E5E6EA]">
 
 						{# Aperçu image #}
 						<img
-						id="image-preview" class="absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-300"/>
+						id="featured-preview" src="{{ featuredPath }}" class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-300
+																																																																																																																																																																																																																																																																																			{{ featuredPath ? '' : 'opacity-0' }}">
+
 
 						{# Placeholder #}
-						<span id="image-placeholder" class="absolute text-gray-500 transition-opacity duration-300">
-							Cliquez pour ajouter une image
+						<span id="featured-placeholder" class="absolute text-white transition-opacity duration-300 text-center
+																																																																																																																																																																																																																																																																																																																																																																           {{ featuredPath ? 'opacity-0' : '' }}" style="font-size:24px;">
+							<i class="bi bi-person-circle"></i>
 						</span>
 
-						{# Overlay texte/hero (facultatif) #}
-						<div class="bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl text-center pointer-events-none">
-							<h1 class="text-white font-bold uppercase mb-4 text-4xl">{{ trick.title ?: 'Titre du trick' }}</h1>
-							<p class="text-white text-2xl">Modifier la figure</p>
-						</div>
 
 						{# Champ file Symfony #}
-						{{ form_widget(form.featuredImage, { 
-            attr: { 
-                class: 'absolute w-full h-full opacity-0 cursor-pointer', 
-                accept: 'image/png, image/jpeg, image/webp' 
-            } 
+						{{ form_widget(form.featuredImage, {
+            attr: {
+                class: 'absolute w-full h-full opacity-0 cursor-pointer rounded-full',
+                accept: 'image/png, image/jpeg, image/webp'
+            }
         }) }}
-
-						{# Actions Edit/Delete #}
-						<div class="absolute top-2 right-2 flex gap-2 opacity-0 transition-opacity duration-300" id="image-actions">
-							<button type="button" id="edit-image" class="p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white">
+						{# Actions Edit/Delete sous le cercle #}
+						<div class="absolute top-2 right-2 flex gap-2">
+							<button type="button" id="edit-featured" class="p-2 rounded bg-[#1b84ff] hover:bg-[#056ee9] text-white ">
 								<i class="bi bi-pencil"></i>
 								<span class="sr-only">Edit</span>
 							</button>
-							<button type="button" id="delete-image" class="p-2 rounded border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+							<button type="button" id="delete-featured" class="p-2 rounded bg-[#f8285a] text-white hover:bg-[#d81a48]">
 								<i class="bi bi-trash"></i>
 								<span class="sr-only">Delete</span>
 							</button>
 						</div>
-
-						{# Erreur validation #}
-						<div id="image-error" class="absolute bottom-2 left-2 text-red-500 text-sm">
-							{{ form_errors(form.featuredImage) }}
-						</div>
-
 						{# Champ caché suppression (backend) #}
 						{{ form_widget(form.deleteFeaturedImage) }}
 					</div>
+
+
+					{# Erreur validation #}
+					<div id="featured-error" class="absolute bottom-1 left-1 text-red-500 text-sm">
+						{{ form_errors(form.featuredImage) }}
+					</div>
+
 				</div>
 
 
@@ -91,14 +98,14 @@
 					<input type="hidden" class="removed-image" name="removed_images[]">
 					<div class="media-actions flex justify-end gap-2 mt-2">
 						<div class="flex flex-row-reverse items-center gap-2">
-							<button type="button" class="remove-item p-2 rounded border  border-[#f8285a] bg-white  text-[#f8285a] hover:bg-[#f8285a] hover:text-white">
-								<i class="bi bi-x-square-fill"></i>
+							<button type="button" class="remove-item p-2 rounded  border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+								<i class="bi bi-trash "></i>
 							</button>
 							<button type="button" class="item-add p-2 rounded border border-[#1b84ff]  bg-white hover:bg-[#1b84ff] hover:text-white text-[#1b84ff]  transition">
-								<i class="bi bi-plus-square-fill"></i>
+								<i class="bi bi-pencil"></i>
 							</button>
-							<button type="button" class="item-edit p-2  rounded  bg-[#e9f3ff] hover:bg-[#1b84ff] hover:text-white text-[#1b84ff] transition hidden ">
-								<i class="bi bi-plus-square-fill"></i>
+							<button type="button" class="item-edit p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+								<i class="bi bi-pencil"></i>
 							</button>
 							<button type="button" class="item-close p-2 rounded border border-[#f6c000]  bg-white hover:bg-[#f6c000] hover:text-white text-[#f6c000] transition hidden">
 								<i class="bi bi-eye-slash-fill"></i>
@@ -109,6 +116,9 @@
         accept: 'image/png,image/jpeg,image/webp'
     }
 }) }}
+
+							<input type="hidden" class="uploaded-filename" name="images_tmp[]">
+							<input type="hidden" class="removed-image" name="removed_images[]">
 
 						</div>
 					</div>
@@ -129,16 +139,17 @@
 						</div>
 					</div>
 					<input type="hidden" class="removed-video" name="removed_videos[]">
+
 					<div class="media-actions flex justify-end gap-2 mt-2">
 						<div class="flex flex-row-reverse items-center gap-2">
-							<button type="button" class="remove-item p-2 rounded border  border-[#f8285a] bg-white  text-[#f8285a] hover:bg-[#f8285a] hover:text-white">
-								<i class="bi bi-x-square-fill"></i>
+							<button type="button" class="remove-item p-2 rounded  border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+								<i class="bi bi-trash "></i>
 							</button>
 							<button type="button" class="item-add p-2  rounded border border-[#1b84ff]  bg-white hover:bg-[#1b84ff] hover:text-white text-[#1b84ff]   transition">
-								<i class="bi bi-plus-square-fill"></i>
+								<i class="bi bi-pencil"></i>
 							</button>
-							<button type="button" class="item-edit p-2  rounded border border-[#1b84ff]  bg-white hover:bg-[#1b84ff] hover:text-white text-[#1b84ff] transition hidden">
-								<i class="bi bi-plus-square-fill"></i>
+							<button type="button" class="item-edit p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+								<i class="bi bi-pencil"></i>
 							</button>
 							<button type="button" class="item-close p-2 rounded border border-[#f6c000]  bg-white hover:bg-[#f6c000] hover:text-white text-[#f6c000] transition hidden">
 								<i class="bi bi-eye-slash-fill"></i>
@@ -158,44 +169,48 @@
 				<div id="image-prototype" class="hidden" data-prototype="{{ imagePrototype|e('html_attr') }}"></div>
 				<div id="video-prototype" class="hidden" data-prototype="{{ videoPrototype|e('html_attr') }}"></div>
 
-				{# ----------------- CAROUSEL ----------------- #}
-				<div class="relative w-full px-4 md:px-8 lg:px-8 overflow-hidden ">
-					<div
-						id="media-wrapper" class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory">
-						{# Images existantes #}
-						{% for imageForm in form.images %}
-							<div class="media-item media-image flex-shrink-0 w-40 snap-start relative ">
-								{% if imageForm.vars.data and imageForm.vars.data.picture %}
-									<div class="mb-3 w-full aspect-video rounded overflow-hidden border">
-										<img src="{{ asset('uploads/tricks/' ~ imageForm.vars.data.picture) }}" class="w-full h-full object-cover" data-filename="{{ imageForm.vars.data.picture }}">
-									</div>
-								{% else %}
-									<div class="image-placeholder bg-gray-100 w-full aspect-video flex items-center justify-center rounded border mb-3">
-										<i class="bi bi-image text-2xl text-gray-400"></i>
-									</div>
-								{% endif %}
-								<input type="hidden" class="removed-image" name="removed_images[]">
+
+				{# templates/profile/tricks/_media_carousel.html.twig #}
+
+				<div
+					class="grid md:grid-cols-2 grid-cols-1 gap-4">
+
+					{# ----------------- CAROUSEL IMAGES ----------------- #}
+					<div class="relative w-full px-4 md:px-8 lg:px-8 overflow-hidden">
+						<div
+							id="image-wrapper" class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory">
+
+							{# Images existantes #}
+							{% for imageForm in form.images %}
+								{% set tempImage = tempImages[loop.index0] ?? null %}
+								<div class="media-item media-image flex-shrink-0 w-40 snap-start relative ">
+									{% if tempImage %}
+										<div class="mb-3 w-full aspect-video rounded overflow-hidden border">
+											<img src="{{ asset('uploads/images_tmp/' ~ tempImage) }}" class="image-preview w-full h-full object-cover" data-filename="{{ tempImage }}">
+										</div>
+
+										<input type="hidden" class="removed-image" name="removed_images[]">
 
 
-								<div class="media-actions flex justify-end gap-2 mt-2">
+										<div class="media-actions flex justify-end gap-2 mt-2">
 
-									<div class="flex flex-row-reverse items-center gap-2">
-										<button type="button" class="remove-item p-2 rounded  border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
-											<i class="bi bi-trash "></i>
-										</button>
+											<div class="flex flex-row-reverse items-center gap-2">
+												<button type="button" class="remove-item p-2 rounded  border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+													<i class="bi bi-trash "></i>
+												</button>
 
 
-										<button type="button" class="item-add p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
-											<i class="bi bi-pencil"></i>
-										</button>
-										<button type="button" class="item-edit p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
-											<i class="bi bi-pencil"></i>
-										</button>
-										<button type="button" class="item-close p-2 rounded  bg-[#f6c000]  hover:bg-[#dead00] text-white  transition hidden">
-											<i class="bi bi-eye-slash"></i>
-										</button>
+												<button type="button" class="item-add p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+													<i class="bi bi-pencil"></i>
+												</button>
+												<button type="button" class="item-edit p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+													<i class="bi bi-pencil"></i>
+												</button>
+												<button type="button" class="item-close p-2 rounded  bg-[#f6c000]  hover:bg-[#dead00] text-white  transition hidden">
+													<i class="bi bi-eye-slash"></i>
+												</button>
 
-										{{ form_widget(imageForm.file, {
+												{{ form_widget(imageForm.file, {
     attr: {
         class: 'item-input h-10 w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm file:h-full file:border-0 file:bg-transparent',
         accept: 'image/png,image/jpeg,image/webp'
@@ -203,77 +218,173 @@
 }) }}
 
 
-									</div>
+											</div>
+
+
+										</div>
+
+
+										<div class="text-red-500 text-sm">
+											{{ form_errors(imageForm.file) }}
+										</div>
+									{% elseif imageForm.vars.data and imageForm.vars.data.picture %}
+										<div class="mb-3 w-full aspect-video rounded overflow-hidden border">
+											<img src="{{ asset('uploads/images/' ~ imageForm.vars.data.picture) }}" class="image-preview w-full h-full object-cover" data-filename="{{ imageForm.vars.data.picture }}">
+										</div>
+
+										<input type="hidden" class="removed-image" name="removed_images[]">
+
+										<div class="media-actions flex justify-end gap-2 mt-2">
+
+											<div class="flex flex-row-reverse items-center gap-2">
+												<button type="button" class="remove-item p-2 rounded  border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+													<i class="bi bi-trash "></i>
+												</button>
+												<button type="button" class="item-add p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+													<i class="bi bi-pencil"></i>
+												</button>
+												<button type="button" class="item-edit p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+													<i class="bi bi-pencil"></i>
+												</button>
+												<button type="button" class="item-close p-2 rounded  bg-[#f6c000]  hover:bg-[#dead00] text-white  transition hidden">
+													<i class="bi bi-eye-slash"></i>
+												</button>
+
+												{{ form_widget(imageForm.file, {
+    attr: {
+        class: 'item-input h-10 w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm file:h-full file:border-0 file:bg-transparent',
+        accept: 'image/png,image/jpeg,image/webp'
+    }
+}) }}
+
+
+											</div>
+
+
+										</div>
+
+
+										<div class="text-red-500 text-sm">
+											{{ form_errors(imageForm.file) }}
+										</div>
+									{% else %}
+										<div class="image-placeholder bg-gray-100 w-full aspect-video flex items-center justify-center rounded border mb-3">
+											<i class="bi bi-image text-2xl text-gray-400"></i>
+										</div>
+										<input type="hidden" class="removed-image" name="removed_images[]">
+
+										<div class="media-actions flex justify-end gap-2 mt-2">
+
+											<div class="flex flex-row-reverse items-center gap-2">
+												<button type="button" class="remove-item p-2 rounded  border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
+													<i class="bi bi-trash "></i>
+												</button>
+
+												<button type="button" class="item-add p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+													<i class="bi bi-pencil"></i>
+												</button>
+												<button type="button" class="item-edit p-2 rounded  bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+													<i class="bi bi-pencil"></i>
+												</button>
+												<button type="button" class="item-close p-2 rounded  bg-[#f6c000]  hover:bg-[#dead00] text-white  transition hidden">
+													<i class="bi bi-eye-slash"></i>
+												</button>
+
+												{{ form_widget(imageForm.file, {
+    attr: {
+        class: 'item-input h-10 w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm file:h-full file:border-0 file:bg-transparent',
+        accept: 'image/png,image/jpeg,image/webp'
+    }
+}) }}
+
+
+											</div>
+
+
+										</div>
+
+
+										<div class="text-red-500 text-sm">
+											{{ form_errors(imageForm.file) }}
+										</div>
+									{% endif %}
 
 
 								</div>
+							{% endfor %}
 
+						</div>
 
-								<div class="text-red-500 text-sm">
-									{{ form_errors(imageForm.file) }}
-								</div>
-
-							</div>
-						{% endfor %}
-
-						{# Vidéos existantes #}
-						{% for videoForm in form.videos %}
-							<div class="media-item media-video flex-shrink-0 w-40 snap-start relative">
-								<div class="video-container mb-3 w-full aspect-video rounded border relative">
-									<iframe src="{{ videoForm.vars.data.getEmbedUrl()|default('') }}" class="w-full h-full rounded border" frameborder="0" allowfullscreen></iframe>
-									<div class="video-placeholder bg-gray-100 w-full h-full flex items-center justify-center rounded border absolute inset-0 {{ videoForm.vars.data.getEmbedUrl() ? 'hidden' : '' }}">
-										<i class="bi bi-play-btn text-3xl text-gray-400"></i>
-									</div>
-								</div>
-								<input type="hidden" class="removed-video" name="removed_videos[]">
-								<div class="media-actions flex justify-end gap-2 mt-2">
-
-									<div class="flex flex-row-reverse items-center gap-2">
-										<button type="button" class="remove-item p-2 rounded   border-[#f8285a] bg-[#f8285a]  text-white hover:bg-[#d81a48]">
-											<i class="bi bi-trash "></i>
-										</button>
-
-
-										<button type="button" class="item-add p-2 rounded   bg-[#1b84ff] hover:bg-[#056ee9] transition hidden">
-											<i class="bi bi-pencil  text-white"></i>
-										</button>
-										<button type="button" class="item-edit p-2 rounded   bg-[#1b84ff]  hover:bg-[#056ee9]  transition hidden">
-											<i class="bi bi-pencil text-white"></i>
-										</button>
-										<button type="button" class="item-close p-2 rounded   bg-[#f6c000]  hover:bg-[#dead00] transition hidden">
-											<i class="bi bi-eye-slash text-white"></i>
-										</button>
-
-										{{ form_widget(videoForm.url, {
-                 attr: {
-            class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2',
-            placeholder: 'Lien YouTube'
-        }
-    }) }}
-
-
-									</div>
-								</div>
-
-								<div class="text-[#f8285a] text-sm">
-									{{ form_errors(videoForm.url) }}
-								</div>
-							</div>
-						{% endfor %}
+						{# Bouton ajout d'image #}
+						<div class="flex justify-center gap-4 mt-4 mb-4">
+							<button type="button" id="add-image" class="w-full px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:text-white hover:bg-[#056ee9]">
+								<i class="bi bi-plus-square-fill"></i>
+								Ajouter une image
+							</button>
+						</div>
 					</div>
 
-					{# Boutons ajout #}
-					<div class="flex justify-center gap-4 mt-[42px] mb-[42px]">
-						<button type="button" id="add-image" class="px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:text-white hover:bg-[#056ee9]">
-							<i class="bi bi-plus-square-fill"></i>
-							Ajouter une image
-						</button>
-						<button type="button" id="add-video" class="px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:text-white hover:bg-[#056ee9]">
-							<i class="bi bi-plus-square-fill "></i>
-							Ajouter une vidéo
-						</button>
+					{# ----------------- CAROUSEL VIDÉOS ----------------- #}
+					<div class="relative w-full px-4 md:px-8 lg:px-8 overflow-hidden">
+						<div id="video-wrapper" class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory">
+
+							{% for videoForm in form.videos %}
+								<div class="media-item media-video flex-shrink-0 w-40 snap-start relative">
+									<div class="video-container mb-3 w-full aspect-video rounded border relative">
+										<iframe src="{{ videoForm.vars.data.getEmbedUrl()|default('') }}" class="w-full h-full rounded border" frameborder="0" allowfullscreen></iframe>
+										<div class="video-placeholder bg-gray-100 w-full h-full flex items-center justify-center rounded border absolute inset-0 {{ videoForm.vars.data.getEmbedUrl() ? 'hidden' : '' }}">
+											<i class="bi bi-play-btn text-3xl text-gray-400"></i>
+										</div>
+									</div>
+
+									<input type="hidden" class="removed-video" name="removed_videos[]">
+
+									<div class="media-actions flex justify-end gap-2 mt-2">
+										<div class="flex flex-row-reverse items-center gap-2">
+											<button type="button" class="remove-item p-2 rounded border-[#f8285a] bg-[#f8285a] text-white hover:bg-[#d81a48]">
+												<i class="bi bi-trash"></i>
+											</button>
+
+											<button type="button" class="item-add p-2 rounded border border-[#1b84ff] bg-white hover:bg-[#1b84ff] hover:text-white text-[#1b84ff] transition hidden">
+												<i class="bi bi-pencil"></i>
+											</button>
+
+											<button type="button" class="item-edit p-2 rounded bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
+												<i class="bi bi-pencil"></i>
+											</button>
+
+											<button type="button" class="item-close p-2 rounded border border-[#f6c000] bg-white hover:bg-[#f6c000] hover:text-white text-[#f6c000] transition hidden">
+												<i class="bi bi-eye-slash-fill"></i>
+											</button>
+
+											{{ form_widget(videoForm.url, {
+                                attr: {
+                                    class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2',
+                                    placeholder: 'Lien YouTube'
+                                }
+                            }) }}
+										</div>
+									</div>
+
+									<div class="text-red-500 text-sm">
+										{{ form_errors(videoForm.url) }}
+									</div>
+								</div>
+							{% endfor %}
+
+						</div>
+
+						{# Bouton ajout vidéo #}
+						<div class="flex justify-center gap-4 mt-4 mb-4">
+							<button type="button" id="add-video" class="w-full px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:text-white hover:bg-[#056ee9]">
+								<i class="bi bi-plus-square-fill"></i>
+								Ajouter une vidéo
+							</button>
+						</div>
 					</div>
+
 				</div>
+
 
 				<!-- Title, Content, Category -->
 				<div class="px-4 md:px-8 lg:px-24">
@@ -320,6 +431,16 @@
 
 {% block javascripts %}
 	{{ parent() }}
-	<script src="{{ asset('js/hero.js') }}"></script>
-	<script src="{{ asset('js/carousel-media-repeater.js') }}"></script>
+
+
+	{# profile/edit.html.twig #}
+	<script>
+		const IMAGE_ROUTES = {
+upload: "{{ path('profile_images_temp') }}",
+delete: "{{ path('profile_images_temp_delete') }}"
+};
+	</script>
+	<script src="{{ asset('js/featured-image.js') }}"></script>
+	<script src="{{ asset('js/media-video.js') }}"></script>
+	<script src="{{ asset('js/media-image-ajax.js') }}"></script>
 {% endblock %}

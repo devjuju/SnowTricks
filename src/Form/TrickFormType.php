@@ -17,7 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
-use Symfony\Component\Validator\Constraints\Image as ImageConstraint;
+use Symfony\Component\Validator\Constraints\File;
 
 class TrickFormType extends AbstractType
 {
@@ -39,25 +39,30 @@ class TrickFormType extends AbstractType
                 'attr' => ['class' => 'rounded-xl border px-4 py-2 pr-10'],
                 'constraints' => [new NotNull(['message' => 'Veuillez choisir une catégorie.'])]
             ])
-            // Featured image
             ->add('featuredImage', FileType::class, [
-                'label' => 'Image principale',
                 'mapped' => false,
-                'required' => false, // gestion obligation côté contrôleur
-                'attr' => ['accept' => 'image/png,image/jpeg,image/webp'],
+                'required' => false,
                 'constraints' => [
-                    new ImageConstraint([
-                        'maxSize' => '5M',
-                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
-                        'mimeTypesMessage' => 'Formats autorisés : JPEG, PNG, WebP',
-                    ]),
-                ]
+                    new File(
+                        maxSize: '2M',
+                        mimeTypes: [
+                            'image/jpeg',
+                            'image/png',
+                            'image/webp',
+                        ],
+                        mimeTypesMessage: 'Veuillez sélectionner une image valide (jpeg, png, webp).'
+                    ),
+                ],
             ])
+
+
             // Champ caché pour suppression côté frontend/backend
             ->add('deleteFeaturedImage', HiddenType::class, [
                 'mapped' => false,
-                'data' => 0,
+                'required' => false,
             ])
+
+
             // Images secondaires
             ->add('images', CollectionType::class, [
                 'entry_type' => ImageType::class,

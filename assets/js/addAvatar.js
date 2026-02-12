@@ -1,57 +1,63 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('avatar-container');
-    const input = container.querySelector('input[type="file"]');
     const preview = document.getElementById('avatar-preview');
     const placeholder = document.getElementById('avatar-placeholder');
-    const actions = document.getElementById('avatar-actions');
-    const editBtn = document.getElementById('edit-avatar');
+    const fileInput = container.querySelector('input[type="file"]');
+    const deleteInput = document.querySelector('[name$="[deleteAvatar]"]');
     const deleteBtn = document.getElementById('delete-avatar');
-    const deleteHidden = document.getElementById('profile_deleteAvatarImage');
+    const editBtn = document.getElementById('edit-avatar');
 
-    let hasImage = false;
-
-    // Image existante
+    // Vérifie s'il y a déjà une image au chargement
     const existingImage = container.dataset.existingImage;
-    if (existingImage) {
-        preview.src = existingImage;
-        preview.classList.remove('opacity-0');
-        preview.classList.add('opacity-100');
-        placeholder.classList.add('opacity-0');
-        hasImage = true;
-        actions.classList.remove('pointer-events-none');
+    if (!existingImage) {
+        deleteBtn.classList.add('hidden');
+        preview.classList.add('opacity-0');
+        placeholder.classList.remove('opacity-0');
     } else {
-        actions.classList.add('pointer-events-none');
+        deleteBtn.classList.remove('hidden');
+        preview.classList.remove('opacity-0');
+        placeholder.classList.add('opacity-0');
     }
 
-    // Upload nouvelle image
-    input.addEventListener('change', function () {
-        const file = input.files[0];
-        if (!file || !file.type.startsWith('image/')) return;
+    const showAvatar = () => {
+        preview.classList.remove('opacity-0');
+        placeholder.classList.add('opacity-0');
+        deleteBtn.classList.remove('hidden');
+    };
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            preview.classList.remove('opacity-0');
-            preview.classList.add('opacity-100');
-            placeholder.classList.add('opacity-0');
-            hasImage = true;
-            deleteHidden.value = 0;
-            actions.classList.remove('pointer-events-none');
-        };
-        reader.readAsDataURL(file);
-    });
-
-    // Edit
-    editBtn.addEventListener('click', () => input.click());
-
-    // Delete
-    deleteBtn.addEventListener('click', function () {
-        input.value = '';
+    const hideAvatar = () => {
         preview.src = '';
         preview.classList.add('opacity-0');
         placeholder.classList.remove('opacity-0');
-        hasImage = false;
-        deleteHidden.value = 1;
-        actions.classList.add('pointer-events-none');
+        deleteBtn.classList.add('hidden');
+    };
+
+    fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('avatar', file);
+
+        const response = await fetch('/profile/avatar/temp', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+            preview.src = data.url;
+            showAvatar();
+            deleteInput.value = 0;
+        }
     });
+
+    deleteBtn.addEventListener('click', () => {
+        hideAvatar();
+        fileInput.value = '';
+        deleteInput.value = 1;
+    });
+
+    editBtn.addEventListener('click', () => fileInput.click());
 });

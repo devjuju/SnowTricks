@@ -142,17 +142,20 @@ class Tricks
     /*        SETTERS        */
     /* ===================== */
 
-    public function setTitle(string $title): self
+    public function setTitle(?string $title): self
     {
+        // On peut accepter null ici, la validation NotBlank s'assurera que le titre n'est pas vide avant persistance
         $this->title = $title;
         return $this;
     }
 
-    public function setContent(string $content): self
+    public function setContent(?string $content): self
     {
+        // Même logique que pour le titre
         $this->content = $content;
         return $this;
     }
+
 
     public function setFeaturedImage(?string $featuredImage): self
     {
@@ -250,5 +253,21 @@ class Tricks
             $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/', '-', $this->title)));
             $this->slug = rtrim($slug, '-');
         }
+    }
+
+    /**
+     * @var string|null
+     */
+    private ?string $tmpFeaturedImage = null;
+
+    public function getTmpFeaturedImage(): ?string
+    {
+        return $this->tmpFeaturedImage;
+    }
+
+    public function setTmpFeaturedImage(?string $tmpFeaturedImage): self
+    {
+        $this->tmpFeaturedImage = $tmpFeaturedImage;
+        return $this;
     }
 }

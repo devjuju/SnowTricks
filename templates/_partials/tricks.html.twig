@@ -3,7 +3,7 @@
 		class="relative overflow-hidden rounded-xl shadow-lg group trick-card">
 		{# Image principale #}
 		<a href="{{ path('app_tricks_details', {slug: trick.slug}) }}">
-			<img src="{{ asset('uploads/tricks/' ~ trick.featuredImage) }}" alt="{{ trick.title }}" class="w-full h-56 object-cover transform group-hover:scale-110 transition duration-500 ease-in-out">
+			<img src="{{ asset('uploads/featured_images/' ~ trick.featuredImage) }}" alt="{{ trick.title }}" class="w-full h-56 object-cover transform group-hover:scale-110 transition duration-500 ease-in-out">
 		</a>
 
 		<div class="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm px-4 py-3">

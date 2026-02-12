@@ -6,7 +6,7 @@
 
 {% block body %}
 	<section
-		class="relative pb-12">
+		class="relative bg-[#A3A8B5] pb-12">
 
 		<!-- Hero image -->
 		<div class="absolute inset-0">
@@ -21,9 +21,9 @@
 
 				<!-- Featured Image Hero -->
 				<div class="px-6 md:px-[93px]
-																																																																																				                        bg-[url('{{ asset('uploads/tricks/' ~ trick.featuredImage) }}')]
-																																																																																				                        bg-cover bg-center bg-no-repeat min-h-[70vh] md:min-h-[60vh]
-																																																																																				                        flex items-center justify-center">
+																																																																																																																																																						                        bg-[url('{{ asset('uploads/tricks/' ~ trick.featuredImage) }}')]
+																																																																																																																																																						                        bg-cover bg-center bg-no-repeat min-h-[70vh] md:min-h-[60vh]
+																																																																																																																																																						                        flex items-center justify-center">
 
 					<div class="bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl text-center">
 						<h1 class="text-white font-bold uppercase mb-4" style="font-size: 48px">
@@ -34,7 +34,7 @@
 
 
 				{# ----------------- CAROUSEL ----------------- #}
-				<div class="relative w-full px-4 md:px-8 lg:px-8 overflow-hidden ">
+				<div class="relative w-full px-4 md:px-8 lg:px-8 overflow-hidden mt-8">
 					<div
 						id="media-wrapper" class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory">
 						{# Images existantes #}
@@ -58,7 +58,7 @@
 				</div>
 
 				<!-- Trick Content -->
-				<div class="px-4 md:px-8 lg:px-16">
+				<div class="px-4 md:px-8 lg:px-16  ">
 					<p>{{ trick.content }}</p>
 
 					<hr class="border-0 h-px bg-gray-300 my-8">

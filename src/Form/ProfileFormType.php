@@ -14,56 +14,88 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Image;
 
 class ProfileFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email', EmailType::class)
-            ->add('username', null, [
+
+            // -----------------
+            // EMAIL
+            // -----------------
+            ->add('email', EmailType::class, [
+                'empty_data' => '',
                 'constraints' => [
-                    new NotBlank(['message' => 'Le pseudo est obligatoire']),
-                    new Length(['min' => 3, 'max' => 50]),
+                    new NotBlank(message: 'L’email est obligatoire'),
                 ],
             ])
 
+            // -----------------
+            // USERNAME
+            // -----------------
+            ->add('username', null, [
+                'empty_data' => '',
+                'constraints' => [
+                    new NotBlank(message: 'Le pseudo est obligatoire'),
+                    new Length(
+                        min: 3,
+                        max: 50,
+                        minMessage: 'Le pseudo doit contenir au moins {{ limit }} caractères',
+                        maxMessage: 'Le pseudo ne peut pas dépasser {{ limit }} caractères'
+                    ),
+                ],
+            ])
+
+            // -----------------
+            // PASSWORD (OPTIONNEL)
+            // -----------------
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
                 'required' => false,
-                'first_options'  => ['label' => 'Nouveau mot de passe'],
-                'second_options' => ['label' => 'Répéter le mot de passe'],
+                'first_options'  => [
+                    'label' => 'Nouveau mot de passe',
+                ],
+                'second_options' => [
+                    'label' => 'Répéter le mot de passe',
+                ],
                 'invalid_message' => 'Les mots de passe doivent correspondre.',
                 'constraints' => [
-                    new Length([
-                        'min' => 6,
-                        'max' => 4096,
-                        'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} caractères',
-                    ])
+                    new Length(
+                        min: 6,
+                        max: 4096,
+                        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères'
+                    ),
                 ],
             ])
+
+            // -----------------
+            // AVATAR (UPLOAD)
+            // -----------------
             ->add('avatar', FileType::class, [
                 'label' => 'Avatar',
-                'mapped' => false, // upload géré manuellement
+                'mapped' => false,
                 'required' => false,
                 'constraints' => [
-                    new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => [
+                    new File(
+                        maxSize: '2M',
+                        mimeTypes: [
                             'image/jpeg',
                             'image/png',
-                            'image/webp'
+                            'image/webp',
                         ],
-                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (jpeg, png, webp).',
-                    ])
+                        mimeTypesMessage: 'Veuillez sélectionner une image valide (jpeg, png, webp).'
+                    ),
                 ],
             ])
-            // Champ caché pour suppression côté frontend/backend
+
+            // -----------------
+            // DELETE AVATAR (HIDDEN)
+            // -----------------
             ->add('deleteAvatar', HiddenType::class, [
                 'mapped' => false,
-                'data' => 0,
+                'required' => false,
             ]);
     }
 

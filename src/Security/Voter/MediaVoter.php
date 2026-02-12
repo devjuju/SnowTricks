@@ -32,7 +32,7 @@ class MediaVoter extends Voter
         }
 
         // ADMIN peut tout
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted('ROLE_MEMBER')) {
             return true;
         }
 

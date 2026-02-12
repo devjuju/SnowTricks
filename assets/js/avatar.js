@@ -9,9 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const existingImage = container.dataset.existingImage;
 
-    // ----------------------
-    // Helpers
-    // ----------------------
+    if (!existingImage) {
+        deleteBtn.classList.add('hidden');
+        preview.classList.add('opacity-0');
+        placeholder.classList.remove('opacity-0');
+    } else {
+        deleteBtn.classList.remove('hidden');
+        preview.classList.remove('opacity-0');
+        placeholder.classList.add('opacity-0');
+    }
+
     const showAvatar = () => {
         preview.classList.remove('opacity-0');
         placeholder.classList.add('opacity-0');
@@ -25,47 +32,42 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteBtn.classList.add('hidden');
     };
 
-    // ----------------------
-    // Init
-    // ----------------------
-    if (existingImage) {
-        preview.src = existingImage;
-        showAvatar();
-    } else {
-        hideAvatar();
-    }
+    const deleteTempAvatar = async () => {
+        await fetch('/profile/avatar/temp/delete', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+    };
 
-    // ----------------------
-    // Upload / preview
-    // ----------------------
-    fileInput.addEventListener('change', () => {
+    fileInput.addEventListener('change', async () => {
         const file = fileInput.files[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = e => {
-            preview.src = e.target.result;
-            showAvatar();
-        };
-        reader.readAsDataURL(file);
+        const formData = new FormData();
+        formData.append('avatar', file);
 
-        deleteInput.value = 0;
+        const response = await fetch('/profile/avatar/temp', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+            preview.src = data.url;
+            showAvatar();
+            deleteInput.value = 0;
+        }
     });
 
-    // ----------------------
-    // Delete avatar
-    // ----------------------
-    deleteBtn.addEventListener('click', () => {
-        hideAvatar();
+    deleteBtn.addEventListener('click', async () => {
+        await deleteTempAvatar();   // 👈 nettoyage serveur
+        hideAvatar();               // UI
         fileInput.value = '';
         deleteInput.value = 1;
     });
 
-    // ----------------------
-    // Edit click
-    // ----------------------
-    editBtn.addEventListener('click', () => {
-        fileInput.click();
-    });
+    editBtn.addEventListener('click', () => fileInput.click());
 });
-
