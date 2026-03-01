@@ -51,7 +51,7 @@ final class TricksController extends AbstractController
 
         // Pagination commentaires
         $page = max(1, $request->query->getInt('page', 1));
-        $limit = 5;
+        $limit = 10;
         $offset = ($page - 1) * $limit;
 
         $comments = $commentsRepository->findBy(
@@ -97,7 +97,7 @@ final class TricksController extends AbstractController
         $comments = $commentsRepository->findBy(
             ['trick' => $trick],
             ['createdAt' => 'DESC'],
-            5,
+            10,
             $offset
         );
 

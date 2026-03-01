@@ -1,100 +1,163 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const imageWrapper = document.getElementById('image-wrapper');
-    if (!imageWrapper) return;
+    const wrapper = document.getElementById('image-wrapper');
+    if (!wrapper) return;
 
-    // --- Fonctions utilitaires ---
-    const createHiddenInput = (div, name, value, className) => {
-        let input = div.querySelector(`.${className}`);
-        if (!input) {
-            input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = name;
-            input.className = className;
-            div.appendChild(input);
+    let index = parseInt(wrapper.dataset.index || 0);
+
+    const validateFile = (file) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        const maxSize = 2 * 1024 * 1024; // 2 Mo
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Type de fichier non autorisé');
+            return false;
         }
-        input.value = value;
-        return input;
+
+        if (file.size > maxSize) {
+            alert('Fichier trop lourd (max 2 Mo)');
+            return false;
+        }
+
+        return true;
     };
 
-    const initImageItem = (div) => {
-        const inputFile = div.querySelector('input[type="file"]');
-        const preview = div.querySelector('img');
-        const placeholder = div.querySelector('.image-placeholder');
-        const removeBtn = div.querySelector('.remove-item');
+    const initItem = (item, isNew = false) => {
+        const input = item.querySelector('.item-input');
+        const preview = item.querySelector('.image-preview');
+        const placeholder = item.querySelector('.image-placeholder');
+        const addBtn = item.querySelector('.item-add');
+        const editBtn = item.querySelector('.item-edit');
+        const closeBtn = item.querySelector('.item-close');
+        const removeBtn = item.querySelector('.remove-item');
+        const hiddenInput = item.querySelector('.uploaded-filename');
 
-        // --- Prévisualisation & upload TEMP ---
-        inputFile?.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+        if (!hiddenInput) return;
+
+        const showPreview = (src) => {
+            if (!preview) return;
+            preview.src = src;
+            preview.classList.remove('hidden');
+            placeholder?.classList.add('hidden');
+        };
+
+        const hidePreview = () => {
+            if (!preview) return;
+            preview.removeAttribute('src');
+            preview.classList.add('hidden');
+            placeholder?.classList.remove('hidden');
+        };
+
+        const updateUI = () => {
+            const hasImage = !!hiddenInput.value;
+            const isOpen = input && !input.classList.contains('w-0');
+            addBtn?.classList.toggle('hidden', isOpen || hasImage);
+            editBtn?.classList.toggle('hidden', !(hasImage && !isOpen));
+            closeBtn?.classList.toggle('hidden', !isOpen);
+            removeBtn?.classList.toggle('hidden', isOpen);
+        };
+
+        const openInput = () => input?.click();
+        const closeInput = () => {
+            input?.classList.add('w-0', 'opacity-0');
+            input?.classList.remove('w-full', 'opacity-100');
+            updateUI();
+        };
+
+        const upload = async (file, replace = false) => {
+            if (!validateFile(file)) return;
 
             const formData = new FormData();
             formData.append('images[]', file);
 
             try {
-                const res = await fetch('/profile/images/temp', { method: 'POST', body: formData });
+                const res = await fetch('/profile/images/temp', {
+                    method: 'POST',
+                    body: formData
+                });
                 const data = await res.json();
 
-                if (data.images?.[0]) {
-                    const filename = data.images[0].filename;
-                    const url = data.images[0].url;
-
-                    preview.src = url;
-                    preview.classList.remove('hidden');
-                    placeholder?.classList.add('hidden');
-
-                    // Stocker le nom temporaire
-                    createHiddenInput(div, 'temp_images[]', filename, 'temp-filename');
+                if (!res.ok || !data.images?.[0]) {
+                    alert(data.error || 'Erreur upload');
+                    return;
                 }
-            } catch (err) {
-                console.error('Erreur upload image temporaire', err);
-            }
-        });
 
-        // --- Suppression ---
-        removeBtn?.addEventListener('click', async () => {
-            const hidden = div.querySelector('.temp-filename');
-            if (hidden?.value) {
-                try {
-                    await fetch('/profile/images/temp/remove', {
+                const image = data.images[0];
+                const oldFilename = hiddenInput.value;
+
+                // suppression si remplacement
+                if (replace && oldFilename) {
+                    await fetch('/profile/images/temp/delete', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ filename: hidden.value })
+                        body: new URLSearchParams({ filename: oldFilename })
                     });
-                } catch (err) {
-                    console.error('Erreur suppression image temporaire', err);
                 }
+
+                hiddenInput.value = image.filename;
+                showPreview(image.url);
+                item.dataset.isTemp = 'true';
+                item.dataset.wasTemp = 'true';
+                updateUI();
+
+            } catch (e) {
+                console.error(e);
+                alert('Erreur serveur');
             }
+        };
 
-            // Marquer comme removed pour Symfony si nécessaire
-            const removed = div.querySelector('.removed-image');
-            if (removed) removed.value ||= 'new';
+        addBtn?.addEventListener('click', openInput);
+        editBtn?.addEventListener('click', openInput);
+        closeBtn?.addEventListener('click', closeInput);
 
-            div.remove();
+        input?.addEventListener('change', () => {
+            if (input.files?.[0]) {
+                const isReplacing = !!hiddenInput.value;
+                upload(input.files[0], isReplacing);
+            }
         });
+
+        removeBtn?.addEventListener('click', async () => {
+            const filename = hiddenInput.value;
+            if (filename) {
+                await fetch('/profile/images/temp/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ filename })
+                });
+            }
+            item.remove();
+        });
+
+        const existingSrc = preview?.getAttribute('src');
+        if (existingSrc) {
+            preview.classList.remove('hidden');
+            hiddenInput.value = preview.dataset.filename || existingSrc.split('/').pop();
+            item.dataset.isTemp = existingSrc.includes('/images_tmp/') ? 'true' : 'false';
+            item.dataset.wasTemp = item.dataset.isTemp;
+        } else {
+            hidePreview();
+        }
+
+        if (isNew) openInput();
+        updateUI();
     };
 
-    // --- Initialisation des items existants TEMP + base ---
-    imageWrapper.querySelectorAll('.media-item').forEach(initImageItem);
-
-    // --- Ajouter une nouvelle image via prototype ---
-    const addBtn = document.getElementById('add-image');
-    addBtn?.addEventListener('click', () => {
+    const addImage = () => {
         const proto = document.getElementById('image-prototype');
         if (!proto) return;
 
-        const index = imageWrapper.querySelectorAll('.media-item').length;
         const div = document.createElement('div');
         div.className = 'media-item media-image flex-shrink-0 w-40 snap-start relative';
         div.innerHTML = proto.dataset.prototype.replace(/__name__/g, index);
 
-        imageWrapper.appendChild(div);
-        initImageItem(div);
+        wrapper.appendChild(div);
+        index++;
+        wrapper.dataset.index = index;
 
-        // Ouvre automatiquement le fichier
-        const input = div.querySelector('input[type="file"]');
-        input?.click();
-
-        // Scroll vers la nouvelle image
+        initItem(div, true);
         div.scrollIntoView({ behavior: 'smooth', inline: 'start' });
-    });
+    };
+
+    document.getElementById('add-image')?.addEventListener('click', addImage);
+    wrapper.querySelectorAll('.media-item').forEach(item => initItem(item));
 });

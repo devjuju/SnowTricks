@@ -1,87 +1,159 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const imageWrapper = document.getElementById('image-wrapper');
-    if (!imageWrapper) return;
+    const wrapper = document.getElementById('image-wrapper-mobile');
+    if (!wrapper) return;
 
-    let imageIndex = imageWrapper.querySelectorAll('.media-item').length || 0;
+    let index = parseInt(wrapper.dataset.index || 0);
 
-    const initImageItem = (item, isNew = false) => {
-        const input = item.querySelector('.item-input');
-        if (!input) return;
+    const validateFile = (file) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        const maxSize = 2 * 1024 * 1024; // 2 Mo
 
-        const preview = item.querySelector('img');
-        const placeholder = item.querySelector('.image-placeholder');
-        const addBtn = item.querySelector('.item-add');
-        const editBtn = item.querySelector('.item-edit');
-        const closeBtn = item.querySelector('.item-close');
-        const removeBtn = item.querySelector('.remove-item');
+        if (!allowedTypes.includes(file.type)) {
+            alert('Type de fichier non autorisé');
+            return false;
+        }
+        if (file.size > maxSize) {
+            alert('Fichier trop lourd (max 2 Mo)');
+            return false;
+        }
+        return true;
+    };
 
-        const updatePreview = () => {
-            if (input.files?.[0]) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    preview.src = e.target.result;
-                    preview.classList.remove('hidden');
-                    placeholder?.classList.add('hidden');
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+    const initElement = (element, isNew = false) => {
+        const input = element.querySelector('.element-input');
+        const preview = element.querySelector('.element-image-preview');
+        const placeholder = element.querySelector('.element-image-placeholder');
+        const addBtn = element.querySelector('.element-add');
+        const editBtn = element.querySelector('.element-edit');
+        const closeBtn = element.querySelector('.element-close');
+        const removeBtn = element.querySelector('.remove-element');
+        const hiddenInput = element.querySelector('.uploaded-filename-element');
+
+        if (!hiddenInput) return;
+
+        const showPreview = (src) => {
+            if (!preview) return;
+            preview.src = src;
+            preview.classList.remove('hidden');
+            placeholder?.classList.add('hidden');
+        };
+
+        const hidePreview = () => {
+            if (!preview) return;
+            preview.removeAttribute('src');
+            preview.classList.add('hidden');
+            placeholder?.classList.remove('hidden');
         };
 
         const updateUI = () => {
-            const hasValue = input.files.length > 0;
-            const isOpen = !input.classList.contains('w-0');
-
-            addBtn?.classList.toggle('hidden', isOpen || hasValue);
-            editBtn?.classList.toggle('hidden', !(hasValue && !isOpen));
+            const hasImage = !!hiddenInput.value;
+            const isOpen = input && !input.classList.contains('w-0');
+            addBtn?.classList.toggle('hidden', isOpen || hasImage);
+            editBtn?.classList.toggle('hidden', !(hasImage && !isOpen));
             closeBtn?.classList.toggle('hidden', !isOpen);
             removeBtn?.classList.toggle('hidden', isOpen);
         };
 
-        const openInput = () => {
-            input.classList.remove('w-0', 'opacity-0');
-            input.classList.add('w-full', 'opacity-100');
-            updateUI();
-            input.focus();
-        };
-
+        const openInput = () => input?.click();
         const closeInput = () => {
-            input.classList.add('w-0', 'opacity-0');
-            input.classList.remove('w-full', 'opacity-100');
+            input?.classList.add('w-0', 'opacity-0');
+            input?.classList.remove('w-full', 'opacity-100');
             updateUI();
         };
 
-        input.addEventListener('change', () => {
-            updatePreview();
-            updateUI();
-        });
+        const upload = async (file, replace = false) => {
+            if (!validateFile(file)) return;
+
+            const formData = new FormData();
+            formData.append('images[]', file);
+
+            try {
+                const res = await fetch('/profile/images/temp', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.images?.[0]) {
+                    alert(data.error || 'Erreur upload');
+                    return;
+                }
+
+                const image = data.images[0];
+                const oldFilename = hiddenInput.value;
+
+                if (replace && oldFilename) {
+                    await fetch('/profile/images/temp/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ filename: oldFilename })
+                    });
+                }
+
+                hiddenInput.value = image.filename;
+                showPreview(image.url);
+                element.dataset.isTemp = 'true';
+                element.dataset.wasTemp = 'true';
+                updateUI();
+            } catch (e) {
+                console.error(e);
+                alert('Erreur serveur');
+            }
+        };
 
         addBtn?.addEventListener('click', openInput);
         editBtn?.addEventListener('click', openInput);
         closeBtn?.addEventListener('click', closeInput);
 
-        removeBtn?.addEventListener('click', () => {
-            const removed = item.querySelector('.removed-image');
-            if (removed) removed.value ||= 'new';
-            item.remove();
+        input?.addEventListener('change', () => {
+            if (input.files?.[0]) {
+                const isReplacing = !!hiddenInput.value;
+                upload(input.files[0], isReplacing);
+            }
         });
 
-        updatePreview();
+        removeBtn?.addEventListener('click', async () => {
+            const filename = hiddenInput.value;
+            if (filename) {
+                await fetch('/profile/images/temp/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ filename })
+                });
+            }
+            element.remove();
+        });
+
+        const existingSrc = preview?.getAttribute('src');
+        if (existingSrc) {
+            preview.classList.remove('hidden');
+            hiddenInput.value = preview.dataset.filename || existingSrc.split('/').pop();
+            element.dataset.isTemp = existingSrc.includes('/images_tmp/') ? 'true' : 'false';
+            element.dataset.wasTemp = element.dataset.isTemp;
+        } else {
+            hidePreview();
+        }
+
         if (isNew) openInput();
-        else updateUI();
+        updateUI();
     };
 
     const addImage = () => {
-        const proto = document.getElementById('image-prototype');
+        const proto = document.getElementById('image-prototype-element');
         if (!proto) return;
 
         const div = document.createElement('div');
-        div.className = 'media-item media-image flex-shrink-0 w-40 snap-start relative';
-        div.innerHTML = proto.dataset.prototype.replace(/__name__/g, imageIndex++);
-        imageWrapper.appendChild(div);
-        initImageItem(div, true);
-        div.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+        div.className = 'media-element relative border rounded overflow-hidden w-full'; // Bloc vertical
+        div.innerHTML = proto.dataset.prototype.replace(/__name__/g, index);
+
+        wrapper.appendChild(div);
+        index++;
+        wrapper.dataset.index = index;
+
+        initElement(div, true);
+        div.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    document.getElementById('add-image')?.addEventListener('click', addImage);
-    imageWrapper.querySelectorAll('.media-item').forEach(item => initImageItem(item));
+    document.getElementById('add-image-element')?.addEventListener('click', addImage);
+    wrapper.querySelectorAll('.media-element').forEach(element => initElement(element));
 });

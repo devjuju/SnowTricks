@@ -1,14 +1,12 @@
-document.querySelectorAll('[data-collapse]').forEach(button => {
-    button.addEventListener('click', () => {
-        const targetId = button.dataset.collapse;
-        const target = document.getElementById(targetId);
-        const arrow = button.querySelector('[data-arrow]');
 
+document.querySelectorAll('[data-collapse-toggle]').forEach(button => {
+    button.addEventListener('click', () => {
+        const targetId = button.getAttribute('data-collapse-toggle');
+        const target = document.getElementById(targetId);
         target.classList.toggle('hidden');
 
-        if (arrow) {
-            arrow.classList.toggle('rotate-180');
-        }
+        // Animation flèche
+        const icon = button.querySelector('i');
+        icon.classList.toggle('rotate-180');
     });
 });
-

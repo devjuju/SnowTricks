@@ -12,7 +12,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[UniqueEntity(fields: ['email'], message: 'Cette adresse e-mail est déjà utilisée.')]
+#[UniqueEntity(fields: ['username'], message: 'Ce nom d’utilisateur est déjà utilisé.')]
 #[ORM\HasLifecycleCallbacks]
 class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -33,7 +34,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private string $password;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
+    #[Assert\NotBlank(message: "Le nom d’utilisateur est obligatoire.")]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: "Le nom d’utilisateur doit faire au moins {{ limit }} caractères.",
+        maxMessage: "Le nom d’utilisateur ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9]+$/',
+        message: 'Le nom d’utilisateur ne peut contenir que des lettres et des chiffres, sans espaces ni tirets.'
+    )]
     private string $username;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
@@ -69,7 +81,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     }
     public function getUserIdentifier(): string
     {
-        return $this->email;
+        return $this->username;
     }
     public function eraseCredentials(): void {}
 
@@ -112,7 +124,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     }
     public function setUsername(string $username): self
     {
-        $this->username = $username;
+        $this->username = mb_strtolower(trim($username));
         return $this;
     }
 

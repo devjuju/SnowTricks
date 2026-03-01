@@ -1,57 +1,56 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const wrapper = document.getElementById('media-wrapper');
-    const addBtn = document.getElementById('add-video');
-    const proto = document.getElementById('video-prototype');
+    const videoWrapper = document.getElementById('video-wrapper');
+    if (!videoWrapper) return;
 
-    if (!wrapper || !addBtn || !proto) return;
-
-    let index = wrapper.querySelectorAll('.media-video').length;
+    let videoIndex = videoWrapper.querySelectorAll('.media-item').length || 0;
 
     const extractYoutubeId = (url) => {
         try {
-            const u = new URL(url);
-            if (u.hostname.includes('youtube.com')) return u.searchParams.get('v');
-            if (u.hostname === 'youtu.be') return u.pathname.substring(1);
-        } catch { }
+            const parsed = new URL(url);
+            if (parsed.hostname.includes('youtube.com')) return parsed.searchParams.get('v');
+            if (parsed.hostname === 'youtu.be') return parsed.pathname.substring(1);
+        } catch (e) { }
         return null;
     };
 
-    const initItem = (item) => {
+    const initVideoItem = (item, isNew = false) => {
         const input = item.querySelector('.item-input');
-        const iframe = item.querySelector('iframe');
-        const placeholder = item.querySelector('.video-placeholder');
+        if (!input) return;
 
-        const add = item.querySelector('.item-add');
-        const edit = item.querySelector('.item-edit');
-        const close = item.querySelector('.item-close');
-        const remove = item.querySelector('.remove-item');
+        const preview = item.querySelector('iframe');
+        const placeholder = item.querySelector('.video-placeholder');
+        const addBtn = item.querySelector('.item-add');
+        const editBtn = item.querySelector('.item-edit');
+        const closeBtn = item.querySelector('.item-close');
+        const removeBtn = item.querySelector('.remove-item');
 
         const updatePreview = () => {
             const id = extractYoutubeId(input.value.trim());
-            if (!id) {
-                iframe.src = '';
+            if (id) {
+                preview.src = `https://www.youtube.com/embed/${id}`;
+                preview.classList.remove('hidden');
+                placeholder?.classList.add('hidden');
+            } else {
+                preview.src = '';
                 placeholder?.classList.remove('hidden');
-                return;
             }
-            iframe.src = `https://www.youtube.com/embed/${id}`;
-            iframe.classList.remove('hidden');
-            placeholder?.classList.add('hidden');
         };
 
         const updateUI = () => {
             const hasValue = input.value.trim() !== '';
             const isOpen = !input.classList.contains('w-0');
 
-            add?.classList.toggle('hidden', isOpen || hasValue);
-            edit?.classList.toggle('hidden', !(hasValue && !isOpen));
-            close?.classList.toggle('hidden', !isOpen);
-            remove?.classList.toggle('hidden', isOpen);
+            addBtn?.classList.toggle('hidden', isOpen || hasValue);
+            editBtn?.classList.toggle('hidden', !(hasValue && !isOpen));
+            closeBtn?.classList.toggle('hidden', !isOpen);
+            removeBtn?.classList.toggle('hidden', isOpen);
         };
 
-        const open = () => {
+        const openInput = () => {
             input.classList.remove('w-0', 'opacity-0');
             input.classList.add('w-full', 'opacity-100');
             updateUI();
+            input.focus();
         };
 
         const closeInput = () => {
@@ -65,26 +64,33 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUI();
         });
 
-        add?.addEventListener('click', open);
-        edit?.addEventListener('click', open);
-        close?.addEventListener('click', closeInput);
+        addBtn?.addEventListener('click', openInput);
+        editBtn?.addEventListener('click', openInput);
+        closeBtn?.addEventListener('click', closeInput);
 
-        remove?.addEventListener('click', () => {
-            item.querySelector('.removed-video')?.value ||= 'new';
+        removeBtn?.addEventListener('click', () => {
+            const removed = item.querySelector('.removed-video');
+            if (removed) removed.value ||= 'new';
             item.remove();
         });
 
         updatePreview();
-        updateUI();
+        if (isNew) openInput();
+        else updateUI();
     };
 
-    addBtn.addEventListener('click', () => {
-        const div = document.createElement('div');
-        div.innerHTML = proto.dataset.prototype.replace(/__name__/g, index++);
-        wrapper.appendChild(div.firstElementChild);
-        initItem(wrapper.lastElementChild);
-        wrapper.lastElementChild.scrollIntoView({ behavior: 'smooth', inline: 'start' });
-    });
+    const addVideo = () => {
+        const proto = document.getElementById('video-prototype');
+        if (!proto) return;
 
-    wrapper.querySelectorAll('.media-video').forEach(initItem);
+        const div = document.createElement('div');
+        div.className = 'media-item media-video flex-shrink-0 w-40 snap-start relative';
+        div.innerHTML = proto.dataset.prototype.replace(/__name__/g, videoIndex++);
+        videoWrapper.appendChild(div);
+        initVideoItem(div, true);
+        div.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+    };
+
+    document.getElementById('add-video')?.addEventListener('click', addVideo);
+    videoWrapper.querySelectorAll('.media-item').forEach(item => initVideoItem(item));
 });

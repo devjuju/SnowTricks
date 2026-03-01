@@ -38,7 +38,7 @@ class VideosFixtures extends Fixture implements DependentFixtureInterface
                 $video = new Videos();
                 $video->setUrl($url);
                 $video->setTrick($trick);
-                $video->setUsers($trick->getUser()); // 🔐 assigner le propriétaire
+                $video->setUser($trick->getUser()); // ✅ setter corrigé
 
                 $manager->persist($video);
             }

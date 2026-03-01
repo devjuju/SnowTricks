@@ -8,6 +8,7 @@
 		{% else %}
 			<div class="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold" style="font-size:16px;">
 				{{ comment.user.username|first|upper }}
+
 			</div>
 		{% endif %}
 
@@ -15,10 +16,11 @@
 		<div class="flex-1 bg-gray-50 p-3 rounded-lg">
 			<div class="flex justify-between items-center mb-1">
 				<strong class="text-sm text-gray-800">
-					{{ comment.user.username }}
+
+					{{ comment.user.username|capitalize }}
 				</strong>
 				<span class="text-xs text-gray-500">
-					{{ comment.createdAt|date('d/m/Y H:i') }}
+					{{ comment.createdAt|date('d/m/Y') }}
 				</span>
 			</div>
 
