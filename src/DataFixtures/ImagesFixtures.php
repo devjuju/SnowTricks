@@ -28,7 +28,7 @@ class ImagesFixtures extends Fixture implements DependentFixtureInterface
                 $image = new Images();
                 $image->setPicture($file);
                 $image->setTrick($trick);
-                $image->setUsers($trick->getUser()); // 🔐 assigner le propriétaire
+                $image->setUser($trick->getUser()); // ✅ setter corrigé
 
                 $manager->persist($image);
             }

@@ -1,96 +1,159 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('image-container');
-    const preview = document.getElementById('featured-preview');
-    const placeholder = document.getElementById('featured-placeholder');
-    const fileInput = container.querySelector('input[type="file"]');
-    const deleteBtn = document.getElementById('delete-featured');
-    const editBtn = document.getElementById('edit-featured');
-    const deleteInput = document.querySelector('[name$="[deleteFeaturedImage]"]');
-    const errorDiv = document.getElementById('image-error');
+    const wrapper = document.getElementById('image-wrapper');
+    if (!wrapper) return;
 
-    // Vérifie si une image existait au chargement
-    const existingImage = preview.src && !preview.classList.contains('opacity-0');
-    if (!existingImage) {
-        preview.classList.add('opacity-0');
-        placeholder.classList.remove('opacity-0');
-        if (deleteBtn) deleteBtn.classList.add('hidden');
-    } else {
-        preview.classList.remove('opacity-0');
-        placeholder.classList.add('opacity-0');
-        if (deleteBtn) deleteBtn.classList.remove('hidden');
-    }
+    let index = parseInt(wrapper.dataset.index || 0);
 
-    const showPreview = (url) => {
-        preview.src = url;
-        preview.classList.remove('opacity-0');
-        placeholder.classList.add('opacity-0');
-        if (deleteBtn) deleteBtn.classList.remove('hidden');
-        deleteInput.value = 0;
-        errorDiv.innerText = '';
+    const validateFile = (file) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        const maxSize = 2 * 1024 * 1024; // 2 Mo
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Type de fichier non autorisé');
+            return false;
+        }
+        if (file.size > maxSize) {
+            alert('Fichier trop lourd (max 2 Mo)');
+            return false;
+        }
+        return true;
     };
 
-    const hidePreview = () => {
-        preview.src = '';
-        preview.classList.add('opacity-0');
-        placeholder.classList.remove('opacity-0');
-        if (deleteBtn) deleteBtn.classList.add('hidden');
-        deleteInput.value = 1;
-    };
+    const initItem = (item, isNew = false) => {
+        const input = item.querySelector('.item-input');
+        const preview = item.querySelector('.image-preview');
+        const placeholder = item.querySelector('.image-placeholder');
+        const addBtn = item.querySelector('.item-add');
+        const editBtn = item.querySelector('.item-edit');
+        const closeBtn = item.querySelector('.item-close');
+        const removeBtn = item.querySelector('.remove-item');
+        const hiddenInput = item.querySelector('.uploaded-filename');
 
-    // Upload async vers temp
-    fileInput.addEventListener('change', async () => {
-        const file = fileInput.files[0];
-        if (!file) return;
+        if (!hiddenInput) return;
 
-        const formData = new FormData();
-        formData.append('featuredImage', file);
+        const showPreview = (src) => {
+            if (!preview) return;
+            preview.src = src;
+            preview.classList.remove('hidden');
+            placeholder?.classList.add('hidden');
+        };
 
-        try {
-            const response = await fetch('/profile/tricks/featured-image/temp', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+        const hidePreview = () => {
+            if (!preview) return;
+            preview.removeAttribute('src');
+            preview.classList.add('hidden');
+            placeholder?.classList.remove('hidden');
+        };
+
+        const updateUI = () => {
+            const hasImage = !!hiddenInput.value;
+            const isOpen = input && !input.classList.contains('w-0');
+            addBtn?.classList.toggle('hidden', isOpen || hasImage);
+            editBtn?.classList.toggle('hidden', !(hasImage && !isOpen));
+            closeBtn?.classList.toggle('hidden', !isOpen);
+            removeBtn?.classList.toggle('hidden', isOpen);
+        };
+
+        const openInput = () => input?.click();
+        const closeInput = () => {
+            input?.classList.add('w-0', 'opacity-0');
+            input?.classList.remove('w-full', 'opacity-100');
+            updateUI();
+        };
+
+        const upload = async (file, replace = false) => {
+            if (!validateFile(file)) return;
+
+            const formData = new FormData();
+            formData.append('images[]', file);
+
+            try {
+                const res = await fetch('/profile/images/temp', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.images?.[0]) {
+                    alert(data.error || 'Erreur upload');
+                    return;
                 }
-            });
 
-            const data = await response.json();
+                const image = data.images[0];
+                const oldFilename = hiddenInput.value;
 
-            if (data.url) {
-                showPreview(data.url);
-            } else if (data.error) {
-                errorDiv.innerText = data.error;
-                fileInput.value = '';
-                hidePreview();
+                if (replace && oldFilename) {
+                    await fetch('/profile/images/temp/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ filename: oldFilename })
+                    });
+                }
+
+                hiddenInput.value = image.filename;
+                showPreview(image.url);
+                item.dataset.isTemp = 'true';
+                item.dataset.wasTemp = 'true';
+                updateUI();
+            } catch (e) {
+                console.error(e);
+                alert('Erreur serveur');
             }
-        } catch (err) {
-            console.error(err);
-            errorDiv.innerText = 'Erreur lors de l’upload de l’image.';
-            fileInput.value = '';
-            hidePreview();
-        }
-    });
+        };
 
-    // Bouton delete
-    if (deleteBtn) {
-        deleteBtn.addEventListener('click', () => {
-            hidePreview();
-            fileInput.value = '';
+        addBtn?.addEventListener('click', openInput);
+        editBtn?.addEventListener('click', openInput);
+        closeBtn?.addEventListener('click', closeInput);
+
+        input?.addEventListener('change', () => {
+            if (input.files?.[0]) {
+                const isReplacing = !!hiddenInput.value;
+                upload(input.files[0], isReplacing);
+            }
         });
-    }
 
-    // Bouton edit → clique sur input file
-    if (editBtn) {
-        editBtn.addEventListener('click', () => fileInput.click());
-    }
+        removeBtn?.addEventListener('click', async () => {
+            const filename = hiddenInput.value;
+            if (filename) {
+                await fetch('/profile/images/temp/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ filename })
+                });
+            }
+            item.remove();
+        });
 
-    // Bloquer submit si pas d'image (UX instantanée)
-    const form = container.closest('form');
-    form.addEventListener('submit', (e) => {
-        if (!preview.src || preview.classList.contains('opacity-0')) {
-            e.preventDefault();
-            errorDiv.innerText = 'Une image mise en avant est obligatoire.';
-            fileInput.focus();
+        const existingSrc = preview?.getAttribute('src');
+        if (existingSrc) {
+            preview.classList.remove('hidden');
+            hiddenInput.value = preview.dataset.filename || existingSrc.split('/').pop();
+            item.dataset.isTemp = existingSrc.includes('/images_tmp/') ? 'true' : 'false';
+            item.dataset.wasTemp = item.dataset.isTemp;
+        } else {
+            hidePreview();
         }
-    });
+
+        if (isNew) openInput();
+        updateUI();
+    };
+
+    const addImage = () => {
+        const proto = document.getElementById('image-prototype');
+        if (!proto) return;
+
+        const div = document.createElement('div');
+        div.className = 'media-item relative border rounded overflow-hidden w-full'; // Bloc vertical
+        div.innerHTML = proto.dataset.prototype.replace(/__name__/g, index);
+
+        wrapper.appendChild(div);
+        index++;
+        wrapper.dataset.index = index;
+
+        initItem(div, true);
+        div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    document.getElementById('add-image')?.addEventListener('click', addImage);
+    wrapper.querySelectorAll('.media-item').forEach(item => initItem(item));
 });

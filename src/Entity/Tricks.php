@@ -8,8 +8,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Entity\Timestampable;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-
+#[UniqueEntity(
+    fields: ['title'],
+    message: 'Une figure avec ce titre existe déjà.',
+    errorPath: 'title'
+)]
 #[ORM\Entity(repositoryClass: TricksRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Tricks
@@ -144,18 +151,15 @@ class Tricks
 
     public function setTitle(?string $title): self
     {
-        // On peut accepter null ici, la validation NotBlank s'assurera que le titre n'est pas vide avant persistance
         $this->title = $title;
         return $this;
     }
 
     public function setContent(?string $content): self
     {
-        // Même logique que pour le titre
         $this->content = $content;
         return $this;
     }
-
 
     public function setFeaturedImage(?string $featuredImage): self
     {
@@ -243,21 +247,8 @@ class Tricks
     }
 
     /* ===================== */
-    /*   LIFECYCLE EVENTS    */
+    /* Temporary featured image for upload workflow */
     /* ===================== */
-
-    #[ORM\PrePersist]
-    public function initializeSlug(): void
-    {
-        if (empty($this->slug) && $this->title) {
-            $slug = strtolower(trim(preg_replace('/[^a-z0-9]+/', '-', $this->title)));
-            $this->slug = rtrim($slug, '-');
-        }
-    }
-
-    /**
-     * @var string|null
-     */
     private ?string $tmpFeaturedImage = null;
 
     public function getTmpFeaturedImage(): ?string

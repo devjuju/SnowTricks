@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const videoWrapper = document.getElementById('video-wrapper');
+    const videoWrapper = document.getElementById('video-wrapper-mobile');
     if (!videoWrapper) return;
 
-    let videoIndex = videoWrapper.querySelectorAll('.media-item').length || 0;
+    let videoIndex = videoWrapper.querySelectorAll('.media-element').length || 0;
 
     const extractYoutubeId = (url) => {
         try {
@@ -13,16 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     };
 
-    const initVideoItem = (item, isNew = false) => {
-        const input = item.querySelector('.item-input');
+    const initVideoElement = (element, isNew = false) => {
+        const input = element.querySelector('.element-input');
         if (!input) return;
 
-        const preview = item.querySelector('iframe');
-        const placeholder = item.querySelector('.video-placeholder');
-        const addBtn = item.querySelector('.item-add');
-        const editBtn = item.querySelector('.item-edit');
-        const closeBtn = item.querySelector('.item-close');
-        const removeBtn = item.querySelector('.remove-item');
+        const preview = element.querySelector('iframe');
+        const placeholder = element.querySelector('.video-placeholder');
+        const addBtn = element.querySelector('.element-add');
+        const editBtn = element.querySelector('.element-edit');
+        const closeBtn = element.querySelector('.element-close');
+        const removeBtn = element.querySelector('.remove-item');
+        const hiddenInput = element.querySelector('.removed-video');
 
         const updatePreview = () => {
             const id = extractYoutubeId(input.value.trim());
@@ -69,9 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
         closeBtn?.addEventListener('click', closeInput);
 
         removeBtn?.addEventListener('click', () => {
-            const removed = item.querySelector('.removed-video');
-            if (removed) removed.value ||= 'new';
-            item.remove();
+            if (hiddenInput) hiddenInput.value = 'new';
+            element.remove();
         });
 
         updatePreview();
@@ -80,17 +80,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const addVideo = () => {
-        const proto = document.getElementById('video-prototype');
+        const proto = document.getElementById('video-prototype-element');
         if (!proto) return;
 
         const div = document.createElement('div');
-        div.className = 'media-item media-video flex-shrink-0 w-40 snap-start relative';
+        // Bloc vertical, suppression des classes de carousel
+        div.className = 'media-element media-video relative border rounded overflow-hidden w-full';
         div.innerHTML = proto.dataset.prototype.replace(/__name__/g, videoIndex++);
         videoWrapper.appendChild(div);
-        initVideoItem(div, true);
-        div.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+        initVideoElement(div, true);
+        div.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    document.getElementById('add-video')?.addEventListener('click', addVideo);
-    videoWrapper.querySelectorAll('.media-item').forEach(item => initVideoItem(item));
+    document.getElementById('add-video-element')?.addEventListener('click', addVideo);
+    videoWrapper.querySelectorAll('.media-element').forEach(element => initVideoElement(element));
 });

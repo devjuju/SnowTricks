@@ -20,33 +20,58 @@
 				class="bg-white rounded-xl shadow-lg max-w-6xl mx-auto overflow-hidden">
 
 				<!-- Featured Image Hero -->
-				<div class="px-6 md:px-[93px]
-																																																																																																																																																						                        bg-[url('{{ asset('uploads/tricks/' ~ trick.featuredImage) }}')]
-																																																																																																																																																						                        bg-cover bg-center bg-no-repeat min-h-[70vh] md:min-h-[60vh]
-																																																																																																																																																						                        flex items-center justify-center">
+				<div class="relative min-h-[30vh] sm:min-h-[55vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden">
 
-					<div class="bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl text-center">
-						<h1 class="text-white font-bold uppercase mb-4" style="font-size: 48px">
+					<img src="{{ asset('uploads/featured_images/' ~ trick.featuredImage) }}" class="absolute inset-0 w-full h-full object-cover object-top md:object-center" alt="{{ trick.title }}">
+
+					<div class="relative bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl text-center">
+						<h1 class="text-white font-bold uppercase " style="font-size: clamp(26px, 5vw, 56px)">
 							{{ trick.title }}
 						</h1>
 					</div>
+
+				</div>
+
+				{# ---------------- BOUTON COLLAPSE MOBILE ---------------- #}
+				<div class="md:hidden mt-6 px-4 mb-6">
+					<button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-gray-100 rounded-lg font-medium" data-collapse-toggle="media-collapse-mobile">
+						<span>Médias</span>
+						<i class="bi bi-chevron-down transition-transform"></i>
+					</button>
+				</div>
+
+				{# ---------------- WRAPPER COLLAPSE MOBILE ---------------- #}
+				<div
+					id="media-collapse-mobile" class="hidden md:hidden px-4 mt-4 space-y-4 mb-6">
+					{# Images mobiles #}
+					{% for image in trick.images %}
+						<div class="w-full aspect-video rounded overflow-hidden border">
+							<img src="{{ asset('uploads/images/' ~ image.picture) }}" class="w-full h-full object-cover">
+						</div>
+					{% endfor %}
+
+					{# Vidéos mobiles #}
+					{% for video in trick.videos %}
+						<div class="w-full aspect-video rounded border">
+							<iframe src="{{ video.getEmbedUrl() }}" class="w-full h-full rounded border" frameborder="0" allowfullscreen></iframe>
+						</div>
+					{% endfor %}
 				</div>
 
 
 				{# ----------------- CAROUSEL ----------------- #}
-				<div class="relative w-full px-4 md:px-8 lg:px-8 overflow-hidden mt-8">
-					<div
-						id="media-wrapper" class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory">
-						{# Images existantes #}
+				<div class="hidden md:flex relative w-full px-4 md:px-8 lg:px-8 overflow-hidden mt-8">
+					<div id="media-wrapper" class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory">
 						{% for image in trick.images %}
-							<div class="media-item media-image flex-shrink-0 w-40 snap-start relative ">
-								<div class="mb-3 w-full aspect-video rounded overflow-hidden border">
-									<img src="{{ asset('uploads/tricks/' ~ image.picture) }}" class="w-full h-full object-cover">
+							{% if image.picture %}
+								<div class="media-item media-image flex-shrink-0 w-40 snap-start relative">
+									<div class="mb-3 w-full aspect-video rounded overflow-hidden border">
+										<img src="{{ asset('uploads/images/' ~ image.picture) }}" class="w-full h-full object-cover">
+									</div>
 								</div>
-							</div>
+							{% endif %}
 						{% endfor %}
 
-						{# Vidéos existantes #}
 						{% for video in trick.videos %}
 							<div class="media-item media-video flex-shrink-0 w-40 snap-start relative">
 								<div class="video-container mb-3 w-full aspect-video rounded border relative">
@@ -91,7 +116,7 @@
 				<div class="mt-12">
 					{% if app.user %}
 						{{ form_start(commentForm, { attr: { class: 'w-full max-w-xl mx-auto bg-white p-4 rounded-lg ' } }) }}
-						<div class="flex gap-2">
+						<div class="flex flex-col md:flex-row gap-2">
 							{{ form_widget(commentForm.content, {
                             attr: {
                                 class: 'flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 h-12 resize-none',
@@ -117,25 +142,34 @@
 					<div id="comments-container" class="space-y-6">
 						{% include '_partials/comments.html.twig' with { comments: comments } %}
 					</div>
-
 					<!-- Pagination -->
-					<div class="mt-6 flex justify-center gap-2">
-						{% if page > 1 %}
-							<a href="{{ path('app_tricks_details', { slug: trick.slug, page: page-1 }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Précédent</a>
-						{% endif %}
-
-						{% for p in 1..totalPages %}
-							{% if p == page %}
-								<span class="px-3 py-1 bg-blue-600 text-white rounded">{{ p }}</span>
-							{% else %}
-								<a href="{{ path('app_tricks_details', { slug: trick.slug, page: p }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">{{ p }}</a>
+					{% if totalPages > 0 %}
+						<div
+							class="mt-6 flex justify-center gap-2">
+							{# Bouton Précédent #}
+							{% if page > 1 %}
+								<a href="{{ path('app_tricks_details', { slug: trick.slug, page: page-1 }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+									Précédent
+								</a>
 							{% endif %}
-						{% endfor %}
 
-						{% if page < totalPages %}
-							<a href="{{ path('app_tricks_details', { slug: trick.slug, page: page+1 }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Suivant</a>
-						{% endif %}
-					</div>
+							{# Numéros de pages #}
+							{% for p in 1..totalPages %}
+								{% if p == page %}
+									<span class="px-3 py-1 bg-blue-600 text-white rounded">{{ p }}</span>
+								{% else %}
+									<a href="{{ path('app_tricks_details', { slug: trick.slug, page: p }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">{{ p }}</a>
+								{% endif %}
+							{% endfor %}
+
+							{# Bouton Suivant #}
+							{% if page < totalPages %}
+								<a href="{{ path('app_tricks_details', { slug: trick.slug, page: page+1 }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+									Suivant
+								</a>
+							{% endif %}
+						</div>
+					{% endif %}
 				</div>
 
 			</div>
@@ -149,4 +183,5 @@
 {% block javascripts %}
 	{{ parent() }}
 	<script src="{{ asset('js/carousel.js') }}"></script>
+	<script src="{{ asset('js/collapse.js') }}"></script>
 {% endblock %}

@@ -15,7 +15,7 @@ class Images
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $picture = null;
 
     #[ORM\ManyToOne(inversedBy: 'images')]
@@ -24,7 +24,7 @@ class Images
 
     #[ORM\ManyToOne(inversedBy: 'images')]
     #[ORM\JoinColumn(nullable: true)]
-    private ?Users $users = null;
+    private ?Users $user = null;
 
 
     public function getId(): ?int
@@ -54,14 +54,14 @@ class Images
         return $this;
     }
 
-    public function getUsers(): ?Users
+    public function getUser(): ?Users
     {
-        return $this->users;
+        return $this->user;
     }
 
-    public function setUsers(?Users $users): static
+    public function setUser(?Users $user): static
     {
-        $this->users = $users;
+        $this->user = $user;
         return $this;
     }
 

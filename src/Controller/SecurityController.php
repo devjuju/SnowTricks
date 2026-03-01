@@ -58,9 +58,14 @@ class SecurityController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $user = $usersRepository->findOneByEmail($form->get('email')->getData());
+            $username = $form->get('username')->getData();
+
+            $user = $usersRepository->findOneBy([
+                'username' => mb_strtolower($username)
+            ]);
 
             if ($user) {
+
                 $header = [
                     'alg' => 'HS256',
                     'typ' => 'JWT'
@@ -70,23 +75,33 @@ class SecurityController extends AbstractController
                     'user_id' => $user->getId(),
                 ];
 
-                $token = $jwtService->generate($header, $payload, $this->getParameter('app.jwtsecret'));
+                $token = $jwtService->generate(
+                    $header,
+                    $payload,
+                    $this->getParameter('app.jwtsecret')
+                );
 
-                $url = $this->generateUrl('reset_password', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+                $url = $this->generateUrl(
+                    'reset_password',
+                    ['token' => $token],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
 
                 $sendEmailService->send(
                     'no-reply@snowtricks.test',
-                    $user->getEmail(),
+                    $user->getEmail(), // toujours email en base
                     'Récupération de votre mot de passe',
                     'reset_password',
                     compact('user', 'url')
                 );
-
-                $this->addFlash('success', 'E-mail de réinitialisation du mot de passe envoyé !');
-                return $this->redirectToRoute('app_login');
             }
 
-            $this->addFlash('danger', 'Un problème est survenu.');
+            // Message identique dans tous les cas
+            $this->addFlash(
+                'success',
+                'Si un compte correspond à ce nom d’utilisateur, un email a été envoyé.'
+            );
+
             return $this->redirectToRoute('app_login');
         }
 

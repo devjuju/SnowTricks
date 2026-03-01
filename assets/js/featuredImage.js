@@ -6,19 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteInput = document.querySelector('[name$="[deleteFeaturedImage]"]');
     const deleteBtn = document.getElementById('delete-featured');
     const editBtn = document.getElementById('edit-featured');
+    const errorDiv = document.getElementById('featured-error'); // ⚡ le message d'erreur
 
     const existingImage = container.dataset.existingImage;
 
     if (!existingImage) {
         hideFeaturedImage();
+        showError("La figure doit avoir une image mise en avant.");
     } else {
         showFeaturedImage();
+        hideError();
     }
 
     function showFeaturedImage() {
         preview.classList.remove('opacity-0');
         placeholder.classList.add('opacity-0');
         deleteBtn.classList.remove('hidden');
+        hideError();
     }
 
     function hideFeaturedImage() {
@@ -26,18 +30,28 @@ document.addEventListener('DOMContentLoaded', () => {
         preview.classList.add('opacity-0');
         placeholder.classList.remove('opacity-0');
         deleteBtn.classList.add('hidden');
+        showError("La figure doit avoir une image mise en avant.");
+    }
+
+    function showError(message) {
+        if (errorDiv) {
+            errorDiv.textContent = message;
+        }
+    }
+
+    function hideError() {
+        if (errorDiv) {
+            errorDiv.textContent = '';
+        }
     }
 
     async function deleteTempFeaturedImage() {
         await fetch('/profile/featured-image/temp/delete', {
             method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
         });
     }
 
-    // Upload temporaire
     fileInput.addEventListener('change', async () => {
         const file = fileInput.files[0];
         if (!file) return;
@@ -58,9 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Supprimer l'image
     deleteBtn.addEventListener('click', async () => {
-        await deleteTempFeaturedImage(); // 🔥 nettoyage serveur
+        await deleteTempFeaturedImage();
         hideFeaturedImage();
         fileInput.value = '';
         deleteInput.value = 1;
