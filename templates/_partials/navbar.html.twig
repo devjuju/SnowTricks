@@ -7,7 +7,7 @@
 				<!-- LOGO -->
 				<a href="{{ path('app_main') }}" class="flex items-center">
 					<img src="{{ asset('assets/images/logo-snowtricks-favicon.svg') }}" class="h-6 mr-3 sm:h-9" alt="SnowTricks Logo">
-					<span id="logo-text" class="self-center text-xl font-semibold text-white">SnowTricks</span>
+					<span id="logo-text" class="font-[Raleway] self-center text-xl font-semibold text-white">SnowTricks</span>
 				</a>
 
 
@@ -16,10 +16,10 @@
 					{% for label, messages in app.flashes %}
 						{% for message in messages %}
 							<div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-4 py-3 rounded-lg shadow-md max-w-xl w-full
-									                               {% if label == 'success' %} bg-green-100 text-green-800 {% endif %}
-									                               {% if label == 'error' %} bg-red-100 text-red-800 {% endif %}
-									                               {% if label == 'warning' %} bg-yellow-100 text-yellow-800 {% endif %}
-									                               {% if label == 'info' %} bg-blue-100 text-blue-800 {% endif %}">
+																											                               {% if label == 'success' %} bg-green-100 text-green-800 {% endif %}
+																											                               {% if label == 'error' %} bg-red-100 text-red-800 {% endif %}
+																											                               {% if label == 'warning' %} bg-yellow-100 text-yellow-800 {% endif %}
+																											                               {% if label == 'info' %} bg-blue-100 text-blue-800 {% endif %}">
 
 								<div class="flex items-center justify-between">
 									<div class="flex items-center space-x-2">
@@ -53,39 +53,39 @@
 
 				<!-- MENU DE NAVIGATION -->
 				<div id="mobile-menu-2" class="hidden lg:flex lg:w-auto lg:order-3 items-center justify-end
-																																																																																																																				bg-white lg:bg-transparent transition-colors duration-300  lg:shadow-none">
+																																																																																																																																bg-white lg:bg-transparent transition-colors duration-300  lg:shadow-none">
 					<ul class="flex flex-col mt-4 font-medium lg:flex-row lg:mt-0">
 						<li class="lg:border-r lg:border-gray-300 lg:pr-4">
 							<a href="{{ path('app_main') }}" class="menu-link block py-2 pl-3 pr-4											{% if app.request.attributes.get('_route') == 'app_main' %}
-																																																																																																																																																																								text-blue-600
-																																																																																																																																																																																										           {% else %}
-																																																																																																																																																																																										               text-blue-400 opacity-60
-																																																																																																																																																																																										           {% endif %}
-																																																																																																																																																																																						       text-[#001236] lg:text-white hover:underline">
+																																																																																																																																																																																										text-blue-600
+																																																																																																																																																																																																												           {% else %}
+																																																																																																																																																																																																												               text-blue-400 opacity-60
+																																																																																																																																																																																																												           {% endif %}
+																																																																																																																																																																																																								       text-[#001236] lg:text-white hover:underline">
 								Accueil
 							</a>
 						</li>
 
 						<li class="lg:border-r lg:border-gray-300 lg:px-4">
 							<a href="{{ path('app_register') }}" class="menu-link block py-2 pl-3 pr-4
-																																																																																																																																																																								{% if app.request.attributes.get('_route') == 'app_register' %}
-																																																																																																																																																																								text-blue-600
-																																																																																																																																																																								{% else %}
-																																																																																																																																																																							text-blue-400 opacity-60
-																																																																																																																																																																						{% endif %}
-																																																																																																																																																																					text-[#001236] lg:text-white hover:underline">
+																																																																																																																																																																																										{% if app.request.attributes.get('_route') == 'app_register' %}
+																																																																																																																																																																																										text-blue-600
+																																																																																																																																																																																										{% else %}
+																																																																																																																																																																																									text-blue-400 opacity-60
+																																																																																																																																																																																								{% endif %}
+																																																																																																																																																																																							text-[#001236] lg:text-white hover:underline">
 								S'inscrire
 							</a>
 						</li>
 
 						<li class="lg:pl-4">
 							<a href="{{ path('app_login') }}" class="menu-link block py-2 pl-3 pr-4
-																																																																																																																																																																								 {% if app.request.attributes.get('_route') == 'app_login' %}
-																																																																																																																																																																				text-blue-600
-																																																																																																																																																																				{% else %}
-																																																																																																																																																																				text-blue-400 opacity-60
-																																																																																																																																																																			{% endif %}
-																																																																																																																																																																			text-[#001236] lg:text-white hover:underline">
+																																																																																																																																																																																										 {% if app.request.attributes.get('_route') == 'app_login' %}
+																																																																																																																																																																																						text-blue-600
+																																																																																																																																																																																						{% else %}
+																																																																																																																																																																																						text-blue-400 opacity-60
+																																																																																																																																																																																					{% endif %}
+																																																																																																																																																																																					text-[#001236] lg:text-white hover:underline">
 								Se connecter
 							</a>
 						</li>
@@ -106,7 +106,7 @@
 				<!-- LOGO -->
 				<a href="{{ path('app_profile_index') }}" class="flex items-center">
 					<img src="{{ asset('assets/images/logo-snowtricks-favicon.svg') }}" class="h-6 mr-3 sm:h-9" alt="SnowTricks Logo">
-					<span id="logo-text" class="self-center text-xl font-semibold text-white">SnowTricks</span>
+					<span id="logo-text" class="font-[Raleway] self-center text-xl font-semibold text-white">SnowTricks</span>
 				</a>
 
 
@@ -115,10 +115,10 @@
 					{% for label, messages in app.flashes %}
 						{% for message in messages %}
 							<div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-2" class="px-4 py-3 rounded-lg shadow-md max-w-xl w-full
-																		                               {% if label == 'success' %} bg-green-100 text-green-800 {% endif %}
-																		                               {% if label == 'error' %} bg-red-100 text-red-800 {% endif %}
-																		                               {% if label == 'warning' %} bg-yellow-100 text-yellow-800 {% endif %}
-																		                               {% if label == 'info' %} bg-blue-100 text-blue-800 {% endif %}">
+																																				                               {% if label == 'success' %} bg-green-100 text-green-800 {% endif %}
+																																				                               {% if label == 'error' %} bg-red-100 text-red-800 {% endif %}
+																																				                               {% if label == 'warning' %} bg-yellow-100 text-yellow-800 {% endif %}
+																																				                               {% if label == 'info' %} bg-blue-100 text-blue-800 {% endif %}">
 
 								<div class="flex items-center justify-between">
 									<div class="flex items-center space-x-2">
@@ -152,27 +152,27 @@
 
 				<!-- MENU DE NAVIGATION -->
 				<div id="mobile-menu-2" class="hidden lg:flex lg:w-auto lg:order-3 items-center justify-end
-																																																																																																																				bg-white lg:bg-transparent transition-colors duration-300  lg:shadow-none">
+																																																																																																																																bg-white lg:bg-transparent transition-colors duration-300  lg:shadow-none">
 					<ul class="flex flex-col mt-4 font-medium lg:flex-row lg:mt-0">
 						<li class="lg:border-r lg:border-gray-300 lg:pr-4">
 							<a href="{{ path('app_profile_index') }}" class="menu-link block py-2 pl-3 pr-4											{% if app.request.attributes.get('_route') == 'app_profile_index' %}
-																																																																																																																																																																								text-blue-600
-																																																																																																																																																																																										           {% else %}
-																																																																																																																																																																																										               text-blue-400 opacity-60
-																																																																																																																																																																																										           {% endif %}
-																																																																																																																																																																																						       text-[#001236] lg:text-white hover:underline">
+																																																																																																																																																																																										text-blue-600
+																																																																																																																																																																																																												           {% else %}
+																																																																																																																																																																																																												               text-blue-400 opacity-60
+																																																																																																																																																																																																												           {% endif %}
+																																																																																																																																																																																																								       text-[#001236] lg:text-white hover:underline">
 								Accueil
 							</a>
 						</li>
 
 						<li class="lg:border-r lg:border-gray-300 lg:px-4">
 							<a href="{{ path('app_profile_tricks_add') }}" class="menu-link block py-2 pl-3 pr-4
-																																																																																																																																																																								{% if app.request.attributes.get('_route') == 'app_profile_tricks_add' %}
-																																																																																																																																																																								text-blue-600
-																																																																																																																																																																								{% else %}
-																																																																																																																																																																							text-blue-400 opacity-60
-																																																																																																																																																																						{% endif %}
-																																																																																																																																																																					text-[#001236] lg:text-white hover:underline">
+																																																																																																																																																																																										{% if app.request.attributes.get('_route') == 'app_profile_tricks_add' %}
+																																																																																																																																																																																										text-blue-600
+																																																																																																																																																																																										{% else %}
+																																																																																																																																																																																									text-blue-400 opacity-60
+																																																																																																																																																																																								{% endif %}
+																																																																																																																																																																																							text-[#001236] lg:text-white hover:underline">
 								Ajouter une figure
 							</a>
 						</li>
@@ -180,7 +180,7 @@
 						<li class="lg:pl-4">
 							<a href="{{ path('app_logout') }}" class="menu-link block py-2 pl-3 pr-4 text-blue-400 opacity-60
 									
-																																																																																																																																																							 lg:text-white hover:underline">
+																																																																																																																																																																									 lg:text-white hover:underline">
 								Se déconnecter
 							</a>
 						</li>
