@@ -15,6 +15,8 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $tricksData = [
+            ['title' => 'Mute',        'content' => 'Grab de la planche avec la main avant sur le pied avant, légèrement différent du Melon, très élégant.', 'image' => 'mute.jpg',        'category' => 'Spins',  'user' => 'Jimmy'],
+            ['title' => 'Nos grab',    'content' => 'Saisie du nez de la planche avec la main avant, idéal pour les rotations aériennes stylées.', 'image' => 'nos_grab.jpg',    'category' => 'Spins',  'user' => 'Jimmy'],
             ['title' => 'Backflip',    'content' => 'Un salto arrière complet en l’air, idéal pour impressionner sur les sauts.', 'image' => 'backflip.jpg',    'category' => 'Flips',  'user' => 'Jimmy'],
             ['title' => 'Buntslide',   'content' => 'Glisse rapide sur un rail ou une boîte avec le pied avant en premier, demandant équilibre et précision.', 'image' => 'buntslide.jpg',   'category' => 'Rails',  'user' => 'Jimmy'],
             ['title' => 'Rodeo',       'content' => 'Rotation combinée avec un flip latéral, un trick avancé pour les sauteurs expérimentés.', 'image' => 'rodeo.jpg',       'category' => 'Flips',  'user' => 'Jimmy'],
@@ -28,8 +30,7 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             ['title' => 'Stalefish',   'content' => 'Grab classique où la main arrière attrape le côté du pied arrière et la planche, très stylé.', 'image' => 'stalefish.jpg',   'category' => 'Spins',  'user' => 'Jimmy'],
             ['title' => 'Backside',    'content' => 'Rotation avec le dos orienté vers la direction de rotation, souvent 180° ou plus.', 'image' => 'backside.jpg',    'category' => 'Spins',  'user' => 'Jimmy'],
             ['title' => 'Melon',       'content' => 'Saisie de la planche avec la main avant sur le côté du pied avant, un grab classique.', 'image' => 'melon.jpg',       'category' => 'Spins',  'user' => 'Jimmy'],
-            ['title' => 'Mute',        'content' => 'Grab de la planche avec la main avant sur le pied avant, légèrement différent du Melon, très élégant.', 'image' => 'mute.jpg',        'category' => 'Spins',  'user' => 'Jimmy'],
-            ['title' => 'Nos grab',    'content' => 'Saisie du nez de la planche avec la main avant, idéal pour les rotations aériennes stylées.', 'image' => 'nos_grab.jpg',    'category' => 'Spins',  'user' => 'Jimmy'],
+
         ];
 
         foreach ($tricksData as $data) {

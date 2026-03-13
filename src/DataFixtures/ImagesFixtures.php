@@ -13,11 +13,7 @@ class ImagesFixtures extends Fixture implements DependentFixtureInterface
     {
         $imagesData = [
             'trick_nos_grab' => ['nos_grab_1.jpg', 'nos_grab_2.jpg', 'nos_grab_3.jpg'],
-            'trick_mute'     => ['mute_1.jpg', 'mute_2.jpg', 'mute_3.jpg'],
-            'trick_melon'    => ['nos_grab_1.jpg', 'nos_grab_2.jpg', 'nos_grab_3.jpg'],
-            'trick_backside' => ['mute_1.jpg', 'mute_2.jpg', 'mute_3.jpg'],
-            'trick_stalefish' => ['mute_1.jpg', 'mute_2.jpg', 'mute_3.jpg'],
-            'trick_corce'    => ['nos_grab_1.jpg', 'nos_grab_2.jpg', 'nos_grab_3.jpg'],
+            'trick_mute'     => ['mute_1.jpg', 'mute_2.jpg'],
         ];
 
         foreach ($imagesData as $trickRef => $files) {

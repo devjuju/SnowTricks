@@ -13,21 +13,18 @@ class VideosFixtures extends Fixture implements DependentFixtureInterface
     {
         $videosData = [
             'trick_nos_grab' => [
-                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                'https://www.youtube.com/watch?v=9bZkp7q19f0',
+                'https://youtu.be/hW_RhD0D-Ew?si=eme94s6Xtl-6Q3Xu',
             ],
             'trick_mute' => [
-                'https://www.youtube.com/watch?v=3JZ_D3ELwOQ',
-                'https://www.youtube.com/watch?v=L_jWHffIx5E',
-            ],
-            'trick_melon' => [
-                'https://www.youtube.com/watch?v=fJ9rUzIMcZQ',
-                'https://www.youtube.com/watch?v=oRdxUFDoQe0',
+                'https://youtu.be/mBB7CznvSPQ?si=BQ5lIYO8Z1YBE7Cc',
             ],
             'trick_backside' => [
-                'https://www.youtube.com/watch?v=ZZ5LpwO-An4',
-                'https://www.youtube.com/watch?v=OPf0YbXqDm0',
+                'https://youtu.be/XKoj-e52w30?si=EFYIeQNFFBVu5q4p',
             ],
+            'trick_frontside' => [
+                'https://youtu.be/pJxmL9uh27c?si=VFucBvk_TtDzl7Dc',
+            ]
+
         ];
 
         foreach ($videosData as $trickRef => $urls) {
