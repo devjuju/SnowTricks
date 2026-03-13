@@ -2,24 +2,18 @@
 
 namespace App\Controller\Profile;
 
-use App\Entity\Comments;
 use App\Entity\Tricks;
 use App\Entity\Images;
 use App\Entity\Videos;
 use App\Form\TrickAddFormType;
-use App\Form\TrickContributeType;
-use App\Form\TrickFormType;
 use App\Form\TrickUpdateFormType;
 use App\Repository\TricksRepository;
 use App\Service\ImagesUploaderService;
-use App\Service\ImageUploaderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Service\FeaturedImageUploaderService;
 use App\Service\FeaturedImageTempService;
 use App\Service\ImagesTempService;
