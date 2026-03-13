@@ -31,12 +31,10 @@ class TrickAddFormType extends AbstractType
             // Titre
             ->add('title', TextType::class, [
                 'attr' => ['placeholder' => 'Titre de la figure', 'class' => 'w-full rounded-xl border px-4 py-2'],
-                'constraints' => [new NotBlank(['message' => 'Veuillez entrer un titre.'])]
             ])
             // Contenu
             ->add('content', TextareaType::class, [
                 'attr' => ['placeholder' => 'Décrivez la figure en détail', 'class' => 'w-full h-28 sm:h-36 rounded-xl border px-4 py-2'],
-                'constraints' => [new NotBlank(['message' => 'Veuillez entrer un contenu.'])]
             ])
             // Catégorie
             ->add('category', EntityType::class, [
@@ -44,7 +42,6 @@ class TrickAddFormType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => 'Choisir une catégorie',
                 'attr' => ['class' => 'rounded-xl border px-4 py-2 pr-10'],
-                'constraints' => [new NotNull(['message' => 'Veuillez choisir une catégorie.'])]
             ])
             // Image mise en avant
             ->add('featuredImage', FileType::class, [
