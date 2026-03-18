@@ -321,8 +321,13 @@
 				</div>
 
 				{# ---------------- PROTOTYPES CACHÉS ---------------- #}
-				<div id="image-prototype" class="hidden" data-prototype="{{ imagePrototype|e('html_attr') }}"></div>
-				<div id="video-prototype" class="hidden" data-prototype="{{ videoPrototype|e('html_attr') }}"></div>
+				<template id="image-prototype">
+    {{ imagePrototype|raw }}
+</template>
+
+<template id="video-prototype">
+    {{ videoPrototype|raw }}
+</template>
 
 
 				<!-- Title, Content, Category -->

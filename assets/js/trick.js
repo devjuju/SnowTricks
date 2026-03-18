@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
-    /* -------- Collapse unique mobile -------- */
+    /* -------- Collapse mobile -------- */
     const collapseBtn = document.querySelector(
         '[data-collapse-toggle="media-collapse"]',
     );
     const collapseTarget = document.getElementById("media-collapse");
     const icon = collapseBtn?.querySelector("i");
+
     if (collapseBtn && collapseTarget) {
         collapseBtn.addEventListener("click", () => {
             collapseTarget.classList.toggle("hidden");
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* -------- UTILS -------- */
     const isDesktopLayout = (wrapper) =>
         window.getComputedStyle(wrapper).flexDirection === "row";
+
     const smartScroll = (wrapper, element) => {
         element.scrollIntoView({
             behavior: "smooth",
@@ -23,6 +25,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+    /* -------- SAFE TEMPLATE CLONE -------- */
+    const cloneTemplate = (templateId, index) => {
+        const template = document.getElementById(templateId);
+        if (!template) return null;
+
+        const clone = template.content.cloneNode(true);
+
+        // remplace __name__ dans TOUS les attributs
+        clone.querySelectorAll("*").forEach((el) => {
+            [...el.attributes].forEach((attr) => {
+                if (attr.value.includes("__name__")) {
+                    attr.value = attr.value.replace(/__name__/g, index);
+                }
+            });
+        });
+
+        return clone.firstElementChild;
+    };
+
+    /* -------- IMAGE SECTION -------- */
     const imageWrapper = document.getElementById("image-wrapper");
     if (!imageWrapper) return;
 
@@ -60,8 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!hiddenInput) return;
 
-        /* ---------- PREVIEW ---------- */
-
         const showPreview = (src) => {
             preview.src = src;
             preview.classList.remove("hidden");
@@ -73,8 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
             preview.classList.add("hidden");
             placeholder?.classList.remove("hidden");
         };
-
-        /* ---------- UI ---------- */
 
         const updateUI = () => {
             const hasImage = !!hiddenInput.value;
@@ -94,8 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
             updateUI();
         };
 
-        /* ---------- UPLOAD ---------- */
-
         const upload = async (file, replace = false) => {
             if (!validateFile(file)) return;
 
@@ -106,6 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await fetch("/profile/images/temp", {
                     method: "POST",
                     body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
                 });
 
                 const data = await res.json();
@@ -116,9 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 const image = data.images[0];
-
-                /* -------- remplacement image -------- */
-
                 const oldFilename = hiddenInput.value;
 
                 if (replace && oldFilename) {
@@ -133,23 +149,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 hiddenInput.value = image.filename;
-
                 showPreview(image.url);
-
                 updateUI();
-
-                console.log("Image uploadée :", image.filename);
             } catch (e) {
                 console.error(e);
                 alert("Erreur serveur");
             }
         };
 
-        /* ---------- EVENTS ---------- */
-
         input?.addEventListener("change", () => {
             if (!input.files?.[0]) return;
-
             upload(input.files[0], !!hiddenInput.value);
         });
 
@@ -158,12 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
         closeBtn?.addEventListener("click", closeInput);
 
         removeBtn?.addEventListener("click", () => {
-            if (!confirm("Voulez-vous vraiment supprimer cette image ?")) {
-                return;
-            }
+            if (!confirm("Supprimer cette image ?")) return;
 
             const filename = hiddenInput.value;
-
             if (removedInput && filename) {
                 removedInput.value = filename;
             }
@@ -171,49 +177,26 @@ document.addEventListener("DOMContentLoaded", () => {
             item.classList.add("opacity-30", "pointer-events-none");
         });
 
-        /* ---------- INIT ---------- */
-
         if (preview?.getAttribute("src")) {
             hiddenInput.value = preview.dataset.filename || "";
         } else {
             hidePreview();
         }
 
-        if (isNew) {
-            openInput();
-        } else {
-            updateUI();
-        }
+        isNew ? openInput() : updateUI();
     };
 
-    /* ---------- ADD IMAGE ---------- */
-
     const addImage = () => {
-        const proto = document.getElementById("image-prototype");
-        if (!proto) return;
+        const element = cloneTemplate("image-prototype", index++);
+        if (!element) return;
 
-        const div = document.createElement("div");
+        imageWrapper.appendChild(element);
+        initImageItem(element, true);
+        smartScroll(imageWrapper, element);
 
-        div.className =
-            "media-item media-image relative w-full md:w-40 md:flex-shrink-0 md:snap-start";
-
-        div.innerHTML = proto.dataset.prototype.replace(/__name__/g, index++);
-
-        imageWrapper.appendChild(div);
-
-        initImageItem(div, true);
-
-        div.scrollIntoView({
-            behavior: "smooth",
-            inline: "start",
-        });
-
-        /* effet visuel */
-
-        div.classList.add("ring-2", "ring-blue-400");
-
+        element.classList.add("ring-2", "ring-blue-400");
         setTimeout(() => {
-            div.classList.remove("ring-2", "ring-blue-400");
+            element.classList.remove("ring-2", "ring-blue-400");
         }, 1500);
     };
 
@@ -223,26 +206,36 @@ document.addEventListener("DOMContentLoaded", () => {
         .querySelectorAll(".media-item")
         .forEach((item) => initImageItem(item));
 
-    /* -------- VIDEOS -------- */
+    /* -------- VIDEO SECTION -------- */
     const videoWrapper = document.getElementById("video-wrapper");
+
     if (videoWrapper) {
         let videoIndex = videoWrapper.querySelectorAll(".media-item").length;
+
         const extractYoutubeId = (url) => {
             try {
                 const parsed = new URL(url);
-                if (parsed.hostname.includes("youtube.com"))
-                    return parsed.searchParams.get("v");
-                if (parsed.hostname === "youtu.be")
-                    return parsed.pathname.substring(1);
-            } catch (e) {}
-            return null;
+                let id = null;
+
+                if (parsed.hostname.includes("youtube.com")) {
+                    id = parsed.searchParams.get("v");
+                } else if (parsed.hostname === "youtu.be") {
+                    id = parsed.pathname.substring(1);
+                }
+
+                return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
+            } catch {
+                return null;
+            }
         };
 
         const initVideoItem = (item, isNew = false) => {
             const input = item.querySelector(".item-input");
             if (!input) return;
+
             const preview = item.querySelector("iframe");
             const placeholder = item.querySelector(".video-placeholder");
+
             const addBtn = item.querySelector(".item-add");
             const editBtn = item.querySelector(".item-edit");
             const closeBtn = item.querySelector(".item-close");
@@ -250,6 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const updatePreview = () => {
                 const id = extractYoutubeId(input.value.trim());
+
                 if (id) {
                     preview.src = `https://www.youtube.com/embed/${id}`;
                     preview.classList.remove("hidden");
@@ -259,20 +253,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     placeholder?.classList.remove("hidden");
                 }
             };
+
             const updateUI = () => {
                 const hasValue = input.value.trim() !== "";
                 const isOpen = !input.classList.contains("w-0");
+
                 addBtn?.classList.toggle("hidden", isOpen || hasValue);
                 editBtn?.classList.toggle("hidden", !(hasValue && !isOpen));
                 closeBtn?.classList.toggle("hidden", !isOpen);
                 removeBtn?.classList.toggle("hidden", isOpen);
             };
+
             const openInput = () => {
                 input.classList.remove("w-0", "opacity-0");
                 input.classList.add("w-full", "opacity-100");
                 updateUI();
                 input.focus();
             };
+
             const closeInput = () => {
                 input.classList.add("w-0", "opacity-0");
                 input.classList.remove("w-full", "opacity-100");
@@ -283,34 +281,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 updatePreview();
                 updateUI();
             });
+
             addBtn?.addEventListener("click", openInput);
             editBtn?.addEventListener("click", openInput);
             closeBtn?.addEventListener("click", closeInput);
             removeBtn?.addEventListener("click", () => item.remove());
 
             updatePreview();
-            if (isNew) openInput();
-            else updateUI();
+            isNew ? openInput() : updateUI();
         };
 
         const addVideo = () => {
-            const proto = document.getElementById("video-prototype");
-            if (!proto) return;
-            const div = document.createElement("div");
-            div.className =
-                "media-item media-video relative w-full md:w-40 md:flex-shrink-0 md:snap-start";
-            div.innerHTML = proto.dataset.prototype.replace(
-                /__name__/g,
-                videoIndex++,
-            );
-            videoWrapper.appendChild(div);
-            initVideoItem(div, true);
-            smartScroll(videoWrapper, div);
+            const element = cloneTemplate("video-prototype", videoIndex++);
+            if (!element) return;
+
+            videoWrapper.appendChild(element);
+            initVideoItem(element, true);
+            smartScroll(videoWrapper, element);
         };
 
         document
             .getElementById("add-video")
             ?.addEventListener("click", addVideo);
+
         videoWrapper
             .querySelectorAll(".media-item")
             .forEach((item) => initVideoItem(item));
