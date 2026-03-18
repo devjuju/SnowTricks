@@ -1,18 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    /* -------- Collapse mobile -------- */
-    const collapseBtn = document.querySelector(
-        '[data-collapse-toggle="media-collapse"]',
-    );
-    const collapseTarget = document.getElementById("media-collapse");
-    const icon = collapseBtn?.querySelector("i");
-
-    if (collapseBtn && collapseTarget) {
-        collapseBtn.addEventListener("click", () => {
-            collapseTarget.classList.toggle("hidden");
-            icon?.classList.toggle("rotate-180");
-        });
-    }
-
     /* -------- UTILS -------- */
     const isDesktopLayout = (wrapper) =>
         window.getComputedStyle(wrapper).flexDirection === "row";
@@ -23,25 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
             inline: isDesktopLayout(wrapper) ? "start" : "nearest",
             block: isDesktopLayout(wrapper) ? "nearest" : "start",
         });
-    };
-
-    /* -------- SAFE TEMPLATE CLONE -------- */
-    const cloneTemplate = (templateId, index) => {
-        const template = document.getElementById(templateId);
-        if (!template) return null;
-
-        const clone = template.content.cloneNode(true);
-
-        // remplace __name__ dans TOUS les attributs
-        clone.querySelectorAll("*").forEach((el) => {
-            [...el.attributes].forEach((attr) => {
-                if (attr.value.includes("__name__")) {
-                    attr.value = attr.value.replace(/__name__/g, index);
-                }
-            });
-        });
-
-        return clone.firstElementChild;
     };
 
     /* -------- VIDEO SECTION -------- */

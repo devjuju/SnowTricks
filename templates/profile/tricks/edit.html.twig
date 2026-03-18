@@ -431,6 +431,7 @@
 
 	{% block javascripts %}
 		{{ parent() }}
+
 		<script>
 			const IMAGE_ROUTES = {
 upload: "{{ path('profile_images_temp') }}",
@@ -438,10 +439,13 @@ delete: "{{ path('profile_images_temp_delete') }}"
 };
 		</script>
 		<script src="{{ asset('js/featuredImage.js') }}"></script>
-			<script  src="{{ asset('js/images.js') }}"></script>
+<script src="{{ asset('js/media-collapse.js') }}"></script>
+<script src="{{ asset('js/template.js') }}"></script>
+<script src="{{ asset('js/utils.js') }}"></script>
+
+				<script  src="{{ asset('js/images.js') }}"></script>
 		<script  src="{{ asset('js/videos.js') }}"></script>
 
 
-
-
+		
 	{% endblock %}
