@@ -6,10 +6,13 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\String\UnicodeString;
 
 class ImagesTempService
 {
     private ?SessionInterface $session;
+    private Filesystem $filesystem;
     private string $sessionKey = 'temp_images';
 
     public function __construct(
@@ -19,6 +22,8 @@ class ImagesTempService
         RequestStack $requestStack
     ) {
         $this->session = $requestStack->getSession();
+        $this->filesystem = new Filesystem();
+
         $this->ensureDirectoryExists($this->tempDir);
         $this->ensureDirectoryExists($this->finalDir);
     }
@@ -32,9 +37,21 @@ class ImagesTempService
     {
         $this->validateFile($file);
 
-        $safeName = $this->slugger->slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+        // Remplacement de pathinfo()
+        $originalName = (new UnicodeString($file->getClientOriginalName()))
+            ->beforeLast('.')
+            ->toString();
+
+        $safeName = $this->slugger->slug($originalName);
+
         $extension = $file->guessExtension() ?: 'bin';
-        $filename = sprintf('%s-%s.%s', $safeName, bin2hex(random_bytes(8)), $extension);
+
+        $filename = sprintf(
+            '%s-%s.%s',
+            $safeName,
+            bin2hex(random_bytes(8)),
+            $extension
+        );
 
         $file->move($this->tempDir, $filename);
 
@@ -43,11 +60,11 @@ class ImagesTempService
         return $filename;
     }
 
-    // ✅ Nouvelle méthode add()
     public function add(string $filename): void
     {
         $images = $this->getAll();
         $images[] = $filename;
+
         $this->session?->set($this->sessionKey, array_values($images));
     }
 
@@ -61,26 +78,38 @@ class ImagesTempService
         $tmpPath = $this->tempDir . '/' . $filename;
         $finalPath = $this->finalDir . '/' . $filename;
 
-        if (!is_file($tmpPath)) return false;
-        if (!rename($tmpPath, $finalPath)) return false;
+        if (!$this->filesystem->exists($tmpPath)) {
+            return false;
+        }
+
+        $this->filesystem->rename($tmpPath, $finalPath, true);
 
         $this->removeFromSession($filename);
+
         return true;
     }
 
     public function moveAllToFinal(): array
     {
         $moved = [];
+
         foreach ($this->getAll() as $filename) {
-            if ($this->moveToFinal($filename)) $moved[] = $filename;
+            if ($this->moveToFinal($filename)) {
+                $moved[] = $filename;
+            }
         }
+
         return $moved;
     }
 
     public function delete(string $filename): void
     {
         $path = $this->tempDir . '/' . $filename;
-        if (is_file($path)) unlink($path);
+
+        if ($this->filesystem->exists($path)) {
+            $this->filesystem->remove($path);
+        }
+
         $this->removeFromSession($filename);
     }
 
@@ -88,14 +117,22 @@ class ImagesTempService
     {
         foreach ($this->getAll() as $filename) {
             $path = $this->tempDir . '/' . $filename;
-            if (is_file($path)) unlink($path);
+
+            if ($this->filesystem->exists($path)) {
+                $this->filesystem->remove($path);
+            }
         }
+
         $this->session?->remove($this->sessionKey);
     }
 
     private function removeFromSession(string $filename): void
     {
-        $images = array_filter($this->getAll(), fn($img) => $img !== $filename);
+        $images = array_filter(
+            $this->getAll(),
+            fn($img) => $img !== $filename
+        );
+
         if ($images) {
             $this->session?->set($this->sessionKey, array_values($images));
         } else {
@@ -105,15 +142,19 @@ class ImagesTempService
 
     private function ensureDirectoryExists(string $dir): void
     {
-        if (!is_dir($dir)) mkdir($dir, 0775, true);
+        if (!$this->filesystem->exists($dir)) {
+            $this->filesystem->mkdir($dir, 0755);
+        }
     }
 
     private function validateFile(UploadedFile $file): void
     {
         $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+
         if (!in_array($file->getMimeType(), $allowed, true)) {
             throw new \RuntimeException('Type de fichier non autorisé.');
         }
+
         if ($file->getSize() > 5 * 1024 * 1024) {
             throw new \RuntimeException('Fichier trop volumineux (max 5MB).');
         }
