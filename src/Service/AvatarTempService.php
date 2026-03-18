@@ -5,28 +5,38 @@ namespace App\Service;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\String\UnicodeString;
 
 class AvatarTempService
 {
     private ?\Symfony\Component\HttpFoundation\Session\SessionInterface $session;
+    private Filesystem $filesystem;
 
     public function __construct(
-        private string $tempDir, // ex: public/uploads/featured_images_tmp
-        private string $finalDir, // ex: public/uploads/featured_images
+        private string $tempDir,
+        private string $finalDir,
         private SluggerInterface $slugger,
         RequestStack $requestStack
     ) {
         $this->session = $requestStack->getSession();
+        $this->filesystem = new Filesystem();
+
         $this->ensureDirectoryExists($this->tempDir);
         $this->ensureDirectoryExists($this->finalDir);
     }
 
     public function upload(UploadedFile $file): string
     {
-        $safeName = $this->slugger->slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+        // Remplacement de pathinfo()
+        $originalName = (new UnicodeString($file->getClientOriginalName()))
+            ->beforeLast('.')
+            ->toString();
+
+        $safeName = $this->slugger->slug($originalName);
+
         $filename = $safeName . '-' . uniqid() . '.' . $file->guessExtension();
 
-        // Déplacement vers dossier temporaire
         $file->move($this->tempDir, $filename);
 
         $this->session?->set('temp_avatar', $filename);
@@ -42,10 +52,15 @@ class AvatarTempService
     public function clear(): void
     {
         $filename = $this->get();
+
         if ($filename) {
             $path = $this->tempDir . '/' . $filename;
-            if (is_file($path)) unlink($path);
+
+            if ($this->filesystem->exists($path)) {
+                $this->filesystem->remove($path);
+            }
         }
+
         $this->session?->remove('temp_avatar');
     }
 
@@ -54,8 +69,8 @@ class AvatarTempService
         $tmpPath = $this->tempDir . '/' . $filename;
         $finalPath = $this->finalDir . '/' . $filename;
 
-        if (is_file($tmpPath)) {
-            rename($tmpPath, $finalPath);
+        if ($this->filesystem->exists($tmpPath)) {
+            $this->filesystem->rename($tmpPath, $finalPath, true);
         }
 
         $this->session?->remove('temp_avatar');
@@ -63,6 +78,8 @@ class AvatarTempService
 
     private function ensureDirectoryExists(string $dir): void
     {
-        if (!is_dir($dir)) mkdir($dir, 0777, true);
+        if (!$this->filesystem->exists($dir)) {
+            $this->filesystem->mkdir($dir, 0755);
+        }
     }
 }
