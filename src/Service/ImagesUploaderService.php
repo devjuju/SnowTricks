@@ -3,21 +3,34 @@
 namespace App\Service;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\String\UnicodeString;
 
 class ImagesUploaderService
 {
-    public function __construct(private string $targetDirectoryImages) {}
+    private Filesystem $filesystem;
+
+    public function __construct(
+        private string $targetDirectoryImages,
+        private SluggerInterface $slugger
+    ) {
+        $this->filesystem = new Filesystem();
+        $this->ensureDirectoryExists();
+    }
 
     public function upload(?UploadedFile $file, string $type = 'image'): ?string
     {
-        if (!$file) return null;
-
-        if (!is_dir($this->targetDirectoryImages)) {
-            mkdir($this->targetDirectoryImages, 0777, true);
+        if (!$file) {
+            return null;
         }
 
-        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '', $originalName);
+        // Remplacement de pathinfo()
+        $originalName = (new UnicodeString($file->getClientOriginalName()))
+            ->beforeLast('.')
+            ->toString();
+
+        $safeName = $this->slugger->slug($originalName);
 
         $filename = $type . '_' . $safeName . '_' . uniqid() . '.' . $file->guessExtension();
 
@@ -27,11 +40,7 @@ class ImagesUploaderService
     }
 
     /**
-     * Upload multiple files.
-     *
      * @param UploadedFile[]|null $files
-     * @param string $type
-     * @return string[] List of uploaded filenames
      */
     public function uploadMultiple(?array $files, string $type = 'image'): array
     {
@@ -43,6 +52,7 @@ class ImagesUploaderService
 
         foreach ($files as $file) {
             $filename = $this->upload($file, $type);
+
             if ($filename) {
                 $uploadedFiles[] = $filename;
             }
@@ -53,23 +63,35 @@ class ImagesUploaderService
 
     public function delete(?string $filename): void
     {
-        if (!$filename) return;
+        if (!$filename) {
+            return;
+        }
+
         $path = $this->targetDirectoryImages . '/' . $filename;
-        if (file_exists($path) && is_file($path)) {
-            unlink($path);
+
+        if ($this->filesystem->exists($path)) {
+            $this->filesystem->remove($path);
         }
     }
 
     /**
-     * Delete multiple files.
-     *
      * @param string[]|null $filenames
      */
     public function deleteMultiple(?array $filenames): void
     {
-        if (!$filenames) return;
+        if (!$filenames) {
+            return;
+        }
+
         foreach ($filenames as $filename) {
             $this->delete($filename);
+        }
+    }
+
+    private function ensureDirectoryExists(): void
+    {
+        if (!$this->filesystem->exists($this->targetDirectoryImages)) {
+            $this->filesystem->mkdir($this->targetDirectoryImages, 0755);
         }
     }
 }
