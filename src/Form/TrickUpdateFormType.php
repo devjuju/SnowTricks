@@ -102,11 +102,11 @@ class TrickUpdateFormType extends AbstractType
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Modifier',
-                'attr' => ['class' => 'px-4 py-2 bg-[#1b84ff] text-white rounded hover:bg-[#056ee9]']
+                'attr' => ['class' => 'bg-blue-600 text-white px-6 py-3 rounded-2xl hover:bg-blue-800 font-semibold transition-all duration-300 uppercase']
             ])
             ->add('delete', SubmitType::class, [
                 'label' => 'Supprimer',
-                'attr' => ['class' => 'px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600']
+                'attr' => ['class' => 'bg-[#f8285a] text-white px-6 py-3 rounded-2xl hover:bg-[#d81a48] font-semibold transition-all duration-300 uppercase '],
             ]);
     }
 

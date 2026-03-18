@@ -247,13 +247,40 @@ class TricksController extends AbstractController
     ): void {
         $currentUser = $this->getUser();
 
+        // REPLACEMENT DES IMAGES TEMPORAIRES
+        $replacements = $request->request->all('replace_images', []);
+
+        foreach ($replacements as $old => $new) {
+
+            foreach ($trick->getImages() as $image) {
+
+                if ($image->getPicture() === $old) {
+
+                    $imagesUploaderService->delete($old);
+
+                    $image->setPicture($new);
+
+                    break;
+                }
+            }
+        }
+
+        $replacedFiles = array_values($replacements);
+
         // AJOUT DES IMAGES TEMP → FINAL
         foreach ($imagesTempService->moveAllToFinal() as $filename) {
-            if (!$filename) continue; // ⚠️ sécurité anti-vide
+
+            if (!$filename) continue;
+
+            // 🔥 si déjà utilisé pour remplacement → on skip
+            if (in_array($filename, $replacedFiles, true)) {
+                continue;
+            }
+
             $image = new Images();
             $image->setPicture($filename);
             $image->setTrick($trick);
-            $image->setUser($currentUser);
+            $image->setUser($this->getUser());
 
             $trick->addImage($image);
             $em->persist($image);

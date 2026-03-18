@@ -5,7 +5,7 @@
 
 {% block body %}
 	<section
-		class="relative bg-[#D9E2F1] pb-12">
+		class="relative bg-[#979EAB] pb-12">
 
 		<!-- Hero image -->
 		<div class="absolute inset-0">
@@ -76,12 +76,12 @@
 }) }}
 					{# Actions Edit/Delete sous le cercle #}
 					<div class="absolute top-2 right-2 flex gap-2">
-						<button type="button" id="edit-featured" class="p-2 rounded bg-[#1b84ff] hover:bg-[#056ee9] text-white ">
-							<i class="bi bi-pencil"></i>
+						<button type="button" id="edit-featured" class="p-2 rounded bg-[#2563eb] hover:bg-[#1e40af] text-white shadow-lg">
+							<i class="bi bi-pencil-fill"></i>
 							<span class="sr-only">Edit</span>
 						</button>
-						<button type="button" id="delete-featured" class="p-2 rounded bg-[#f8285a] text-white hover:bg-[#d81a48]">
-							<i class="bi bi-trash"></i>
+						<button type="button" id="delete-featured" class="p-2 rounded bg-[#f8285a] text-white hover:bg-[#d81a48] shadow-lg">
+							<i class="bi bi-trash3-fill"></i>
 							<span class="sr-only">Delete</span>
 						</button>
 					</div>
@@ -111,20 +111,22 @@
 
 					<input type="hidden" class="uploaded-filename" name="images_tmp[]">
 					<input type="hidden" class="removed-image" name="removed_images[]">
+					<input type="hidden" class="replace-image" name="replace_images[]">
 
 					<div class="media-actions flex justify-end gap-2 mt-2">
 						<div class="flex flex-row-reverse items-center gap-2">
 
 							<button type="button" class="remove-item p-2 rounded bg-[#f8285a] text-white hover:bg-[#d81a48]">
-								<i class="bi bi-trash"></i>
+							<i class="bi bi-trash3-fill"></i>
+								<span class="sr-only">Remove</span>
 							</button>
 
-							<button type="button" class="item-add p-2 rounded border border-[#1b84ff] text-[#1b84ff] hover:bg-[#1b84ff] hover:text-white transition">
-								<i class="bi bi-pencil"></i>
+							<button type="button" class="item-add p-2 rounded border border-[#2563eb] text-[#2563eb] hover:bg-[#1e40af] hover:text-white transition">
+								<i class="bi bi-pencil-fill"></i>
 							</button>
 
-							<button type="button" class="item-edit hidden p-2 rounded bg-[#1b84ff] hover:bg-[#056ee9] text-white transition">
-								<i class="bi bi-pencil"></i>
+							<button type="button" class="item-edit hidden p-2 rounded border border-[#2563eb] hover:border-[#1e40af] text-white bg-[#2663eb] hover:bg-[#1e40af] hover:text-white transition">
+								<i class="bi bi-pencil-fill"></i>
 							</button>
 
 							<button type="button" class="item-close hidden p-2 rounded border border-[#f6c000] text-[#f6c000] hover:bg-[#f6c000] hover:text-white transition">
@@ -169,12 +171,12 @@
 								<i class="bi bi-trash"></i>
 							</button>
 
-							<button type="button" class="item-add p-2 rounded border border-[#1b84ff] text-[#1b84ff] hover:bg-[#1b84ff] hover:text-white transition">
-								<i class="bi bi-pencil"></i>
+							<button type="button" class="item-add p-2 rounded border border-[#2563eb] bg-white hover:bg-[#2563eb] hover:text-white transition text-[#2563eb]">
+								<i class="bi bi-pencil-fill"></i>
 							</button>
 
-							<button type="button" class="item-edit hidden p-2 rounded bg-[#1b84ff] hover:bg-[#056ee9] text-white transition">
-								<i class="bi bi-pencil"></i>
+							<button type="button" class="item-edit hidden p-2 rounded border border-[#2563eb] bg-[#2563eb] hover:bg-[#1e40af] hover:text-white transition text-[#2563eb] hover:border-[#1e40af]">
+								<i class="bi bi-pencil-fill"></i>
 							</button>
 
 							<button type="button" class="item-close hidden p-2 rounded border border-[#f6c000] text-[#f6c000] hover:bg-[#f6c000] hover:text-white transition">
@@ -236,20 +238,24 @@
 
 											<div class="media-actions flex justify-end gap-2 mt-2">
 												<div class="flex flex-row-reverse items-center gap-2">
-													<button type="button" class="remove-item p-2 rounded bg-[#f8285a] text-white">
-														<i class="bi bi-trash"></i>
+													<button type="button" class="remove-item p-2 rounded bg-[#f8285a] text-white hover:bg-[#d81a48] hover:border-[#d81a48]">
+														<i class="bi bi-trash3-fill"></i>
+														<span class="sr-only">Remove</span>
 													</button>
 
-													<button type="button" class="item-add p-2 rounded border border-[#1b84ff] text-[#1b84ff]">
-														<i class="bi bi-pencil"></i>
+													<button type="button" class="item-add p-2 rounded border border-[#2563eb] bg-[#2563eb] text-white hover:bg-[#1e40af] hover:text-white transition">
+														<i class="bi bi-pencil-fill"></i>
+														<span class="sr-only">Add</span>
 													</button>
 
-													<button type="button" class="item-edit hidden p-2 rounded bg-[#1b84ff] text-white">
-														<i class="bi bi-pencil"></i>
+													<button type="button" class="item-edit p-2 rounded border border-[#2563eb] text-white hover:bg-[#1f40ae] hover:text-white transition hidden bg-[#2563eb] hover:border-[#1f40ae]">
+														<i class="bi bi-pencil-fill"></i>
+														<span class="sr-only">Edit</span>
 													</button>
 
 													<button type="button" class="item-close hidden p-2 rounded border border-[#f6c000] text-[#f6c000]">
 														<i class="bi bi-eye-slash-fill"></i>
+														<span class="sr-only">Close</span>
 													</button>
 
 													{{ form_widget(imageForm.file, {attr:{class:'item-input w-0 opacity-0 transition-all duration-300'}}) }}
@@ -276,17 +282,21 @@
 
 										<div class="media-actions flex justify-end gap-2 mt-2">
 											<div class="flex flex-row-reverse items-center gap-2">
-												<button type="button" class="remove-item p-2 rounded border-[#f8285a] bg-[#f8285a] text-white hover:bg-[#d81a48]">
-													<i class="bi bi-trash"></i>
+												<button type="button" class="remove-item p-2 rounded border-[#f8285a] bg-[#f8285a] text-white hover:bg-[#d81a48] hover:border-[#d81a48]">
+													<i class="bi bi-trash3-fill"></i>
+													<span class="sr-only">Remove</span>
 												</button>
-												<button type="button" class="item-add p-2 rounded border border-[#1b84ff] bg-white hover:bg-[#1b84ff] hover:text-white text-[#1b84ff] transition">
-													<i class="bi bi-pencil"></i>
+												<button type="button" class="item-add p-2 rounded border bg-[#2563eb] hover:bg-[#1f40ae] text-white hidden transition">
+													<i class="bi bi-pencil-fill"></i>
+													<span class="sr-only">Add</span>
 												</button>
-												<button type="button" class="item-edit p-2 rounded bg-[#1b84ff] hover:bg-[#056ee9] text-white transition hidden">
-													<i class="bi bi-pencil"></i>
+												<button type="button" class="item-edit p-2 rounded border bg-[#2563eb] hover:bg-[#1f40ae] text-white transition hidden">
+													<i class="bi bi-pencil-fill"></i>
+													<span class="sr-only">Edit</span>
 												</button>
 												<button type="button" class="item-close p-2 rounded border border-[#f6c000] bg-white hover:bg-[#f6c000] hover:text-white text-[#f6c000] transition hidden">
 													<i class="bi bi-eye-slash-fill"></i>
+													<span class="sr-only">Close</span>
 												</button>
 
 												<input type="file" class="item-input h-10 w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm file:h-full file:border-0 file:bg-transparent" accept="image/png,image/jpeg,image/webp">
@@ -298,7 +308,7 @@
 							</div>
 
 							<div class="mt-4">
-								<button type="button" id="add-image" class="w-full px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:bg-[#056ee9] hover:text-white">
+								<button type="button" id="add-image" class="w-full px-4 py-2 bg-[#f1f1f4] text-[#2663eb] hover:bg-[#e6e6e6] rounded-2xl hover:text-[#2663eb] font-semibold transition-all duration-300 uppercase border border-[#c4cada]">
 									Ajouter une image
 								</button>
 							</div>
@@ -325,20 +335,24 @@
 
 										<div class="media-actions flex justify-end gap-2 mt-2">
 											<div class="flex flex-row-reverse items-center gap-2">
-												<button type="button" class="remove-item p-2 rounded bg-[#f8285a] text-white">
-													<i class="bi bi-trash"></i>
+												<button type="button" class="remove-item p-2 rounded bg-[#f8285a] text-white hover:bg-[#d81a48] hover:border-[#d81a48]">
+													<i class="bi bi-trash3-fill"></i>
+													<span class="sr-only">Remove</span>
 												</button>
 
-												<button type="button" class="item-add p-2 rounded border border-[#1b84ff] text-[#1b84ff]">
-													<i class="bi bi-pencil"></i>
+												<button type="button" class="item-add p-2 rounded border bg-[#2563eb] hover:bg-[#1f40ae]">
+													<i class="bi bi-pencil-fill"></i>
+													<span class="sr-only">Add</span>
 												</button>
 
-												<button type="button" class="item-edit hidden p-2 rounded bg-[#1b84ff] text-white">
-													<i class="bi bi-pencil"></i>
+												<button type="button" class="item-edit hidden p-2 rounded bg-[#2563eb] hover:bg-[#1f40ae] text-white">
+													<i class="bi bi-pencil-fill"></i>
+													<span class="sr-only">Edit</span>
 												</button>
 
 												<button type="button" class="item-close hidden p-2 rounded border border-[#f6c000] text-[#f6c000]">
 													<i class="bi bi-eye-slash-fill"></i>
+													<span class="sr-only">Close</span>
 												</button>
 
 												{{ form_widget(videoForm.url, {attr:{class:'item-input w-0 opacity-0 transition-all duration-300'}}) }}
@@ -350,7 +364,7 @@
 							</div>
 
 							<div class="mt-4">
-								<button type="button" id="add-video" class="w-full px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:bg-[#056ee9] hover:text-white">
+								<button type="button" id="add-video" class="w-full px-4 py-2 bg-[#f1f1f4] text-[#2663eb] hover:bg-[#e6e6e6] rounded-2xl hover:text-[#2663eb] font-semibold transition-all duration-300 uppercase border border-[#c4cada]">
 									Ajouter une vidéo
 								</button>
 							</div>
@@ -370,11 +384,11 @@
 					<div class="mb-4">
 						{{ form_widget(form.title, {
     attr: {
-        class: 'w-full rounded-xl border border-[#1b84ff]  bg-white px-4 py-2',
+        class: 'w-full rounded-xl border border-[#1b84ff]  bg-[white] px-4 py-2',
      
     }
 }) }}
-						<div class="text-red-500 text-sm">{{ form_errors(form.title) }}</div>
+						<div class="text-[#d81a48] text-sm">{{ form_errors(form.title) }}</div>
 					</div>
 					<div class="mb-4">
 						{{ form_widget(form.content, {
@@ -383,7 +397,7 @@
      
     }
 }) }}
-						<div class="text-red-500 text-sm">{{ form_errors(form.content) }}</div>
+						<div class="text-[#d81a48] text-sm">{{ form_errors(form.content) }}</div>
 					</div>
 					<div class="mb-4">
 						{{ form_widget(form.category, {
@@ -392,7 +406,7 @@
      
     }
 }) }}
-						<div class="text-red-500 text-sm">{{ form_errors(form.category) }}</div>
+						<div class="text-[#d81a48] text-sm">{{ form_errors(form.category) }}</div>
 					</div>
 					<div class="flex justify-end mt-4 gap-4">
 
