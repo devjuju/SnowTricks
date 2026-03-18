@@ -5,5 +5,5 @@
 
 import "./styles/app.css"; // ton CSS avec Tailwind
 import "flowbite"; // Flowbite components
-
+import "./js/navbar.js";
 console.log("Assets loaded: Stimulus + Tailwind + Flowbite ✅");

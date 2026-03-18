@@ -1,14 +1,22 @@
-const Encore = require('@symfony/webpack-encore');
+const Encore = require("@symfony/webpack-encore");
 
-Encore
-    .setOutputPath('public/build/')
-    .setPublicPath('/build')
-    .addEntry('app', './assets/app.js')
-    .enablePostCssLoader() // si tu utilises Tailwind
+if (!Encore.isRuntimeEnvironmentConfigured()) {
+    Encore.configureRuntimeEnvironment(process.env.NODE_ENV || "dev");
+}
+
+Encore.setOutputPath("public/build/")
+    .setPublicPath("/build")
+
+    .addEntry("app", "./assets/app.js")
+
+    .splitEntryChunks()
+    .enableSingleRuntimeChunk()
+
+    .enablePostCssLoader()
+
     .cleanupOutputBeforeBuild()
 
     .enableSourceMaps(!Encore.isProduction())
-    .enableVersioning(Encore.isProduction())
-    .enableSingleRuntimeChunk();
+    .enableVersioning(Encore.isProduction());
 
 module.exports = Encore.getWebpackConfig();

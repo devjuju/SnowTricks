@@ -1,11 +1,12 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
 module.exports = {
     content: [
-        './templates/**/*.html.twig', // pour scanner les templates Symfony
-        './assets/**/*.js',
-        "./node_modules/flowbite/**/*.js"         // pour scanner ton JS
+        "./assets/**/*.{js,css}",
+        "./templates/**/*.html.twig",
+        "./node_modules/flowbite/**/*.js",
     ],
-    plugins: [
-        require('flowbite/plugin')
-    ],
+    theme: {
+        extend: {},
+    },
+    plugins: [require("flowbite/plugin")],
 };
