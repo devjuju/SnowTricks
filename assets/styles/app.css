@@ -1,8 +1,15 @@
 @import "tailwindcss";
-@import "flowbite";
 
-@layer base {
-    header.fixed.scrolled {
-        @apply bg-white text-gray-800;
+@layer components {
+    .nav-link {
+        @apply block py-2 px-3 transition-all duration-300;
+    }
+
+    .nav-link-active {
+        @apply text-blue-600;
+    }
+
+    .nav-link-inactive {
+        @apply text-blue-400 opacity-60 hover:opacity-100 hover:underline;
     }
 }

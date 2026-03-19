@@ -1,9 +1,6 @@
-/*
- * Main JavaScript file
- * Included via Encore / importmap in base.html.twig
- */
+import "./styles/app.css";
+import "flowbite";
 
-import "./styles/app.css"; // ton CSS avec Tailwind
-import "flowbite"; // Flowbite components
-import "./js/navbar.js";
-console.log("Assets loaded: Stimulus + Tailwind + Flowbite ✅");
+import Alpine from "alpinejs";
+window.Alpine = Alpine;
+Alpine.start();
