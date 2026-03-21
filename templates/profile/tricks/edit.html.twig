@@ -31,32 +31,40 @@
 
 				{# Détermination du chemin de l'image mise en avant à afficher #}
 				{% set featuredPath =
-    tempFeaturedImage
-        ? asset('uploads/featured_images_tmp/' ~ tempFeaturedImage)
-        : (trick.featuredImage ? asset('uploads/featured_images/' ~ trick.featuredImage) : null)
-%}
+                    tempFeaturedImage
+                    ? asset('uploads/featured_images_tmp/' ~ tempFeaturedImage)
+                    : (trick.featuredImage ? asset('uploads/featured_images/' ~ trick.featuredImage) : null)
+                %}
 
 				{# Conteneur featured image #}
 					<div
-					id="featured-container" data-existing-image="{{ featuredPath ?? '' }}" class="relative
-																																																																																																																																																																														       w-full
-																																																																																																																																																																														       min-h-[30vh]
-																																																																																																																																																																														       sm:min-h-[55vh]
-																																																																																																																																																																														       md:min-h-[60vh]
-																																																																																																																																																																														       border-2
-																																																																																																																																																																														       flex items-center justify-center
-																																																																																																																																																																														       overflow-hidden"> {# Aperçu image #}
+					id="featured-container" data-existing-image="{{ featuredPath ?? '' }}" class="
+					relative
+					w-full
+					min-h-[30vh]
+					sm:min-h-[55vh]
+					md:min-h-[60vh]
+					border-2
+				    flex items-center justify-center
+			        overflow-hidden"> 
+					{# Aperçu image #}
 					<img
-					id="featured-preview" src="{{ featuredPath }}" class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-300 rounded-t-xl
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																		{{ featuredPath ? '' : 'opacity-0' }}">
-
+					id="featured-preview" src="{{ featuredPath }}" class="
+					absolute 
+					inset-0 
+					w-full 
+					h-full 
+					object-cover 
+					object-center 
+					transition-opacity 
+					duration-300 
+					rounded-t-xl
+					{{ featuredPath ? '' : 'opacity-0' }}">
 
 					{# Placeholder #}
-					<span id="featured-placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-200
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															           {{ featuredPath ? 'opacity-0' : '' }}" style="font-size:24px;">
+					<span id="featured-placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-200 {{ featuredPath ? 'opacity-0' : '' }}" style="font-size:24px;">
 						<i class="bi bi-person-circle"></i>
 					</span>
-
 
 					{# Overlay texte/hero (facultatif) #}
 					<div class="bg-[#00214D]/50 backdrop-blur-sm p-6 md:p-10 rounded-xl max-w-xl text-center pointer-events-none">
@@ -65,15 +73,15 @@
 						</h1>
 					</div>
 
-
 					{# Champ file Symfony #}
 					{{ form_widget(form.featuredImage, {
-    attr: {
-        class: 'hidden',
-        accept: 'image/png, image/jpeg, image/webp',
-        id: 'featured-input'
-    }
-}) }}
+                        attr: {
+                            class: 'hidden',
+                            accept: 'image/png, image/jpeg, image/webp',
+                            id: 'featured-input'
+                        }
+                    }) }}
+
 					{# Actions Edit/Delete sous le cercle #}
 					<div class="absolute top-2 right-2 flex gap-2">
 						<button type="button" id="edit-featured" class="p-2 rounded bg-[#2563eb] hover:bg-[#1e40af] text-white shadow-lg">
@@ -89,19 +97,18 @@
 					{{ form_widget(form.deleteFeaturedImage) }}
 				</div>
 
-
 				{# Erreur validation #}
 				<div id="featured-error" class="text-red-500 text-sm px-4 md:px-8 lg:px-8 mt-4">{{ form_errors(form.featuredImage) }}</div>
 
-
 				{% set imagePrototype %}
 				<div class="
-																																																																																																																																																																																																																																																																																																																								        media-item media-image relative
-																																																																																																																																																																																																																																																																																																																								        w-full
-																																																																																																																																																																																																																																																																																																																								        md:w-40
-																																																																																																																																																																																																																																																																																																																								        md:flex-shrink-0
-																																																																																																																																																																																																																																																																																																																								        md:snap-start
-																																																																																																																																																																																																																																																																																																																								    ">
+				media-item 
+				media-image
+				relative
+				w-full
+				md:w-40
+		        md:flex-shrink-0
+		        md:snap-start">
 					<div class="mb-3 w-full aspect-video rounded overflow-hidden border relative">
 						<img class="image-preview hidden w-full h-full object-cover object-center"/>
 						<div class="image-placeholder absolute inset-0 bg-gray-100 flex items-center justify-center rounded border">
@@ -134,26 +141,25 @@
 							</button>
 
 							{{ form_widget(form.images.vars.prototype.file, {
-                    attr: {
-                        class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm',
-                        accept: 'image/png,image/jpeg,image/webp'
-                    }
-                }) }}
-
+                                attr: {
+                                    class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm',
+                                    accept: 'image/png,image/jpeg,image/webp'
+                                }
+                            }) }}
 						</div>
 					</div>
 				</div>
 				{% endset %}
 
-
 				{% set videoPrototype %}
 				<div class="
-																																																																																																																																																																																																																																																																																																																								        media-item media-video relative
-																																																																																																																																																																																																																																																																																																																								        w-full
-																																																																																																																																																																																																																																																																																																																								        md:w-40
-																																																																																																																																																																																																																																																																																																																								        md:flex-shrink-0
-																																																																																																																																																																																																																																																																																																																								        md:snap-start
-																																																																																																																																																																																																																																																																																																																								    ">
+				media-item 
+				media-video 
+				relative
+		        w-full
+				md:w-40
+			    md:flex-shrink-0
+			    md:snap-start">
 					<div class="mb-3 w-full aspect-video rounded border relative">
 						<iframe class="hidden w-full h-full rounded border" frameborder="0" allowfullscreen></iframe>
 
@@ -171,11 +177,12 @@
 								<i class="bi bi-trash"></i>
 							</button>
 
+							
 							<button type="button" class="item-add p-2 rounded border border-[#2563eb] bg-white hover:bg-[#2563eb] hover:text-white transition text-[#2563eb]">
 								<i class="bi bi-pencil-fill"></i>
 							</button>
 
-							<button type="button" class="item-edit hidden p-2 rounded border border-[#2563eb] bg-[#2563eb] hover:bg-[#1e40af] hover:text-white transition text-[#2563eb] hover:border-[#1e40af]">
+							<button type="button" class="item-edit hidden p-2 rounded border border-[#2563eb] bg-[#2563eb] hover:bg-[#1e40af] hover:text-white transition text-white hover:border-[#1e40af]">
 								<i class="bi bi-pencil-fill"></i>
 							</button>
 
@@ -184,19 +191,17 @@
 							</button>
 
 							{{ form_widget(form.videos.vars.prototype.url, {
-                    attr: {
-                        class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2',
-                        placeholder: 'Lien YouTube'
-                    }
-                }) }}
-
+                                attr: {
+                                    class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2',
+                                    placeholder: 'Lien YouTube'
+                                }
+                            }) }}
 						</div>
 					</div>
 				</div>
 				{% endset %}
 
-
-				{# ---------------- BOUTON COLLAPSE UNIQUE MOBILE ---------------- #}
+				{# ----- BOUTON COLLAPSE UNIQUE MOBILE ----- #}
 				<div class="md:hidden mt-6 px-4 mb-6">
 					<button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-gray-100 rounded-lg font-medium" data-collapse-toggle="media-collapse">
 						<span>Médias</span>
@@ -204,19 +209,24 @@
 					</button>
 				</div>
 
-				{# ---------------- WRAPPER COLLAPSE / GRILLE ---------------- #}
+				{# ------ WRAPPER COLLAPSE / GRILLE ----- #}
 				<div id="media-collapse" class="hidden md:block">
-
 					<div
 						class="grid md:grid-cols-2 gap-8 px-4 md:px-8 lg:px-8 mt-8 mb-8">
 
-						{# ==================== IMAGES ==================== #}
+						{# ============== IMAGES ============= #}
 						<div class="relative">
-
 							<div
-								id="image-wrapper" data-index="{{ form.images|length }}" class="grid grid-cols-1 gap-6
-																																																																																																																																																																																																																																																																																																																																																																																																																																			                        md:flex md:flex-row md:gap-4
-																																																																																																																																																																																																																																																																																																																																																																																																																																			                        md:overflow-x-auto md:scroll-smooth md:snap-x md:snap-mandatory">
+								id="image-wrapper" data-index="{{ form.images|length }}" class="
+								grid 
+								grid-cols-1 
+								gap-6
+							    md:flex 
+								md:flex-row 
+								md:gap-4
+				                md:overflow-x-auto 
+								md:scroll-smooth 
+								md:snap-x md:snap-mandatory">
 
 								{# Images existantes #}
 								{% for imageForm in form.images %}
@@ -315,12 +325,19 @@
 
 						</div>
 
-						{# ==================== VIDEOS ==================== #}
+						{# ========== VIDEOS =========== #}
 						<div class="relative">
 
-							<div id="video-wrapper" class="grid grid-cols-1 gap-6
-																																																																																																																																																																																																																																																																																																																																																																																																																																			                                             md:flex md:flex-row md:gap-4
-																																																																																																																																																																																																																																																																																																																																																																																																																																			                                             md:overflow-x-auto md:scroll-smooth md:snap-x md:snap-mandatory">
+							<div id="video-wrapper" class="
+							grid 
+							grid-cols-1 
+							gap-6
+							md:flex 
+							md:flex-row 
+							md:gap-4
+							md:overflow-x-auto 
+							md:scroll-smooth 
+							md:snap-x md:snap-mandatory">
 
 								{% for videoForm in form.videos %}
 									<div class="media-item media-video relative w-full md:w-40 md:flex-shrink-0 md:snap-start">
@@ -376,41 +393,37 @@
 
 				{# ---------------- PROTOTYPES CACHÉS ---------------- #}
 				<template id="image-prototype">
-    {{ imagePrototype|raw }}
-</template>
+                    {{ imagePrototype|raw }}
+                </template>
 
-<template id="video-prototype">
-    {{ videoPrototype|raw }}
-</template>
-
+                <template id="video-prototype">
+                    {{ videoPrototype|raw }}
+                </template>
 
 				<!-- Title, Content, Category -->
 				<div class="px-4 md:px-8 lg:px-24">
 					<div class="mb-4">
 						{{ form_widget(form.title, {
-    attr: {
-        class: 'w-full rounded-xl border border-[#1b84ff]  bg-[white] px-4 py-2',
-     
-    }
-}) }}
+                            attr: {
+                                class: 'w-full rounded-xl border border-[#1b84ff]  bg-[white] px-4 py-2',
+                            }
+                        }) }}
 						<div class="text-[#d81a48] text-sm">{{ form_errors(form.title) }}</div>
 					</div>
 					<div class="mb-4">
 						{{ form_widget(form.content, {
-    attr: {
-        class: 'w-full h-28 sm:h-36 rounded-xl border border-[#1b84ff]  bg-white px-4 py-2 ',
-     
-    }
-}) }}
+                            attr: {
+                                class: 'w-full h-28 sm:h-36 rounded-xl border border-[#1b84ff]  bg-white px-4 py-2 ',
+                            }
+                        }) }}
 						<div class="text-[#d81a48] text-sm">{{ form_errors(form.content) }}</div>
 					</div>
 					<div class="mb-4">
 						{{ form_widget(form.category, {
-    attr: {
-        class: ' rounded-xl border border-[#1b84ff]  bg-white px-4 py-2  px-4 pr-10 py-2 ',
-     
-    }
-}) }}
+                            attr: {
+                                class: ' rounded-xl border border-[#1b84ff]  bg-white px-4 py-2  px-4 pr-10 py-2 ',
+                            }
+                        }) }}
 						<div class="text-[#d81a48] text-sm">{{ form_errors(form.category) }}</div>
 					</div>
 					<div class="flex justify-end mt-4 gap-4">
@@ -418,11 +431,9 @@
 						{{ form_row(form.delete) }}
 						{{ form_row(form.save) }}
 					</div>
-
+					{# Token CSRF #}
 					{{ form_widget(form._token) }}
 					{{ form_end(form, { render_rest: false }) }}
-
-
 				</div>
 			</div>
 		</section>
@@ -431,21 +442,16 @@
 
 	{% block javascripts %}
 		{{ parent() }}
-
 		<script>
 			const IMAGE_ROUTES = {
-upload: "{{ path('profile_images_temp') }}",
-delete: "{{ path('profile_images_temp_delete') }}"
-};
+                upload: "{{ path('profile_images_temp') }}",
+                delete: "{{ path('profile_images_temp_delete') }}"
+            };
 		</script>
 		<script src="{{ asset('js/featuredImage.js') }}"></script>
-<script src="{{ asset('js/media-collapse.js') }}"></script>
-<script src="{{ asset('js/template.js') }}"></script>
-<script src="{{ asset('js/utils.js') }}"></script>
-
-				<script  src="{{ asset('js/images.js') }}"></script>
+        <script src="{{ asset('js/media-collapse.js') }}"></script>
+        <script src="{{ asset('js/template.js') }}"></script>
+        <script src="{{ asset('js/utils.js') }}"></script>
+		<script  src="{{ asset('js/images.js') }}"></script>
 		<script  src="{{ asset('js/videos.js') }}"></script>
-
-
-		
 	{% endblock %}

@@ -10,55 +10,57 @@
 		Mon profil
 	</h1>
 
-	<div class="w-full max-w-md sm:max-w-lg mx-4 sm:mx-auto
-																																						bg-white py-12 px-8
-																																															            sm:py-16 sm:px-12
-																																															            md:px-20
-																																															            rounded-[20px]
-																																															            shadow-[0_18px_45px_rgba(0,0,0,0.12)]
-																																															            space-y-6">
+	<div class="
+	w-full 
+	max-w-md 
+	sm:max-w-lg 
+	mx-4 
+	sm:mx-auto
+  bg-white 
+    py-12
+	px-8
+	sm:py-16 
+	sm:px-12
+	md:px-20
+	rounded-[20px]
+	shadow-[0_18px_45px_rgba(0,0,0,0.12)]
+	space-y-6">
 		<h1 class="font-[Raleway] text-black text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center uppercase md:hidden">
 			Mon profil
 		</h1>
 
 		{{ form_start(profileForm, { attr: { novalidate: 'novalidate', enctype:'multipart/form-data' } }) }}
 
-
 		{# Avatar Upload #}
 		<div
 			class="mb-6 flex flex-col items-center relative group">
 			{# Détermination du chemin de l'avatar à afficher #}
 			{% set avatarPath =
-    tempAvatar
-        ? asset('uploads/avatars_tmp/' ~ tempAvatar)
-        : (user.avatar ? asset('uploads/avatars/' ~ user.avatar) : null)
-%}
-
+                tempAvatar
+                ? asset('uploads/avatars_tmp/' ~ tempAvatar)
+                : (user.avatar ? asset('uploads/avatars/' ~ user.avatar) : null)
+            %}
 			{# Conteneur cercle avatar #}
 			<div
 				id="avatar-container" data-existing-image="{{ avatarPath ?? '' }}" class="w-32 h-32 border-2 rounded-full flex items-center justify-center cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-blue-400 hover:bg-gray-50 bg-blue-600 ">
 
 				{# Aperçu image #}
 				<img
-				id="avatar-preview" src="{{ avatarPath }}" class="absolute inset-0 w-full h-full object-cover rounded-full
-																																																																																           {{ avatarPath ? '' : 'opacity-0' }}">
-
+				id="avatar-preview" src="{{ avatarPath }}" class="absolute inset-0 w-full h-full object-cover rounded-full {{ avatarPath ? '' : 'opacity-0' }}">
 
 				{# Placeholder #}
 				<span id="avatar-placeholder" class="absolute text-white transition-opacity duration-300 text-center
-																																																																											           {{ avatarPath ? 'opacity-0' : '' }}" style="font-size:24px;">
+				{{ avatarPath ? 'opacity-0' : '' }}" style="font-size:24px;">
 					<i class="bi bi-person-circle"></i>
 				</span>
 
-
 				{# Champ file Symfony #}
 				{{ form_widget(profileForm.avatar, { 
-            attr: { 
-                class: 'absolute w-full h-full opacity-0 cursor-pointer rounded-full', 
-                accept: 'image/png, image/jpeg, image/webp' 
-            } 
-        }) }}
-
+                    attr: { 
+                        class: 'absolute w-full h-full opacity-0 cursor-pointer rounded-full', 
+                        accept: 'image/png, image/jpeg, image/webp' 
+                        } 
+                }) }}
 			</div>
 
 			{# Actions Edit/Delete sous le cercle #}
@@ -78,13 +80,9 @@
 				{{ form_errors(profileForm.avatar) }}
 			</div>
 
-
 			{# Champ caché suppression (backend) #}
 			{{ form_widget(profileForm.deleteAvatar) }}
-
-
 		</div>
-
 
 		{# Email #}
 		<div class="space-y-2 text-center">
@@ -124,13 +122,11 @@
                 class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition">
             Modifier mon profil
         </button>
-
         {{ form_end(profileForm) }}
-
     </div>
 </section>
-
 {% endblock %}
+
 {% block javascripts %}
 	{{ parent() }}
 	<script src="{{ asset('js/avatar.js') }}"></script>

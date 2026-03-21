@@ -44,6 +44,11 @@ class TrickContributeController extends AbstractController
             throw $this->createAccessDeniedException('Vous ne pouvez pas contribuer à cette figure.');
         }
 
+        // Si ce n'est pas un POST, on vide les temporaires
+        if (!$request->isMethod('POST')) {
+            $imagesTempService->clear();
+        }
+
         $form = $this->createForm(TrickContributeType::class, $trick);
         $form->handleRequest($request);
 

@@ -10,9 +10,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class TrickContributeType extends AbstractType
 {
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
 
@@ -47,8 +50,7 @@ class TrickContributeType extends AbstractType
                 'prototype_name' => '__video__',
                 'required' => false,
                 'label' => false,
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -107,7 +107,7 @@ class TrickAddFormType extends AbstractType
             ->add('save', SubmitType::class, [
                 'label' => 'Ajouter',
                 'attr' => [
-                    'class' => 'px-4 py-2 bg-[#1b84ff] text-white rounded hover:bg-[#056ee9]'
+                    'class' => 'bg-blue-600 text-white px-6 py-3 rounded-2xl hover:bg-blue-800 font-semibold transition-all duration-300 uppercase',
                 ]
             ]);
     }

@@ -27,7 +27,6 @@
 
 				</div>
 
-
 				{# Flash messages #}
 				{% for label, messages in app.flashes %}
 					{% for message in messages %}
@@ -36,14 +35,16 @@
 				{% endfor %}
 
 				{{ form_start(form, { attr: { novalidate:'novalidate', enctype:'multipart/form-data' } }) }}
+				
 				{% set imagePrototype %}
 				<div class="
-																																																																																																																		        media-item media-image relative
-																																																																																																																		        w-full
-																																																																																																																		        md:w-40
-																																																																																																																		        md:flex-shrink-0
-																																																																																																																		        md:snap-start
-																																																																																																																		    ">
+				media-item
+				media-image 
+				relative
+				w-full
+				md:w-40
+		        md:flex-shrink-0
+				md:snap-start">
 					<div class="mb-3 w-full aspect-video rounded overflow-hidden border relative">
 						<img class="image-preview hidden w-full h-full object-cover object-center"/>
 						<div class="image-placeholder absolute inset-0 bg-gray-100 flex items-center justify-center rounded border">
@@ -58,15 +59,15 @@
 						<div class="flex flex-row-reverse items-center gap-2">
 
 							<button type="button" class="remove-item p-2 rounded bg-[#f8285a] text-white hover:bg-[#d81a48]">
-								<i class="bi bi-trash"></i>
+								<i class="bi bi-trash3-fill"></i>
 							</button>
 
-							<button type="button" class="item-add p-2 rounded border border-[#1b84ff] text-[#1b84ff] hover:bg-[#1b84ff] hover:text-white transition">
-								<i class="bi bi-pencil"></i>
+							<button type="button" class="item-add p-2 rounded border border-[#2563eb] text-white hover:bg-[#1e40af] hover:text-white transition">
+								<i class="bi bi-pencil-fill"></i>
 							</button>
 
-							<button type="button" class="item-edit hidden p-2 rounded bg-[#1b84ff] hover:bg-[#056ee9] text-white transition">
-								<i class="bi bi-pencil"></i>
+							<button type="button" class="item-edit hidden p-2 rounded border border-[#2563eb] hover:border-[#1e40af] text-white bg-[#2663eb] hover:bg-[#1e40af] hover:text-white transition">
+								<i class="bi bi-pencil-fill"></i>
 							</button>
 
 							<button type="button" class="item-close hidden p-2 rounded border border-[#f6c000] text-[#f6c000] hover:bg-[#f6c000] hover:text-white transition">
@@ -74,26 +75,25 @@
 							</button>
 
 							{{ form_widget(form.images.vars.prototype.file, {
-                    attr: {
-                        class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm',
-                        accept: 'image/png,image/jpeg,image/webp'
-                    }
-                }) }}
-
+                                attr: {
+                                    class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 text-sm',
+                                    accept: 'image/png,image/jpeg,image/webp'
+                                }
+                            }) }}
 						</div>
 					</div>
 				</div>
 				{% endset %}
 
-
 				{% set videoPrototype %}
 				<div class="
-																																																																																																																		        media-item media-video relative
-																																																																																																																		        w-full
-																																																																																																																		        md:w-40
-																																																																																																																		        md:flex-shrink-0
-																																																																																																																		        md:snap-start
-																																																																																																																		    ">
+				media-item 
+				media-video 
+				relative
+				w-full
+				md:w-40
+				md:flex-shrink-0
+				md:snap-start">
 					<div class="mb-3 w-full aspect-video rounded border relative">
 						<iframe class="hidden w-full h-full rounded border" frameborder="0" allowfullscreen></iframe>
 
@@ -108,15 +108,15 @@
 						<div class="flex flex-row-reverse items-center gap-2">
 
 							<button type="button" class="remove-item p-2 rounded bg-[#f8285a] text-white hover:bg-[#d81a48]">
-								<i class="bi bi-trash"></i>
+								<i class="bi bi-trash3-fill"></i>
 							</button>
 
-							<button type="button" class="item-add p-2 rounded border border-[#1b84ff] text-[#1b84ff] hover:bg-[#1b84ff] hover:text-white transition">
-								<i class="bi bi-pencil"></i>
+							<button type="button" class="item-add p-2 rounded border border-[#2563eb] bg-white hover:bg-[#2563eb] hover:text-white transition text-[#2563eb]">
+								<i class="bi bi-pencil-fill"></i>
 							</button>
 
-							<button type="button" class="item-edit hidden p-2 rounded bg-[#1b84ff] hover:bg-[#056ee9] text-white transition">
-								<i class="bi bi-pencil"></i>
+							<button type="button" class="item-edit hidden p-2 rounded border border-[#2563eb] bg-[#2563eb] hover:bg-[#1e40af] hover:text-white transition text-white hover:border-[#1e40af]">
+								<i class="bi bi-pencil-fill"></i>
 							</button>
 
 							<button type="button" class="item-close hidden p-2 rounded border border-[#f6c000] text-[#f6c000] hover:bg-[#f6c000] hover:text-white transition">
@@ -124,19 +124,18 @@
 							</button>
 
 							{{ form_widget(form.videos.vars.prototype.url, {
-                    attr: {
-                        class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2',
-                        placeholder: 'Lien YouTube'
-                    }
-                }) }}
-
+                                attr: {
+                                    class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2',
+                                    placeholder: 'Lien YouTube'
+                                }
+                            }) }}
 						</div>
 					</div>
 				</div>
 				{% endset %}
 
 
-				{# ---------------- BOUTON COLLAPSE UNIQUE MOBILE ---------------- #}
+				{# -------- BOUTON COLLAPSE UNIQUE MOBILE ------- #}
 				<div class="md:hidden mt-6 px-4 mb-6">
 					<button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-gray-100 rounded-lg font-medium" data-collapse-toggle="media-collapse">
 						<span>Médias</span>
@@ -144,19 +143,27 @@
 					</button>
 				</div>
 
-				{# ---------------- WRAPPER COLLAPSE / GRILLE ---------------- #}
+				{# -------- WRAPPER COLLAPSE / GRILLE ------ #}
 				<div id="media-collapse" class="hidden md:block">
 
 					<div
 						class="grid md:grid-cols-2 gap-8 px-4 md:px-8 lg:px-8 mt-8 mb-8">
 
-						{# ==================== IMAGES ==================== #}
+						{# ============= IMAGES =========== #}
 						<div class="relative">
 
 							<div
-								id="image-wrapper" data-index="{{ form.images|length }}" class="grid grid-cols-1 gap-6
-																																																																																																																																						                        md:flex md:flex-row md:gap-4
-																																																																																																																																						                        md:overflow-x-auto md:scroll-smooth md:snap-x md:snap-mandatory">
+								id="image-wrapper" data-index="{{ form.images|length }}" class="
+								grid 
+								grid-cols-1 
+								gap-6
+								md:flex 
+								md:flex-row 
+								md:gap-4
+								md:overflow-x-auto 
+								md:scroll-smooth 
+								md:snap-x 
+								md:snap-mandatory">
 
 								{# Images existantes #}
 								{% for imageForm in form.images %}
@@ -175,16 +182,16 @@
 												<div class="flex flex-row-reverse items-center gap-2">
 													{% if is_granted('MEDIA_DELETE', media) %}
 														<button type="button" class="remove-item p-2 rounded border-[#f8285a] bg-[#f8285a] text-white hover:bg-[#d81a48]">
-															<i class="bi bi-trash"></i>
+															<i class="bi bi-trash3-fill"></i>
 														</button>
 													{% endif %}
 
 													{{ form_widget(imageForm.file, {
-                                attr: {
-                                    class: 'item-input h-10 w-0 opacity-0 hidden',
-                                    accept: 'image/png,image/jpeg,image/webp'
-                                }
-                            }) }}
+                                                        attr: {
+                                                            class: 'item-input h-10 w-0 opacity-0 hidden',
+                                                            accept: 'image/png,image/jpeg,image/webp'
+                                                        }
+                                                    }) }}
 												</div>
 											</div>
 										</div>
@@ -194,19 +201,27 @@
 							</div>
 
 							<div class="mt-4">
-								<button type="button" id="add-image" class="w-full px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:bg-[#056ee9] hover:text-white">
+								<button type="button" id="add-image" class="w-full px-4 py-2 bg-[#f1f1f4] text-[#2663eb] hover:bg-[#e6e6e6] rounded-2xl hover:text-[#2663eb] font-semibold transition-all duration-300 uppercase border border-[#c4cada]">
 									Ajouter une image
 								</button>
 							</div>
 
 						</div>
 
-						{# ==================== VIDEOS ==================== #}
+						{# ============== VIDEOS ============== #}
 						<div class="relative">
 
-							<div id="video-wrapper" class="grid grid-cols-1 gap-6
-																																																																																																																																										                                             md:flex md:flex-row md:gap-4
-																																																																																																																																										                                             md:overflow-x-auto md:scroll-smooth md:snap-x md:snap-mandatory">
+							<div id="video-wrapper" class="
+							grid 
+							grid-cols-1 
+							gap-6
+							md:flex 
+							md:flex-row
+							md:gap-4
+							md:overflow-x-auto 
+							md:scroll-smooth 
+							md:snap-x 
+							md:snap-mandatory">
 
 								{% for videoForm in form.videos %}
 									{% set media = videoForm.vars.data %}
@@ -221,16 +236,16 @@
 											<div class="flex flex-row-reverse items-center gap-2">
 												{% if is_granted('MEDIA_DELETE', media) %}
 													<button type="button" class="remove-item p-2 rounded border-[#f8285a] bg-[#f8285a] text-white hover:bg-[#d81a48]">
-														<i class="bi bi-trash"></i>
+														<i class="bi bi-trash3-fill"></i>
 													</button>
 												{% endif %}
 
 												{{ form_widget(videoForm.url, {
-                                attr: {
-                                    class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2 hidden',
-                                    placeholder: 'Lien YouTube'
-                                }
-                            }) }}
+                                                    attr: {
+                                                        class: 'item-input w-0 opacity-0 transition-all duration-300 border rounded px-3 py-2 hidden',
+                                                        placeholder: 'Lien YouTube'
+                                                    }
+                                                }) }}
 											</div>
 										</div>
 									</div>
@@ -239,7 +254,7 @@
 							</div>
 
 							<div class="mt-4">
-								<button type="button" id="add-video" class="w-full px-4 py-2 bg-[#e9f3ff] text-[#1b84ff] rounded hover:bg-[#056ee9] hover:text-white">
+								<button type="button" id="add-video" class="w-full px-4 py-2 bg-[#f1f1f4] text-[#2663eb] hover:bg-[#e6e6e6] rounded-2xl hover:text-[#2663eb] font-semibold transition-all duration-300 uppercase border border-[#c4cada]">
 									Ajouter une vidéo
 								</button>
 							</div>
@@ -249,34 +264,33 @@
 					</div>
 				</div>
 
-				{# ---------------- PROTOTYPES CACHÉS ---------------- #}
-			<template id="image-prototype">
-    {{ imagePrototype|raw }}
-</template>
+				{# ----------- PROTOTYPES CACHÉS ----------- #}
+			    <template id="image-prototype">
+                    {{ imagePrototype|raw }}
+                </template>
 
-<template id="video-prototype">
-    {{ videoPrototype|raw }}
-</template>
+                <template id="video-prototype">
+                    {{ videoPrototype|raw }}
+                </template>
 
 				{{ form_widget(form._token) }}
+				
 				<div class="flex justify-end px-4 md:px-8 lg:px-24 mt-4">
-					<button class="px-4 py-2 bg-[#1b84ff] text-white rounded hover:bg-[#056ee9]">Contribuer</button>
+					<button class="bg-blue-600 text-white px-6 py-3 rounded-2xl hover:bg-blue-800 font-semibold transition-all duration-300 uppercase">Contribuer</button>
 				</div>
 
+			{{ form_end(form, { render_rest: false }) }}
 
-				{{ form_end(form, { render_rest: false }) }}
+			<div class="px-4 md:px-8 lg:px-16 mt-6">
+				<p>{{ trick.content }}</p>
 
+				<hr class="border-0 h-px bg-gray-300 my-8">
 
-				<div class="px-4 md:px-8 lg:px-16 mt-6">
-					<p>{{ trick.content }}</p>
-
-					<hr class="border-0 h-px bg-gray-300 my-8">
-
-					<div class="flex flex-col md:flex-row items-center justify-center gap-4 text-gray-500 mb-6">
-						<div class="flex items-center border-r pr-4">
-							<span class="inline-block bg-blue-100 text-blue-600 text-sm font-semibold px-3 py-1 rounded-full">
-								{{ trick.category ? trick.category.name : 'Aucune catégorie' }}
-							</span>
+				<div class="flex flex-col md:flex-row items-center justify-center gap-4 text-gray-500 mb-6">
+					<div class="flex items-center border-r pr-4">
+						<span class="inline-block bg-blue-100 text-blue-600 text-sm font-semibold px-3 py-1 rounded-full">
+							{{ trick.category ? trick.category.name : 'Aucune catégorie' }}
+						</span>
 						</div>
 						<div class="flex items-center border-r pr-4">
 							<div class="text-sm text-gray-500">
@@ -288,7 +302,6 @@
 									{{ trick.createdAt|date('d/m/Y') }}
 								{% endif %}
 							</div>
-
 						</div>
 					</div>
 
@@ -335,22 +348,21 @@
 		</div>
 	</section>
 
-
 {% endblock %}
 
 {% block javascripts %}
 	{{ parent() }}
 	<script>
 		const IMAGE_ROUTES = {
-upload: "{{ path('profile_images_temp') }}",
-delete: "{{ path('profile_images_temp_delete') }}"
-};
+            upload: "{{ path('profile_images_temp') }}",
+            delete: "{{ path('profile_images_temp_delete') }}"
+            };
 	</script>
-<script src="{{ asset('js/media-collapse.js') }}"></script>
-<script src="{{ asset('js/template.js') }}"></script>
-<script src="{{ asset('js/utils.js') }}"></script>
-<script src="{{ asset('js/api.js') }}"></script>
-		<script  src="{{ asset('js/images.js') }}"></script>
-		<script  src="{{ asset('jsvideos.js') }}"></script>
 
+    <script src="{{ asset('js/media-collapse.js') }}"></script>
+    <script src="{{ asset('js/template.js') }}"></script>
+    <script src="{{ asset('js/utils.js') }}"></script>
+    <script src="{{ asset('js/api.js') }}"></script>
+	<script  src="{{ asset('js/images.js') }}"></script>
+	<script  src="{{ asset('js/videos.js') }}"></script>
 {% endblock %}
